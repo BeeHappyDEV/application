@@ -1,0 +1,57 @@
+<section class="w-screen bg-customDarkBg2 pb-24 pt-24">
+    <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
+        <div class="w-full px-8">
+            <% content.blocks.forEach((block, index) => { %>
+                <% if (index === 0) { %>
+                    <div class="flex sm:flex-col flex-end">
+                        <span class="text-customGrayText">
+                            Última modificación: <%- block.subtitle %>
+                        </span>
+                    </div>
+                    <div class="flex sm:flex-col flex-end items-center justify-center pt-4">
+                        <span class="inline-block">
+                            <%- include ('../components/images', {selection: "video"}) %>
+                        </span>
+                        <span class="inline-block text-customQuaternaryYellow">
+                             <a href="<%- block.link %>">
+                                Ver en YouTube
+                            </a>
+                        </span>
+                    </div>
+                    <div class="w-full mb-12 mt-12 mx-auto">
+                        <div class="border-t border-customGrayBorder"></div>
+                    </div>
+                    <h3 class="custom-content-title pt-4 sm:pt-0">
+                        <%= block.title %>
+                    </h3>
+                    <% block.paragraphs.forEach((paragraph) => { %>
+                        <p class="text-customGrayText pt-4 font-italic overflow-hidden">
+                            <%- paragraph.description %>
+                        </p>
+                    <% }) %>
+                <% } %>
+            <% }) %>
+        </div>
+        <div class="w-full rounded-3xl bg-customDarkBg3 custom-border-gray-darker mt-12 ml-4 mr-4 px-4 py-4">
+                <% content.blocks.forEach((block, index) => { %>
+                    <div>
+                        <% if (index !== 0) { %>
+                            <div class="w-full p-1">
+                                <div class="flex flex-col p-2 justify-center items-start">
+                                    <h3 class="custom-content-title pt-3 sm:pt-0 pr-8 sm:pr-0">
+                                        <%= block.title %>
+                                    </h3>
+                                    <% block.paragraphs.forEach((paragraph) => { %>
+                                        <p class="text-customGrayText pt-4 overflow-hidden">
+                                            <%- paragraph.description %>
+                                        </p>
+                                    <% }) %>
+                                </div>
+                            </div>
+                        <% } %>
+                    </div>
+                <% }) %>
+        </div>
+
+    </div>
+</section>

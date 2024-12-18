@@ -1,0 +1,82 @@
+<% const content = Object.assign ({
+    blocks: [
+        {
+            title: "Bienvenido",
+            subtitle: "1 Octubre 2024",
+            link: txt_path + "/politica-de-privacidad/video",
+            paragraphs: [
+                {
+                    description: "Valoramos tu confianza y queremos asegurarte que tus datos personales son tratados con el mayor cuidado y confidencialidad. Nos comprometemos a cumplir con las leyes y regulaciones aplicables para garantizar la protección de tu privacidad."
+                },
+                {
+                    description: "En nuestra Política, detallamos los tipos de información que recopilamos, cómo la utilizamos y los fines para los cuales la procesamos. También te informamos sobre tus derechos en relación con tus datos personales y cómo puedes ejercerlos."
+                },
+                {
+                    description: "Queremos que te sientas seguro y tranquilo al utilizar nuestros servicios. Por eso, implementamos medidas técnicas y organizativas para proteger tus datos contra pérdida, uso o acceso no autorizado. Además, solo conservaremos tus datos durante el tiempo necesario para cumplir con los fines para los cuales fueron recopilados, a menos que se requiera o permita un período de retención más largo por ley."
+                },
+                {
+                    description: "Te invitamos a leer detenidamente nuestra Política de privacidad para que estés plenamente informado sobre cómo manejamos tus datos personales y cómo ejercer tus derechos en relación con ellos. Si tienes alguna pregunta o inquietud, nuestro equipo de privacidad estará encantado de asistirte."
+                },
+                {
+                    description: "Agradecemos tu confianza en BeeHappy® y nos comprometemos a proteger tu privacidad y proporcionarte un entorno seguro y confiable en todo momento."
+                }
+            ]
+        },
+        {
+            title: "¿Qué información recopilamos?",
+            paragraphs: [
+                {
+                    description: "Recopilamos información personal que nos proporcionas directamente, como tu nombre, dirección de correo electrónico, dirección postal, número de teléfono, información de pago y otra información que nos permita proporcionarte nuestros servicios bajo nuestros <a class=\"text-customTertiaryYellow\" href=\"" + txt_path + "/terminos-y-condiciones\">Términos y Condiciones</a>. También podemos recopilar información sobre tu uso de nuestros servicios, como tus búsquedas, las páginas que visitas, la fecha y hora de tu visita, tus transacciones y otros datos de uso."
+                },
+                {
+                    description: "Además, podemos recopilar información automáticamente a través de tecnologías como cookies y registros de servidores. Esta información puede incluir tu dirección IP, tu tipo de navegador, tu proveedor de servicios de Internet (ISP), las páginas de referencia y de salida, el sistema operativo, la fecha y hora y los datos de uso."
+                }
+            ]
+        },
+        {
+            title: "¿Cómo utilizamos la información?",
+            paragraphs: [
+                {
+                    description: "Utilizamos la información personal que recopilamos para proporcionarte nuestros servicios y mejorarlos continuamente. También podemos utilizar la información para comunicarnos contigo, enviar correos electrónicos promocionales y marketing directo, y llevar a cabo análisis y estadísticas."
+                },
+                {
+                    description: "En algunos casos, podemos compartir tu información personal con terceros para cumplir con nuestras obligaciones legales, proteger nuestros derechos legales, investigar y prevenir fraudes y violaciones de seguridad, y cumplir con las solicitudes legítimas de las autoridades gubernamentales."
+                }
+            ]
+        },
+        {
+            title: "¿Cómo protegemos la información?",
+            paragraphs: [
+                {
+                    description: "Nos comprometemos a proteger la información personal que recopilamos y utilizamos. Hemos implementado medidas de seguridad físicas, técnicas y administrativas para proteger tu información personal contra pérdidas, robos, uso indebido y acceso no autorizado."
+                }
+            ]
+        },
+        {
+            title: "¿Cuáles son tus derechos de privacidad?",
+            paragraphs: [
+                {
+                    description: "En general, tienes derecho a acceder a tu información personal, corregir cualquier error en tu información, oponerte al uso de tu información para fines de marketing directo y solicitar la eliminación de tu información personal. Puedes ejercer tus derechos de privacidad en cualquier momento enviando una solicitud por escrito a nuestra dirección de correo electrónico."
+                }
+            ]
+        },
+        {
+            title: "¿Podemos cambiar nuestra política de privacidad?",
+            paragraphs: [
+                {
+                    description: "Podemos actualizar esta política de privacidad en cualquier momento. Te notificaremos sobre cualquier cambio material en nuestra política de privacidad mediante la publicación de la nueva política de privacidad en nuestro sitio web."
+                }
+            ]
+        },
+        {
+            title: "¿Cómo contactarnos en caso de dudas?",
+            paragraphs: [
+                {
+                    description: "Si tienes alguna pregunta o inquietud sobre nuestra política de privacidad, no dudes en contactarnos a través de los medios proporcionados en nuestro sitio web, o directamente a nuestra casilla: <a class=\"text-customTertiaryYellow\" href=\"/contacto/preguntas\">preguntas@beehappy.dev</a>."
+                }
+            ]
+        }
+    ]
+}) %>
+
+<%- include ('../components/paragraphs', {content: content}) %>

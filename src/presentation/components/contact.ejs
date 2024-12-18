@@ -1,0 +1,121 @@
+<section class="w-screen bg-customDarkBg2 pb-24 pt-24" id="contacto">
+    <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="custom-block-subtitle2">
+                <%= content.subtitle %>
+            </div>
+            <h2 class="mt-6 mb-6 text-4xl lg:text-5xl font-bold font-heading text-white">
+                <%= content.title %>
+            </h2>
+            <span class="w-full lg:w-10/12 md:w-11/12 block text-customGrayText mx-auto">
+                <%= content.description %>
+            </span>
+        </div>
+
+        <div class="w-full flex flex-col lg:flex-row items-center mx-auto">
+            <% for (let offset = 0; offset < content.blocks.length; offset++) { %>
+                <% if (offset < 3) { %>
+                    <div class="w-full lg:w-1/3 mx-auto lg:px-4">
+                        <div class="mt-12 py-8 px-12 custom-border-gray-darker bg-customDarkBg3 rounded-3xl">
+                            <div class="flex justify-center">
+                                <%- include ('../components/images', {selection: content.blocks[offset].image}) %>
+                            </div>
+                            <p class="mt-6 mb-6 text-gray-500 text-center">
+                                <%= content.blocks[offset].description %>
+                            </p>
+                            <ul class="mb-6 text-white">
+                                <li class="flex justify-center">
+                                    <span>
+                                        <%= content.blocks[offset].title %>
+                                    </span>
+                                </li>
+                            </ul>
+                            <% content.blocks[offset].buttons.forEach((button) => { %>
+                                <a href="<%= button.link %>">
+                                    <div class="h-12 custom-button-colored2 mx-auto">
+                                        <%= button.title %>
+                                    </div>
+                                </a>
+                            <% }) %>
+                        </div>
+                    </div>
+                <% } %>
+            <% } %>
+        </div>
+        <div class="flex flex-col lg:flex-row items-center mx-auto">
+            <% for (let offset = 0; offset < content.blocks.length; offset++) { %>
+                <% if (offset >= 3) { %>
+                    <div class="w-full lg:w-2/3 mx-auto px-4">
+                        <div id="mapbox" class="mt-12 py-8 px-12 custom-border-gray-darker bg-customDarkBg3 rounded-3xl" ></div>
+                    </div>
+                    <div class="w-full lg:w-1/3 mx-auto lg:px-4">
+                        <div class="mt-12 py-8 px-12 custom-border-gray-darker bg-customDarkBg3 rounded-3xl">
+                            <div class="flex justify-center">
+                                <%- include ('../components/images', {selection: content.blocks[offset].image}) %>
+                            </div>
+                            <p class="mt-6 mb-6 text-gray-500 text-center">
+                                <%= content.blocks[offset].description %>
+                            </p>
+                            <ul class="mb-6 text-white">
+                                <li class="flex justify-center text-center">
+                                    <span>
+                                        <%- content.blocks[offset].title %>
+                                    </span>
+                                </li>
+                            </ul>
+                            <% content.blocks[offset].buttons.forEach((button) => { %>
+                                <a href="<%= button.link %>">
+                                    <div class="h-12 custom-button-colored2 mx-auto">
+                                        <%= button.title %>
+                                    </div>
+                                </a>
+                            <% }) %>
+                        </div>
+                    </div>
+                <% } %>
+            <% } %>
+        </div>
+    </div>
+</section>
+<script type="text/javascript">
+    mapboxgl.accessToken = 'pk.eyJ1IjoiY3VlbnRhcGFob3RtYWlsIiwiYSI6ImNsbm44ODBuMjAzaDkya3BsZW03enFod2gifQ.AVBQR5RAxPBtdc4kvbMqOg';
+    let map = new mapboxgl.Map ({
+        container: "mapbox",
+        style: 'mapbox://styles/cuentapahotmail/clnqgst4400am01p7053g1r2p',
+        center: [-70.568895, -33.408835],
+        zoom: 17,
+    });
+    map.on ("load", () => {
+        map.loadImage (
+            "http://127.0.0.1:8080/images/mapbox.png",
+            (error, image) => {
+                if (error) throw error;
+                map.addImage ('cat', image);
+                map.addSource ("point", {
+                    'type': 'geojson',
+                    'data': {
+                        'type': 'FeatureCollection',
+                        'features': [
+                            {
+                                'type': 'Feature',
+                                'geometry': {
+                                    'type': 'Point',
+                                    'coordinates': [-70.568895, -33.408835]
+                                }
+                            }
+                        ]
+                    }
+                });
+                map.addLayer ({
+                    'id': 'points',
+                    'type': 'symbol',
+                    'source': 'point',
+                    'layout': {
+                        'icon-image': 'cat',
+                        'icon-size': 0.25
+                    }
+                });
+            }
+        );
+    });
+</script>

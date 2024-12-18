@@ -1,0 +1,23 @@
+<% const content = {
+    subtitle: "Ayudamos a las empresas a dar una mejor experiencia en la atención a sus clientes.",
+    title: "Entrega momentos de felicidad",
+    image: "happiness"
+} %>
+
+<section class="w-screen bg-customDarkBg4 pb-24 pt-24">
+    <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
+        <div class="w-full lg:w-1/2 px-4">
+            <h2 class="mb-4 text-4xl lg:text-5xl custom-block-big-title">
+                <%= content.title %>
+            </h2>
+            <p class="mb-4 custom-block-big-title2">
+                <%= content.subtitle %>
+            </p>
+        </div>
+        <div class="w-full lg:w-1/2 md:w-3/4 mx-auto px-4 lg:order-first">
+            <div class="rounded px-4 pt-4">
+                <%- include ('../components/images', {selection: content.image}) %>
+            </div>
+        </div>
+    </div>
+</section>

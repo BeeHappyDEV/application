@@ -1,0 +1,26 @@
+<% const content = Object.assign ({
+    title: "BeeHappy",
+    description: "BeeHappy te conecta con tus clientes e impulsa tu negocio",
+    path: txt_path,
+    version: txt_version
+}) %>
+
+<head>
+    <title><%= content.title %></title>
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="version" content="<%= content.version %>">
+    <meta name="description" content="<%= content.description %>">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="<%= content.path %>">
+    <meta property="og:title" content="<%= content.title %>">
+    <meta property="og:description" content="<%= content.description %>">
+    <meta property="og:image" content="<%= content.path %>/images/favicon.png">
+    <link href="/images/favicon.svg" rel="icon" type="image/svg+xml">
+    <link href="/styles/tailwind.css" rel="stylesheet">
+    <link href="/styles/fonts.css" rel="stylesheet">
+    <link href="/styles/custom.css" rel="stylesheet">
+    <link href="/styles/mapbox.css" rel="stylesheet">
+    <script src="/scripts/custom.js"></script>
+    <script src="/scripts/mapbox.js"></script>
+</head>

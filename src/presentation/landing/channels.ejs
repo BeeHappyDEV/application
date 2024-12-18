@@ -1,0 +1,39 @@
+<% const content = {
+    subtitle: "Reduce los tiempos de espera",
+    title: "Múltiples canales para todos tus clientes",
+    image: "channels",
+    paragraphs: [
+        {
+            description: "En la actualidad, los clientes esperan poder comunicarse con las empresas a través de variadas formas, como el teléfono, el correo electrónico, las redes sociales y el chat en vivo."
+        },
+        {
+            description: "Por otro lado, las empresas que ofrecen múltiples canales de comunicación a sus clientes están en una mejor posición para proporcionar una experiencia de servicio de alta calidad y aumentar su satisfacción."
+        },
+        {
+            description: "<span class=\"text-white\">¡Dales el poder de conectarse contigo de la forma que les resulte más conveniente!</span>"
+        }
+    ]
+} %>
+
+<section class="w-screen bg-customDarkBg1 pb-24 pt-24" id="canales">
+    <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
+        <div class="w-full lg:w-1/2 px-4">
+            <span class="custom-block-subtitle2">
+                <%= content.subtitle %>
+            </span>
+            <h2 class="mt-6 mb-10 text-4xl lg:text-5xl custom-block-big-title">
+                <%= content.title %>
+            </h2>
+            <% content.paragraphs.forEach((paragraph) => { %>
+                <p class="mb-10 text-customGrayText leading-loose">
+                    <%- paragraph.description %>
+                </p>
+            <% }) %>
+        </div>
+        <div class="w-full lg:w-1/2 md:w-3/4 mx-auto lg:px-4">
+            <div class="rounded lg:px-4 pt-4">
+                <%- include ('../components/images', {selection: content.image}) %>
+            </div>
+        </div>
+    </div>
+</section>

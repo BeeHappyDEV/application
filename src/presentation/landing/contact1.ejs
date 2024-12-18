@@ -1,0 +1,84 @@
+<% const content = Object.assign ({
+    title: "Elige cómo contactarnos",
+    subtitle: "Selecciona el medio de comunicación",
+    description: "¿Tienes alguna pregunta o necesitas ayuda?",
+    blocks: [
+        {
+            title: txt_phone,
+            description: "Llámanos ahora mismo para obtener más información",
+            image: "contact1",
+            buttons: [
+                {
+                    title: "Llámanos",
+                    link: "/contacto/llamanos"
+                }
+            ]
+        },
+        {
+            title: txt_mail,
+            description: "Envíanos un correo y estaremos encantados en atenderte",
+            image: "contact2",
+            buttons: [
+                {
+                    title: "Escríbenos",
+                    link: "/contacto/escribenos"
+                }
+            ]
+        },
+        {
+            title: txt_phone,
+            description: "Textéanos y te responderemos enseguida",
+            image: "contact3",
+            buttons: [
+                {
+                    title: "Textéanos",
+                    link: "/contacto/texteanos"
+                }
+            ]
+        }
+    ]
+}) %>
+
+<section class="w-screen bg-customDarkBg2 pt-24" id="contacto">
+    <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
+        <div class="max-w-2xl mx-auto text-center">
+            <div class="custom-block-subtitle2">
+                <%= content.subtitle %>
+            </div>
+            <h2 class="mt-6 mb-6 text-4xl lg:text-5xl font-bold font-heading text-white">
+                <%= content.title %>
+            </h2>
+            <span class="w-full lg:w-10/12 md:w-11/12 block text-customGrayText mx-auto">
+                    <%= content.description %>
+                </span>
+        </div>
+        <div class="w-full flex flex-col lg:flex-row items-center mx-auto">
+            <% content.blocks.forEach((block) => { %>
+                <div class="w-full lg:w-1/3 mx-auto lg:px-4">
+                    <div class="mt-12 py-8 px-12 custom-border-gray-darker bg-customDarkBg3 rounded-3xl">
+                        <div class="flex justify-center">
+                            <%- include ('../components/images', {selection: block.image}) %>
+                        </div>
+                        <p class="mt-6 mb-6 text-gray-500 text-center">
+                            <%= block.description %>
+                        </p>
+                        <ul class="mb-6 text-white">
+                            <li class="flex justify-center text-center">
+                                <span>
+                                    <%- block.title %>
+                                </span>
+                            </li>
+                        </ul>
+                        <% block.buttons.forEach((button) => { %>
+                            <a href="<%= button.link %>">
+                                <div class="h-12 custom-button-colored2 mx-auto">
+                                    <%= button.title %>
+                                </div>
+                            </a>
+                        <% }) %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</section>

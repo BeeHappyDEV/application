@@ -1,0 +1,35 @@
+<section class="w-screen bg-customDarkBg1 pb-24 pt-24">
+    <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12 pt-24">
+        <% if (content.image) { %>
+            <div class="mx-auto">
+                <%- include ('../components/images', {selection: content.image}) %>
+            </div>
+        <% } %>
+        <div class="w-full px-4 text-center">
+            <span class="custom-block-subtitle2">
+                <%= content.subtitle %>
+            </span>
+            <h2 class="mt-6 mb-6 text-5xl sm:text-6xl lg:text-7xl xl:text-7xl font-bold tracking-wide text-white">
+                <span class="w-full lg:w-10/12 md:w-11/12 block mx-auto">
+                    <%= content.title %>
+                </span>
+            </h2>
+            <% if (content.description) { %>
+                <span class="w-full lg:w-10/12 md:w-11/12 block text-customGrayText mx-auto mb-14">
+                    <%= content.description %>
+                </span>
+            <% } %>
+        </div>
+        <% if (content.buttons) { %>
+            <div class="mx-auto">
+                <% content.buttons.forEach ((button) => { %>
+                    <a href="<%= button.link %>">
+                        <div class="w-[210px] h-12 custom-button-colored2">
+                            <%= button.title %>
+                        </div>
+                    </a>
+                <% }) %>
+            </div>
+        <% } %>
+    </div>
+</section>

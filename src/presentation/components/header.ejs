@@ -1,0 +1,44 @@
+<% const content = Object.assign ({
+    image: "logotype",
+    blocks: [
+        {
+            title: "Inicio",
+            link: "/"
+        },
+        {
+            title: "Características",
+            link: "/#caracteristicas"
+        },
+        {
+            title: "Beneficios",
+            link: "/#beneficios"
+        },
+        {
+            title: "Canales",
+            link: "/#canales"
+        },
+        {
+            title: "Contacto",
+            link: "/#contacto"
+        }
+    ]
+}) %>
+
+<div class="w-full h-20 flex flex-col justify-center items-center fixed bg-customDarkBg0 z-40 lg:backdrop-blur-xl">
+    <div class="2xl:w-[1280px] xl:w-10/12 w-11/12 flex justify-between items-center relative">
+        <a class="navbar-link" href="/">
+            <div class="flex justify-start items-center">
+                <div class="text-white mr-2 text-6xl">
+                    <%- include ('./images', {selection: content.image}) %>
+                </div>
+            </div>
+        </a>
+        <div class="hidden lg:flex pl-12 pb-2">
+            <% content.blocks.forEach ((block) => { %>
+                <a class="navbar-link" href="<%= block.link %>">
+                    <%= block.title %>
+                </a>
+            <% }) %>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,13 @@
+<% const content = Object.assign ({
+    subtitle: "Vaya, tenemos un problema",
+    title: "Error Interno",
+    image: "error",
+    buttons: [
+        {
+            title: "Reinténtalo",
+            link: txt_path
+        }
+    ]
+}) %>
+
+<%- include ('../components/splash', {content: content}) %>

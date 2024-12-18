@@ -1,0 +1,29 @@
+# APPLICATION #
+
+application:
+  name: BeeHappy
+  domain: .dev
+  version: 3.0.241210
+
+# INTEGRATIONS #
+
+integration:
+  public: https://api64.ipify.org?format=json
+
+# SCHEDULERS #
+
+scheduler:
+  metrics:
+    comment: BeeHappy.dev is running metrics task
+  wakeup:
+    comment: BeeHappy.dev is running wakeup task
+  indicators:
+    comment: BeeHappy.dev is running indicators task
+    host:
+      dollar: https://api.cmfchile.cl/api-sbifv3/recursos_api/dolar
+      euro: https://api.cmfchile.cl/api-sbifv3/recursos_api/euro
+      foment_unit: https://api.cmfchile.cl/api-sbifv3/recursos_api/uf
+      monthly_tax_unit: https://api.cmfchile.cl/api-sbifv3/recursos_api/utm
+    token: 8868f4356814969f5c63d9dc122e95bb12b10e61
+  inspirational:
+    comment: BeeHappy.dev is running inspirational task

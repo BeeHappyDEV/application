@@ -1,0 +1,71 @@
+# SYSTEM #
+
+system:
+  cookie: 1000 * 60 * 5
+  host: https://beehappy.dev
+  port: 3000
+  websocket: ws://beehappy.dev
+
+# INTEGRATIONS #
+
+integration:
+  cloudflare:
+    host: https://api.cloudflare.com/client/v4/zones/44fb5eb71c16f2cbc092adf56c43b37f/purge_cache
+    token: eOj_21qDH8ez59dn9Kjm2NOd2d9Y_VVO7sNCdiFs
+  discord:
+    beebee:
+      notifications: https://discord.com/api/webhooks/1043051348381421598/oqytOEnH2Ms4cnVaOD5Q1_XDP-JysOCy1ArLC3fYGA1JZ8x3RkRXalCB3BdCJKNACefc
+    beejay:
+      inspirational: https://discord.com/api/webhooks/1054319461982797864/ruSL9Op3HJwxFII5FWqZP3IGdLEIq0SU2jaxiKimufCH5DcVal4wlV-mMNYUrywg0F3y
+      notifications: https://discord.com/api/webhooks/1043075407563472937/bE7TQvqC5qqTumO82UfY2yqZSTxAzRqSc7zWCBZiN6DlkBJsmB6XfNyvqxoc_Xsvx8HS
+  mongo:
+    datasource: BeeHappyCluster
+    database: Production
+    traces: dat_traces
+    metrics: dat_metrics
+    host: mongodb+srv://beehappydev:beehappydev@beehappycluster.2uqzs.mongodb.net/?retryWrites=true&w=majority&appName=BeeHappyCluster
+  postgres:
+    connections: 15
+    database: postgres
+    host: aws-0-us-west-1.pooler.supabase.com
+    port: 6543
+    pass: beehappydev
+    user: postgres.exjdpgprbskwtbuoikrk
+
+# CHANNELS #
+
+channel:
+  messenger:
+    enable: true
+    token:
+    secret:
+    word:
+  telegram:
+    token: 6793157515:AAFm9a0HBko7Rze3hwFZJa6cxZ_PUmdOwms
+    webhook: https://beehappyadministracion.cl
+  whatsapp:
+    enable: true
+    aaa: aaa
+
+# SCHEDULERS #
+
+scheduler:
+  metrics:
+    cron: 0,10,20,30,40,50 * * * * * UTC_OFFSET=0
+    enable: true
+    verbose: EVERY TEN SECONDS
+  wakeup:
+    cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
+    enable: true
+    service: https://beehappyadministracion.cl/backend/system/wakeup
+    verbose: EVERY TEN MINUTES
+  indicators:
+    cron: 0 0 0,6,12,18 * * * UTC_OFFSET=0
+    enable: true
+    service: https://beehappyadministracion.cl/backend/reload/indicators
+    verbose: MANY TIMES PER DAY
+  inspirational:
+    cron: 0 0 8 * * * UTC_OFFSET=0
+    enable: false
+    service: https://beehappyadministracion.cl/backend/load/inspirational
+    verbose: ONE TIME PER DAY

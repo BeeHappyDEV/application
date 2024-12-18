@@ -1,0 +1,17 @@
+/* * * * * * * * * * * * */
+/* I N S T A L A T I O N */
+/* * * * * * * * * * * * */
+
+reset/index.txt
+core/index.txt
+toolbox/index.txt
+constants/index.txt
+locations/index.txt
+phrases/index.txt
+organizations/index.txt
+
+frontend/index.txt
+backend/index.txt
+robot/index.txt
+workflow/index.txt
+flows/index.txt

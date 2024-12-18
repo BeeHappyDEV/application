@@ -1,0 +1,97 @@
+<% const content = Object.assign ({
+    blocks: [
+        {
+            title: "Bienvenido",
+            subtitle: "1 Octubre 2024",
+            link: txt_path + "/terminos-y-condiciones/video",
+            paragraphs: [
+                {
+                    description: "Nos comprometemos a proporcionar un marco claro y transparente que garantice una experiencia positiva y segura al utilizar los servicios de BeeHappy®. Los Términos abordan aspectos clave relacionados con la privacidad, seguridad, uso aceptable y otros aspectos relevantes para asegurar una interacción confiable y mutuamente beneficiosa entre nosotros y nuestros usuarios."
+                },
+                {
+                    description: "Valoramos tu confianza y nos esforzamos por mantener una relación sólida y confiable contigo. Por eso, te invitamos a revisar detenidamente nuestros Términos, ya que establecen los fundamentos de nuestra colaboración y describen los derechos y obligaciones de ambas partes."
+                },
+                {
+                    description: "Si tienes alguna pregunta o necesitas aclaraciones adicionales sobre nuestros Términos, no dudes en ponerte en contacto con nuestro equipo de soporte. Estaremos encantados de ayudarte en todo lo que necesites."
+                },
+                {
+                    description: "Gracias por elegir BeeHappy®. Estamos comprometidos en brindarte un servicio excepcional y en asegurarnos de que tengas una experiencia satisfactoria con nosotros."
+                }
+            ]
+        },
+        {
+            title: "¿Cuáles son los términos y condiciones que debo aceptar?",
+            paragraphs: [
+                {
+                    description: "Al acceder o utilizar nuestros servicios, aceptas estos términos y nuestra <a class=\"text-customTertiaryYellow \" href=\"" + txt_path + "/politica-de-privacidad\">Política de Privacidad</a>. Si no estás de acuerdo con estos términos o nuestra política de privacidad, no uses nuestros servicios."
+                }
+            ]
+        },
+        {
+            title: "¿En qué consiste la licencia que se te otorga?",
+            paragraphs: [
+                {
+                    description: "Te otorgamos una licencia limitada, no exclusiva y no transferible para acceder y utilizar nuestros servicios, sujeto a estos términos. Esta licencia no incluye el derecho a copiar, modificar, distribuir, vender o transferir nuestros servicios a terceros sin nuestro consentimiento previo por escrito."
+                }
+            ]
+        },
+        {
+            title: "¿Cuáles son tus responsabilidades como usuario?",
+            paragraphs: [
+                {
+                    description: "Eres responsable de todas las actividades que se realicen en tu cuenta y del cumplimiento de estos términos. Debes cumplir con todas las leyes y regulaciones aplicables en relación con el uso de nuestros servicios."
+                }
+            ]
+        },
+        {
+            title: "¿Cuáles son nuestros derechos de propiedad?",
+            paragraphs: [
+                {
+                    description: "Nos reservamos todos los derechos de propiedad y de propiedad intelectual en relación con nuestros servicios, incluidos todos los derechos de autor, marcas comerciales, patentes, diseños y secretos comerciales."
+                }
+            ]
+        },
+        {
+            title: "¿Hasta dónde llega nuestra responsabilidad?",
+            paragraphs: [
+                {
+                    description: "No somos responsables de ningún daño indirecto, incidental, especial, consecuente o punitivo que surja de o en relación con el uso de nuestros servicios. No seremos responsables en ningún caso por los daños que excedan la cantidad total que hayas pagado por nuestros servicios durante el período de tres meses anterior a la fecha del reclamo."
+                }
+            ]
+        },
+        {
+            title: "¿Podemos cambiar nuestros términos y condiciones?",
+            paragraphs: [
+                {
+                    description: "Nos reservamos el derecho de modificar o discontinuar nuestros servicios en cualquier momento y sin previo aviso. También podemos rescindir estos términos y tu acceso a nuestros servicios en cualquier momento y por cualquier motivo."
+                }
+            ]
+        },
+        {
+            title: "¿Qué responsabilidades asumes al aceptar?",
+            paragraphs: [
+                {
+                    description: "Aceptas indemnizarnos y eximirnos de responsabilidad frente a cualquier reclamo, responsabilidad, daño, pérdida o gasto, incluidos los honorarios razonables de abogados, relacionados con tu uso de nuestros servicios o tu incumplimiento de estos términos."
+                }
+            ]
+        },
+        {
+            title: "¿Cuál es la ley aplicable y su jurisdicción?",
+            paragraphs: [
+                {
+                    description: "Estos términos se regirán e interpretarán de acuerdo con las leyes del lugar donde se encuentra nuestra empresa, sin tener en cuenta las disposiciones sobre conflicto de leyes. Cualquier disputa relacionada con estos términos se resolverá exclusivamente en los tribunales competentes del lugar donde se encuentra nuestra empresa."
+                }
+            ]
+        },
+        {
+            title: "¿Cómo contactarnos en caso de dudas?",
+            paragraphs: [
+                {
+                    description: "Si tienes alguna pregunta o inquietud sobre estos términos y condiciones, no dudes en contactarnos a través de los medios proporcionados en nuestro sitio web, o directamente a nuestra casilla: <a class=\"text-customTertiaryYellow\" href=\"/contacto/preguntas\">preguntas@beehappy.ai</a>."
+                }
+            ]
+        }
+    ]
+}) %>
+
+<%- include ('../components/paragraphs', {content: content}) %>

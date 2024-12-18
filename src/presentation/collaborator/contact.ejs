@@ -1,0 +1,67 @@
+<% const content = Object.assign ({
+    blocks: [
+        {
+            title: txt_phone,
+            image: "contact1",
+            buttons: [
+                {
+                    title: "Llámane",
+                    link: "/colaborador/" + txt_name + "/llamame"
+                }
+            ]
+        },
+        {
+            title: txt_mail,
+            image: "contact2",
+            buttons: [
+                {
+                    title: "Escríbeme",
+                    link: "/colaborador/" + txt_name + "/escribeme"
+                }
+            ]
+        },
+        {
+            title: txt_phone,
+            image: "contact3",
+            buttons: [
+                {
+                    title: "Textéame",
+                    link: "/colaborador/" + txt_name + "/texteame"
+                }
+            ]
+        }
+    ]
+}) %>
+
+<section class="w-screen bg-customDarkBg2 pb-24 pt-24" id="contacto">
+    <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
+        <div class="w-full flex flex-col lg:flex-row items-center mx-auto">
+            <% content.blocks.forEach((block) => { %>
+                <div class="w-full lg:w-1/3 mx-auto lg:px-4">
+                    <div class="mt-12 py-8 px-12 custom-border-gray-darker bg-customDarkBg3 rounded-3xl">
+                        <div class="flex justify-center">
+                            <%- include ("../components/images", {selection: block.image}) %>
+                        </div>
+                        <p class="mt-6 mb-6 text-gray-500 text-center">
+                            <%= block.description %>
+                        </p>
+                        <ul class="mb-6 text-white">
+                            <li class="flex justify-center text-center">
+                                <span>
+                                    <%- block.title %>
+                                </span>
+                            </li>
+                        </ul>
+                        <% block.buttons.forEach((button) => { %>
+                            <a href="<%= button.link %>">
+                                <div class="h-12 custom-button-colored2 mx-auto">
+                                    <%= button.title %>
+                                </div>
+                            </a>
+                        <% }) %>
+                    </div>
+                </div>
+            <% }) %>
+        </div>
+    </div>
+</section>

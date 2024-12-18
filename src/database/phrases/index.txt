@@ -1,0 +1,8 @@
+/* * * * * * * * * * * */
+/* D E F I N I T I O N */
+/* * * * * * * * * * * */
+
+definition/tables/dat_phrases.sql
+definition/tables/dat_used_phrases.sql
+
+definition/functions/publish_daily_phrase.sql

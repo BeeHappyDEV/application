@@ -1,0 +1,41 @@
+{
+    "name": "beehappy.dev",
+    "license": "Unlicense",
+    "scripts": {
+        "cls": "npx -y rimraf node_modules out tmp package-lock.json yarn.lock",
+        "upd": "yarn install && npx -y npm-check-updates -u && yarn install --force",
+        "dev": "npx -y ts-node-dev src/application/Launcher.ts --dev",
+        "prd": "node out/Launcher.js --prd",
+        "cmp": "tsc --build"
+    },
+    "dependencies": {
+        "crypto": "1.0.1",
+        "ejs": "3.1.10",
+        "express": "4.21.2",
+        "fs-extra": "11.2.0",
+        "http-proxy": "1.18.1",
+        "js-yaml": "4.1.0",
+        "kleur": "4.1.5",
+        "localtunnel": "2.0.2",
+        "mongodb": "6.12.0",
+        "node-cron": "3.0.3",
+        "pg": "8.13.1",
+        "react": "19.0.0",
+        "react-dom": "19.0.0",
+        "superagent": "10.1.1"
+    },
+    "devDependencies": {
+        "@types/ejs": "3.1.5",
+        "@types/express": "5.0.0",
+        "@types/fs-extra": "11.0.4",
+        "@types/js-yaml": "4.0.9",
+        "@types/localtunnel": "2.0.4",
+        "@types/node": "22.10.2",
+        "@types/node-cron": "3.0.11",
+        "@types/pg": "8.11.10",
+        "@types/react": "19.0.1",
+        "@types/react-dom": "19.0.2",
+        "@types/superagent": "8.1.9",
+        "typescript": "5.7.2"
+    }
+}

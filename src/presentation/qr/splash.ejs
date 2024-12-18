@@ -1,0 +1,13 @@
+<% const content = Object.assign ({
+    subtitle: txt_profile,
+    title: txt_full_name,
+    image: txt_icon,
+    buttons: [
+        {
+            title: "Ve mi perfil",
+            link: "/colaborador/" + txt_name
+        }
+    ]
+}) %>
+
+<%- include ('../components/splash', {content: content}) %>
