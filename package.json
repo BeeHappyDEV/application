@@ -7,7 +7,7 @@
         "dev": "npx -y ts-node-dev src/application/Launcher.ts --dev",
         "prd": "node out/Launcher.js --prd",
         "cmp": "tsc --build",
-        "dpl": "npm run upd && npm run cmp && npm run prd"
+        "dpl": "npm run upd && npm run cmp"
     },
     "dependencies": {
         "crypto": "1.0.1",
