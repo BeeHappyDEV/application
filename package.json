@@ -6,7 +6,8 @@
         "upd": "yarn install && npx -y npm-check-updates -u && yarn install --force",
         "dev": "npx -y ts-node-dev src/application/Launcher.ts --dev",
         "prd": "node out/Launcher.js --prd",
-        "cmp": "tsc --build"
+        "cmp": "tsc --build",
+        "dpl": "npm run upd && npm run cmp && npm run prd"
     },
     "dependencies": {
         "crypto": "1.0.1",
