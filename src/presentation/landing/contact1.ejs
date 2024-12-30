@@ -39,30 +39,30 @@
     ]
 }) %>
 
-<section class="w-screen bg-customDarkBg2 pt-24" id="contacto">
+<section class="w-screen custom-background-section-2 pt-24" id="contacto">
     <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
         <div class="max-w-2xl mx-auto text-center">
-            <div class="custom-block-subtitle2">
+            <div class="custom-block-subtitle">
                 <%= content.subtitle %>
             </div>
-            <h2 class="mt-6 mb-6 text-4xl lg:text-5xl font-bold font-heading text-white">
+            <h2 class="mt-6 mb-10 text-4xl lg:text-5xl custom-block-big-title">
                 <%= content.title %>
             </h2>
-            <span class="w-full lg:w-10/12 md:w-11/12 block text-customGrayText mx-auto">
+            <span class="w-full lg:w-10/12 md:w-11/12 block custom-content-text mx-auto">
                     <%= content.description %>
                 </span>
         </div>
         <div class="w-full flex flex-col lg:flex-row items-center mx-auto">
             <% content.blocks.forEach((block) => { %>
                 <div class="w-full lg:w-1/3 mx-auto lg:px-4">
-                    <div class="mt-12 py-8 px-12 custom-border-gray-darker bg-customDarkBg3 rounded-3xl">
+                    <div class="mt-12 py-8 px-12 custom-border-gray custom-background-section-3 rounded-3xl">
                         <div class="flex justify-center">
                             <%- include ('../components/images', {selection: block.image}) %>
                         </div>
-                        <p class="mt-6 mb-6 text-gray-500 text-center">
+                        <p class="mt-6 mb-6 custom-content-text text-center">
                             <%= block.description %>
                         </p>
-                        <ul class="mb-6 text-white">
+                        <ul class="mb-6 custom-content-highlight">
                             <li class="flex justify-center text-center">
                                 <span>
                                     <%- block.title %>
@@ -71,7 +71,7 @@
                         </ul>
                         <% block.buttons.forEach((button) => { %>
                             <a href="<%= button.link %>">
-                                <div class="h-12 custom-button-colored2 mx-auto">
+                                <div class="h-12 custom-button-colored mx-auto">
                                     <%= button.title %>
                                 </div>
                             </a>

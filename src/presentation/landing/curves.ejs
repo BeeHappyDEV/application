@@ -4,10 +4,10 @@
     image: "curves",
     paragraphs: [
         {
-            description: "<span class=\"text-customSecondaryYellow\">Ahorra dinero:</span> nuestro chatbot puede gestionar las consultas de tus clientes de forma automatizada, ¡así que tus agentes humanos pueden centrarse en otras cosas!"
+            description: "<span class=\"custom-content-topic\">Ahorra dinero:</span> nuestro chatbot puede gestionar las consultas de tus clientes de forma automatizada, ¡así que tus agentes humanos pueden centrarse en otras cosas!"
         },
         {
-            description: "<span class=\"text-customSecondaryYellow\">Satisface a tus clientes:</span> con una disponibilidad 24/7, tus clientes pueden obtener ayuda cuando la necesitan de forma rápida y precisa; proporcionándoles una experiencia de atención personalizada, ¡lo que hace que tus clientes se sientan valorados!"
+            description: "<span class=\"custom-content-topic\">Satisface a tus clientes:</span> con una disponibilidad 24/7, tus clientes pueden obtener ayuda cuando la necesitan de forma rápida y precisa; proporcionándoles una experiencia de atención personalizada, ¡lo que hace que tus clientes se sientan valorados!"
         }
     ],
     buttons: [
@@ -18,10 +18,10 @@
     ]
 } %>
 
-<section class="w-screen bg-customDarkBg1 pb-24 pt-24" id="beneficios">
+<section class="w-screen custom-background-section-1 pb-24 pt-24" id="beneficios">
     <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
         <div class="w-full px-4 text-center">
-            <span class="custom-block-subtitle2">
+            <span class="custom-block-subtitle">
                 <%= content.subtitle %>
             </span>
             <h2 class="mt-6 mb-8 text-4xl lg:text-5xl custom-block-big-title">
@@ -34,14 +34,14 @@
     <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
         <div class="w-full lg:w-1/2 px-4">
             <% content.paragraphs.forEach((paragraph) => { %>
-                <p class="mb-10 text-customGrayText leading-loose">
+                <p class="mb-10 custom-content-text leading-loose">
                     <%- paragraph.description %>
                 </p>
             <% }) %>
             <ul class="flex justify-center mb-10 mt-10 text-white">
                 <% content.buttons.forEach ((button) => { %>
                     <a href="<%= button.link %>">
-                        <div class="w-[210px] h-12 custom-button-colored2">
+                        <div class="w-[210px] h-12 custom-button-colored">
                             <%= button.title %>
                         </div>
                     </a>

@@ -34,7 +34,7 @@
         "@types/node": "22.10.2",
         "@types/node-cron": "3.0.11",
         "@types/pg": "8.11.10",
-        "@types/react": "19.0.1",
+        "@types/react": "19.0.2",
         "@types/react-dom": "19.0.2",
         "@types/superagent": "8.1.9",
         "typescript": "5.7.2"

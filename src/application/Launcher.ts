@@ -111,12 +111,6 @@ class Launcher {
 
         }
 
-        //let internalPort = privatePort + 1;
-
-        //let internalHost = await PropertiesTool.get ("system.host");
-
-        //internalHost = internalHost + ":" + internalPort;
-
         let environmentString = process.argv [2].slice (2);
 
         switch (environmentString) {

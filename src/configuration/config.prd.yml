@@ -57,15 +57,15 @@ scheduler:
   wakeup:
     cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
     enable: true
-    service: https://beehappyadministracion.cl/backend/system/wakeup
+    service: https://beehappy.dev/backend/system/wakeup
     verbose: EVERY TEN MINUTES
   indicators:
     cron: 0 0 0,6,12,18 * * * UTC_OFFSET=0
     enable: true
-    service: https://beehappyadministracion.cl/backend/reload/indicators
+    service: https://beehappy.dev/backend/reload/indicators
     verbose: MANY TIMES PER DAY
   inspirational:
     cron: 0 0 8 * * * UTC_OFFSET=0
     enable: false
-    service: https://beehappyadministracion.cl/backend/load/inspirational
+    service: https://beehappy.dev/backend/load/inspirational
     verbose: ONE TIME PER DAY
