@@ -9,33 +9,6 @@
         .custom-box-fill { fill: rgb(255 170 0); stroke: none; }
         .custom-box-text { fill: rgb(255 255 255); stroke: none; }
     </style>
-    <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-1">
-        <g>
-            <rect x="0" y="0" width="1080" height="780" fill="none" stroke="none" pointer-events="all"/>
-        </g>
-    </g>
-    <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-2">
-        <g>
-            <path d="M 796 160 L 730 160 Q 720 160 720 170 L 720 310 Q 720 320 710 320 L 655.34 320"
-                  fill="none" stroke="#b3b3b3" stroke-width="5" stroke-miterlimit="10"
-                  stroke-dasharray="15 15" pointer-events="stroke"/>
-            <ellipse cx="800" cy="160" rx="4" ry="4" fill="none" stroke="#b3b3b3" stroke-width="5"
-                     pointer-events="all"/>
-            <path d="M 645.59 320 L 658.59 313.5 L 655.34 320 L 658.59 326.5 Z" fill="#b3b3b3"
-                  stroke="#b3b3b3" stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
-        </g>
-    </g>
-    <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-3">
-        <g>
-            <path d="M 796 560 L 730 560 Q 720 560 720 550 L 720 410 Q 720 400 710 400 L 655.34 400"
-                  fill="none" stroke="#b3b3b3" stroke-width="5" stroke-miterlimit="10"
-                  stroke-dasharray="15 15" pointer-events="stroke"/>
-            <ellipse cx="800" cy="560" rx="4" ry="4" fill="none" stroke="#b3b3b3" stroke-width="5"
-                     pointer-events="all"/>
-            <path d="M 645.59 400 L 658.59 393.5 L 655.34 400 L 658.59 406.5 Z" fill="#b3b3b3"
-                  stroke="#b3b3b3" stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
-        </g>
-    </g>
     <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-4">
         <g/>
         <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-5">
@@ -70,117 +43,62 @@
             </g>
         </g>
     </g>
-    <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-10">
-        <g>
-            <rect x="820" y="480" width="160" height="160" fill="none" stroke="none" pointer-events="all"/>
-        </g>
-        <g>
-            <g transform="translate(-0.5 -0.5)">
-                <switch>
-                    <foreignObject pointer-events="none" width="100%" height="100%"
-                                   requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-                                   style="overflow: visible; text-align: left;">
-                        <div xmlns="http://www.w3.org/1999/xhtml"
-                             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 158px; height: 1px; padding-top: 560px; margin-left: 821px;">
-                            <div data-drawio-colors="color: #B3B3B3; "
-                                 style="box-sizing: border-box; font-size: 0px; text-align: center;">
-                                <div style="display: inline-block; font-size: 160px; font-family: boxicons; color: rgb(179, 179, 179); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    </foreignObject>
-                    <text x="900" y="608" fill="#B3B3B3" font-family="boxicons"
-                          font-size="160px" text-anchor="middle">
-                    </text>
-                </switch>
-            </g>
-        </g>
-    </g>
-    <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-11">
-        <g>
-            <rect x="820" y="80" width="160" height="160" fill="none" stroke="none" pointer-events="all"/>
-        </g>
-        <g>
-            <g transform="translate(-0.5 -0.5)">
-                <switch>
-                    <foreignObject pointer-events="none" width="100%" height="100%"
-                                   requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-                                   style="overflow: visible; text-align: left;">
-                        <div xmlns="http://www.w3.org/1999/xhtml"
-                             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 158px; height: 1px; padding-top: 160px; margin-left: 821px;">
-                            <div data-drawio-colors="color: #B3B3B3; "
-                                 style="box-sizing: border-box; font-size: 0px; text-align: center;">
-                                <div style="display: inline-block; font-size: 160px; font-family: boxicons; color: rgb(179, 179, 179); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    </foreignObject>
-                    <text x="900" y="208" fill="#B3B3B3" font-family="boxicons"
-                          font-size="160px" text-anchor="middle">
-                    </text>
-                </switch>
-            </g>
-        </g>
-    </g>
-    <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-12">
-        <g>
-            <rect x="100" y="80" width="160" height="160" fill="none" stroke="none" pointer-events="all"/>
-        </g>
-        <g>
-            <g transform="translate(-0.5 -0.5)">
-                <switch>
-                    <foreignObject pointer-events="none" width="100%" height="100%"
-                                   requiredFeatures="http://www.w3.org/TR/SVG11/feature#Extensibility"
-                                   style="overflow: visible; text-align: left;">
-                        <div xmlns="http://www.w3.org/1999/xhtml"
-                             style="display: flex; align-items: unsafe center; justify-content: unsafe center; width: 158px; height: 1px; padding-top: 160px; margin-left: 101px;">
-                            <div data-drawio-colors="color: #B3B3B3; "
-                                 style="box-sizing: border-box; font-size: 0px; text-align: center;">
-                                <div style="display: inline-block; font-size: 160px; font-family: boxicons; color: rgb(179, 179, 179); line-height: 1.2; pointer-events: all; white-space: normal; overflow-wrap: normal;">
-                                    
-                                </div>
-                            </div>
-                        </div>
-                    </foreignObject>
-                    <text x="180" y="208" fill="#B3B3B3" font-family="boxicons"
-                          font-size="160px" text-anchor="middle">
-                    </text>
-                </switch>
-            </g>
-        </g>
-    </g>
-    <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-14">
-        <g>
-            <path d="M 284 160 L 350 160 Q 360 160 360 170 L 360 310 Q 360 320 370 320 L 424.66 320"
-                  fill="none" stroke="#b3b3b3" stroke-width="5" stroke-miterlimit="10"
-                  stroke-dasharray="15 15" pointer-events="stroke"/>
-            <ellipse cx="280" cy="160" rx="4" ry="4" fill="none" stroke="#b3b3b3" stroke-width="5"
-                     pointer-events="all"/>
-            <path d="M 434.41 320 L 421.41 326.5 L 424.66 320 L 421.41 313.5 Z" fill="#b3b3b3"
-                  stroke="#b3b3b3" stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
-        </g>
-    </g>
-    <g data-cell-id="dPuO1QD4Ml7IeejNWTxz-15">
-        <g>
-            <path d="M 284 560 L 350 560 Q 360 560 360 550 L 360 410 Q 360 400 370 400 L 424.66 400"
-                  fill="none" stroke="#b3b3b3" stroke-width="5" stroke-miterlimit="10"
-                  stroke-dasharray="15 15" pointer-events="stroke"/>
-            <ellipse cx="280" cy="560" rx="4" ry="4" fill="none" stroke="#b3b3b3" stroke-width="5"
-                     pointer-events="all"/>
-            <path d="M 434.41 400 L 421.41 406.5 L 424.66 400 L 421.41 393.5 Z" fill="#b3b3b3"
-                  stroke="#b3b3b3" stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
-        </g>
-    </g>
     <!-- ICONS -->
     <g>
-        <text x="180" y="608" fill="#B3B3B3" font-family="boxicons"
-              font-size="160px" text-anchor="middle">
+        <text class="custom-icon-fill" x="180" y="208" font-family="boxicons" font-size="160px" text-anchor="middle">
+        </text>
+    </g>
+    <g>
+        <text class="custom-icon-fill" x="180" y="608" font-family="boxicons" font-size="160px" text-anchor="middle">
+        </text>
+    </g>
+    <g>
+        <text class="custom-icon-fill" x="900" y="208" font-family="boxicons" font-size="160px" text-anchor="middle">
+        </text>
+    </g>
+    <g>
+        <text class="custom-icon-fill" x="900" y="608" font-family="boxicons" font-size="160px" text-anchor="middle">
         </text>
     </g>
     <!-- LINES -->
-
+    <g>
+        <path class="custom-line-fill"
+              d="M 284 160 L 350 160 Q 360 160 360 170 L 360 310 Q 360 320 370 320 L 424.66 320"
+              stroke-width="5" stroke-miterlimit="10"
+              stroke-dasharray="15 15" pointer-events="stroke"/>
+        <ellipse class="custom-line-fill" cx="280" cy="160" rx="4" ry="4" stroke-width="5"
+                 pointer-events="all"/>
+        <path class="custom-line-fill" d="M 434.41 320 L 421.41 326.5 L 424.66 320 L 421.41 313.5 Z"
+              stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
+    </g>
+    <g>
+        <path class="custom-line-fill"
+              d="M 284 560 L 350 560 Q 360 560 360 550 L 360 410 Q 360 400 370 400 L 424.66 400"
+              stroke-width="5" stroke-miterlimit="10"
+              stroke-dasharray="15 15" pointer-events="stroke"/>
+        <ellipse class="custom-line-fill" cx="280" cy="560" rx="4" ry="4" stroke-width="5"
+                 pointer-events="all"/>
+        <path class="custom-line-fill" d="M 434.41 400 L 421.41 406.5 L 424.66 400 L 421.41 393.5 Z"
+              stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
+    </g>
+    <g>
+        <path class="custom-line-fill" d="M 796 160 L 730 160 Q 720 160 720 170 L 720 310 Q 720 320 710 320 L 655.34 320"
+              stroke-width="5" stroke-miterlimit="10"
+              stroke-dasharray="15 15" pointer-events="stroke"/>
+        <ellipse class="custom-line-fill" cx="800" cy="160" rx="4" ry="4" stroke-width="5"
+                 pointer-events="all"/>
+        <path class="custom-line-fill" d="M 645.59 320 L 658.59 313.5 L 655.34 320 L 658.59 326.5 Z" fill="#b3b3b3"
+              stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
+    </g>
+    <g>
+        <path class="custom-line-fill" d="M 796 560 L 730 560 Q 720 560 720 550 L 720 410 Q 720 400 710 400 L 655.34 400"
+              stroke-width="5" stroke-miterlimit="10"
+              stroke-dasharray="15 15" pointer-events="stroke"/>
+        <ellipse class="custom-line-fill" cx="800" cy="560" rx="4" ry="4" stroke-width="5"
+                 pointer-events="all"/>
+        <path class="custom-line-fill" d="M 645.59 400 L 658.59 393.5 L 655.34 400 L 658.59 406.5 Z"
+              stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
+    </g>
     <!-- BOXES -->
     <g>
         <rect class="custom-box-fill" x="80" y="240" width="200" height="60" rx="9" ry="9"

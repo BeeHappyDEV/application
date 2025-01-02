@@ -31,23 +31,21 @@
                   pointer-events="all"/>
         </g>
     </g>
-
-
     <!-- ICONS -->
     <g>
-        <text class="custom-icon-fill" x="180" y="208" font-family="boxicons" font-size="160px" text-anchor="middle">
+        <text class="custom-icon-fill" x="180" y="208" font-family="Boxicons" font-size="160px" text-anchor="middle">
         </text>
     </g>
     <g>
-        <text class="custom-icon-fill" x="180" y="608" font-family="boxicons" font-size="160px" text-anchor="middle">
+        <text class="custom-icon-fill" x="180" y="608" font-family="Boxicons" font-size="160px" text-anchor="middle">
         </text>
     </g>
     <g>
-        <text class="custom-icon-fill" x="900" y="408" font-family="boxicons" font-size="160px" text-anchor="middle">
+        <text class="custom-icon-fill" x="900" y="408" font-family="Boxicons" font-size="160px" text-anchor="middle">
         </text>
     </g>
     <g>
-        <text class="custom-icon-fill" x="900" y="808" font-family="boxicons" font-size="160px" text-anchor="middle">
+        <text class="custom-icon-fill" x="900" y="808" font-family="Boxicons" font-size="160px" text-anchor="middle">
         </text>
     </g>
     <!-- LINES -->

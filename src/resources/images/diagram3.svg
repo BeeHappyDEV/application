@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" width="1080px"
+     height="1160px" viewBox="0 0 1080 1160">
+    <style>
+        .custom-logo-fill {}
+        .custom-icon-fill { fill: rgb(158 158 158); stroke: rgb(158 158 158); }
+        .custom-line-fill { fill: none; stroke: rgb(158 158 158); }
+        .custom-box-fill { fill: rgb(255 170 0); stroke: none; }
+        .custom-box-text { fill: rgb(255 255 255); stroke: none; }
+    </style>
+    <g>
+        <g data-cell-id="0">
+            <g data-cell-id="1">
+                <g data-cell-id="v2gColc7YxqdhyFFmPGZ-4">
+                    <g data-cell-id="v2gColc7YxqdhyFFmPGZ-5">
+                        <g>
+                            <path d="M 128.09 525.37 L 145.66 498.26 Q 147.29 495.74 150.29 495.74 L 209.71 495.74 Q 212.71 495.74 214.34 498.26 L 249.48 552.48 Q 251.11 555 249.48 557.52 L 214.34 611.74 Q 212.71 614.26 209.71 614.26 L 150.29 614.26 Q 147.29 614.26 145.66 611.74 L 110.52 557.52 Q 108.89 555 110.52 552.48 Z"
+                                  fill="none" stroke="#efba0b" stroke-width="15" stroke-miterlimit="10"
+                                  transform="rotate(-180,180,555)" pointer-events="all"/>
+                        </g>
+                    </g>
+                    <g data-cell-id="v2gColc7YxqdhyFFmPGZ-6">
+                        <g>
+                            <path d="M 153.23 525.83 Q 153.23 525.83 206.77 526.44" fill="none" stroke="#efba0b"
+                                  stroke-width="15" stroke-miterlimit="10" pointer-events="stroke"/>
+                        </g>
+                    </g>
+                    <g data-cell-id="v2gColc7YxqdhyFFmPGZ-7">
+                        <g>
+                            <path d="M 153.23 583.87 Q 153.23 583.87 206.77 584.47" fill="none" stroke="#efba0b"
+                                  stroke-width="15" stroke-miterlimit="10" pointer-events="stroke"/>
+                        </g>
+                    </g>
+                    <g data-cell-id="v2gColc7YxqdhyFFmPGZ-8">
+                        <g>
+                            <path d="M 135.56 554.69 Q 135.56 554.69 224.44 555" fill="none" stroke="#efba0b"
+                                  stroke-width="15" stroke-miterlimit="10" pointer-events="stroke"/>
+                        </g>
+                    </g>
+                    <g data-cell-id="v2gColc7YxqdhyFFmPGZ-9">
+                        <g>
+                            <rect x="100" y="480" width="160" height="150" fill="none" stroke="none"
+                                  pointer-events="all"/>
+                        </g>
+                    </g>
+                </g>
+                <g data-cell-id="v2gColc7YxqdhyFFmPGZ-14">
+                </g>
+            </g>
+        </g>
+    </g>
+    <!-- ICONS -->
+    <g>
+        <text x="540" y="208" font-family="boxicons"
+              font-size="160px" text-anchor="middle">
+        </text>
+    </g>
+    <g>
+        <text x="540" y="1028" font-family="boxicons"
+              font-size="160px" text-anchor="middle">
+        </text>
+    </g>
+    <g>
+        <text x="900" y="408" font-family="boxicons"
+              font-size="160px" text-anchor="middle">
+        </text>
+    </g>
+    <g>
+        <text x="900" y="808" font-family="boxicons"
+              font-size="160px" text-anchor="middle">
+        </text>
+    </g>
+    <!-- LINES -->
+    <g>
+        <path class="custom-line-fill"
+              d="M 424.66 160 L 230 160 Q 220 160 210 160 L 190 160 Q 180 160 180 170 L 180 436"
+              stroke-width="5" stroke-miterlimit="10"
+              stroke-dasharray="15 15" pointer-events="stroke"/>
+        <path class="custom-line-fill" d="M 434.41 160 L 421.41 166.5 L 424.66 160 L 421.41 153.5 Z"
+              stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
+        <ellipse class="custom-line-fill" cx="180" cy="440" rx="4" ry="4" stroke-width="5"
+                 pointer-events="all"/>
+    </g>
+    <g>
+        <g>
+            <path class="custom-line-fill" d="M 424.66 1020 L 190 1020 Q 180 1020 180 1010 L 180 744"
+                  stroke-width="5" stroke-miterlimit="10" stroke-dasharray="15 15" pointer-events="stroke"/>
+            <path class="custom-line-fill" d="M 434.41 1020 L 421.41 1026.5 L 424.66 1020 L 421.41 1013.5 Z"
+                  stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
+            <ellipse class="custom-line-fill" cx="180" cy="740" rx="4" ry="4" stroke-width="5"
+                     pointer-events="all"/>
+        </g>
+    </g>
+    <g>
+        <path class="custom-line-fill"
+              d="M 784.66 360 L 590 360 Q 580 360 580 370 L 580 510 Q 580 520 570 520 L 284 520"
+              stroke-width="5" stroke-miterlimit="10"
+              stroke-dasharray="15 15" pointer-events="stroke"/>
+        <path class="custom-line-fill" d="M 794.41 360 L 781.41 366.5 L 784.66 360 L 781.41 353.5 Z"
+              stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
+        <ellipse class="custom-line-fill" cx="280" cy="520" rx="4" ry="4" stroke-width="5"
+                 pointer-events="all"/>
+    </g>
+    <g>
+        <path class="custom-line-fill"
+              d="M 784.66 760 L 590 760 Q 580 760 580 750 L 580 610 Q 580 600 570 600 L 284 600"
+              stroke-width="5" stroke-miterlimit="10"
+              stroke-dasharray="15 15" pointer-events="stroke"/>
+        <path class="custom-line-fill" d="M 794.41 760 L 781.41 766.5 L 784.66 760 L 781.41 753.5 Z"
+              stroke-width="5" stroke-miterlimit="10" pointer-events="all"/>
+        <ellipse class="custom-line-fill" cx="280" cy="600" rx="4" ry="4" stroke-width="5"
+                 pointer-events="all"/>
+    </g>
+    <!-- BOXES -->
+    <g>
+        <rect class="custom-box-fill" x="440" y="240" width="200" height="60" rx="9" ry="9"
+              pointer-events="all"/>
+        <text class="custom-box-text" x="540" y="277" font-family="Helvetica"
+              font-size="24px" text-anchor="middle">Dar foco a...
+        </text>
+    </g>
+    <g>
+        <rect class="custom-box-fill" x="80" y="640" width="200" height="60" rx="9" ry="9"
+              pointer-events="all"/>
+        <text class="custom-box-text" x="180" y="677" font-family="Helvetica"
+              font-size="24px" text-anchor="middle">BeeHappy
+        </text>
+    </g>
+    <g>
+        <rect class="custom-box-fill" x="440" y="1060" width="200" height="60" rx="9" ry="9"
+              pointer-events="all"/>
+        <text class="custom-box-text" x="540" y="1097" font-family="Helvetica"
+              font-size="24px" text-anchor="middle">Automatizar...
+        </text>
+    </g>
+    <g>
+        <rect class="custom-box-fill" x="800" y="440" width="200" height="60" rx="9" ry="9"
+              pointer-events="all"/>
+        <text class="custom-box-text" x="900" y="477" font-family="Helvetica"
+              font-size="24px" text-anchor="middle">Aumentar...
+        </text>
+    </g>
+    <g>
+        <rect class="custom-box-fill" x="800" y="840" width="200" height="60" rx="9" ry="9"
+              pointer-events="all"/>
+        <text class="custom-box-text" x="900" y="877" font-family="Helvetica"
+              font-size="24px" text-anchor="middle">Determinar...
+        </text>
+    </g>
+</svg>
