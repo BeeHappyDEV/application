@@ -4,7 +4,7 @@
     image: "features1",
     paragraphs: [
         {
-            description: "Minimiza las esperas al máximo: respuestas al instante y ultra precisas. Nuestro chatbot despliega su magia con machine learning y un motor NLP de alto calibre, decodificando a la perfección las preguntas de los usuarios y orquestando respuestas que dan en el clavo."
+            description: "Minimiza las esperas al máximo: respuestas al instante y ultra precisas. Nuestro agente inteligente despliega su magia con machine learning y un motor NLP de alto calibre, decodificando a la perfección las preguntas de los usuarios y orquestando respuestas que dan en el clavo."
         },
         {
             description: "Prepárate para una experiencia de cliente que brilla y di adiós a la frustración, porque los tiempos de espera se reducen a la nada. ¡Bienvenido a un nuevo nivel de satisfacción!."
@@ -37,11 +37,11 @@
                     <%- paragraph.description %>
                 </p>
             <% }) %>
-            <ul class="mb-6 content-symbol2">
+            <ul class="mb-6">
                 <% content.checks.forEach((check) => { %>
                     <li class="mb-4 flex">
-                        <%- include ('../components/check') %>
-                        <span>
+                        <%- include ('../components/bullet1') %>
+                        <span class="content-item">
                             <%- check.title %>
                         </span>
                     </li>

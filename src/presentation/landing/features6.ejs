@@ -4,18 +4,18 @@
     image: "features6",
     paragraphs: [
         {
-            description: "Implementar un chatbot puede ser un proceso complejo y desafiante. Sin embargo, abordamos tres perspectivas fundamentales con las cuales podemos ayudar a garantizar tu éxito."
+            description: "Implementar un agente inteligente puede ser un proceso complejo y desafiante. Sin embargo, abordamos tres perspectivas fundamentales con las cuales podemos ayudar a garantizar tu éxito."
         }
     ],
     checks: [
         {
-            title: "<span class=\"content-highlight\">Cercanía - Profesionales multidisciplinarios conectados:</span> contamos con un equipo multidisciplinario que trabaja en conjunto para que nuestro chatbot sea empático, informativo y agradable."
+            title: "<span class=\"content-highlight\">Cercanía - Profesionales multidisciplinarios conectados:</span> Contamos con un equipo multidisciplinario que trabaja en conjunto para que nuestro agente inteligente sea empático, informativo y agradable."
         },
         {
-            title: "<span class=\"content-highlight\">Metodología - Procesos de trabajo y mejora continua:</span> tenemos un proceso estructurado que garantiza la definición de objetivos claros, el análisis de las necesidades de los clientes y su desarrollo en el tiempo."
+            title: "<span class=\"content-highlight\">Metodología - Procesos de trabajo y mejora continua:</span> Tenemos un proceso estructurado que garantiza la definición de objetivos claros, el análisis de las necesidades de los clientes y su desarrollo en el tiempo."
         },
         {
-            title: "<span class=\"content-highlight\">Tecnología - Asistencia virtual con inteligencia artificial:</span> disponemos de una plataforma robusta y escalable que nos permite la integración con otros sistemas y aplicaciones potenciada por el aprendizaje automático."
+            title: "<span class=\"content-highlight\">Tecnología - Asistencia virtual con inteligencia artificial:</span> Disponemos de una plataforma robusta y escalable que nos permite la integración con otros sistemas y aplicaciones potenciada por el aprendizaje automático."
         }
     ]
 } %>
@@ -30,15 +30,15 @@
                 <%= content.title %>
             </h2>
             <% content.paragraphs.forEach((paragraph) => { %>
-                <p class="mb-10 custom-content-text leading-loose">
+                <p class="mb-10 content-text leading-loose">
                     <%- paragraph.description %>
                 </p>
             <% }) %>
-            <ul class="mb-6 custom-content-text">
+            <ul class="mb-6">
                 <% content.checks.forEach((check) => { %>
                     <li class="mb-4 flex">
-                        <%- include ('../components/check') %>
-                        <span>
+                        <%- include ('../components/bullet1') %>
+                        <span class="content-text">
                             <%- check.title %>
                         </span>
                     </li>

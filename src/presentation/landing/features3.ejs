@@ -4,7 +4,7 @@
     image: "features3",
     paragraphs: [
         {
-            description: "A la medida y sin esfuerzo: respuestas hechas a tu medida. Nuestro chatbot adapta sus respuestas a lo que tú necesitas, para que sientas que estás en una conversación personalizada."
+            description: "A la medida y sin esfuerzo: respuestas hechas a tu medida. Nuestro agente inteligente adapta sus respuestas a lo que tú necesitas, para que sientas que estás en una conversación personalizada."
         },
         {
             description: "Y eso no es todo: también se encarga de las tareas pesadas, desde agendar reuniones hasta avisarte de eventos. Así, el equipo puede poner el foco en lo que realmente importa. Tu asistente personal y tu aliado en la productividad."
@@ -33,15 +33,15 @@
                 <%= content.title %>
             </h2>
             <% content.paragraphs.forEach((paragraph) => { %>
-                <p class="mb-10 custom-content-text leading-loose">
+                <p class="mb-10 content-text leading-loose">
                     <%- paragraph.description %>
                 </p>
             <% }) %>
-            <ul class="mb-6 content-symbol2">
+            <ul class="mb-6">
                 <% content.checks.forEach((check) => { %>
                     <li class="mb-4 flex">
-                        <%- include ('../components/check') %>
-                        <span>
+                        <%- include ('../components/bullet1') %>
+                        <span class="content-item">
                             <%- check.title %>
                         </span>
                     </li>

@@ -1,6 +1,6 @@
 <% const content = Object.assign ({
     title: "Síguenos en nuestras redes sociales para estar al día con todas nuestras novedades.",
-    image: "logotype",
+    image: "logotype2",
     link: txt_path,
     blocks: [
         {
@@ -47,19 +47,19 @@
     ]
 }) %>
 
-<section class="w-screen custom-bg-section-1 pt-24">
+<section class="w-screen background-section-5 pt-24">
     <div class="container mx-auto px-4 w-4/5 md:w-11/12 lg:w-10/12 xl:w-4/5 2xl:w-2/3">
         <div class="flex flex-wrap">
             <div class="w-full lg:w-1/2 mb-16 lg:mb-0 order-last lg:order-first">
                 <div class="flex justify-center lg:justify-start items-center grow basis-0">
                     <%- include ('./images', {selection: content.image}) %>
                 </div>
-                <p class="mb-10 mt-4 sm:w-[22rem] lg:w-[20rem] xl:w-[24rem] text-gray-400 leading-loose text-center lg:text-left mx-auto lg:mx-0">
+                <p class="mb-10 mt-4 sm:w-[22rem] lg:w-[20rem] xl:w-[24rem] content-text leading-loose text-center lg:text-left mx-auto lg:mx-0">
                     <%= content.title %>
                 </p>
                 <div class="flex justify-center lg:justify-start items-center mx-auto lg:mx-0">
                     <% content.blocks [0].blocks.forEach ((block) => { %>
-                        <a class="inline-block mr-2 custom-background-section-4 custom-border-gray rounded-xl" href="<%= block.link %>">
+                        <a class="inline-block mr-2 background-social other-border rounded-xl" href="<%= block.link %>">
                             <%- include ('./images', {selection: block.image}) %>
                         </a>
                     <% }) %>
@@ -68,14 +68,14 @@
             <div class="w-full lg:w-1/2 flex flex-end">
                 <% content.blocks [1].blocks.forEach ((block) => { %>
                     <div class="w-full md:w-1/3 lg:w-auto mb-16 md:mb-0">
-                        <h3 class="text-2xl font-bold custom-content-highlight">
+                        <h3 class="text-2xl content-highlight">
                             <%= block.title %>
                         </h3>
                         <ul class="mt-6">
                             <% block.blocks.forEach((block2) => { %>
                                 <li class="mb-4 flex">
-                                    <%- include ('../components/chevron') %>
-                                    <a class="custom-content-link-1" href="<%= block2.link %>">
+                                    <%- include ('../components/bullet3') %>
+                                    <a class="content-link" href="<%= block2.link %>">
                                         <%= block2.title %>
                                     </a>
                                 </li>
@@ -85,8 +85,8 @@
                 <% }) %>
             </div>
         </div>
-        <p class="lg:text-center text-sm custom-content-text border-t other-divider py-8 mt-16 hidden lg:block">
-            Derechos reservados &copy; <%= new Date ().getFullYear () %> <a class="custom-footer-text" href="<%= content.link %>"><%= txt_website %></a>
+        <p class="lg:text-center text-sm content-text border-t other-divider py-8 mt-16 hidden lg:block">
+            Derechos reservados &copy; <%= new Date ().getFullYear () %> <a class="content-reference" href="<%= content.link %>"><%= txt_website %></a>
         </p>
     </div>
 </section>

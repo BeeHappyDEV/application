@@ -4,7 +4,7 @@
     image: "features2",
     paragraphs: [
         {
-            description: "Conoce todo al momento: datos frescos y completos. Nuestro chatbot navega por múltiples fuentes para brindarte información al día y sin agujeros."
+            description: "Conoce todo al momento: datos frescos y completos. Nuestro agente inteligente navega por múltiples fuentes para brindarte información al día y sin agujeros."
         },
         {
             description: "No tendrás que perder tiempo preparando respuestas o esperando a que alguien conteste. Desde ahora, todo lo que necesitas está a un mensaje de distancia."
@@ -37,11 +37,11 @@
                     <%- paragraph.description %>
                 </p>
             <% }) %>
-            <ul class="mb-6 content-symbol2">
+            <ul class="mb-6">
                 <% content.checks.forEach((check) => { %>
                     <li class="mb-4 flex">
-                        <%- include ('../components/check') %>
-                        <span>
+                        <%- include ('../components/bullet1') %>
+                        <span class="content-item">
                             <%- check.title %>
                         </span>
                     </li>

@@ -4,10 +4,15 @@
     image: "features4",
     paragraphs: [
         {
-            description: "<span class=\"content-topic\">Ahorra dinero:</span> nuestro chatbot puede gestionar las consultas de tus clientes de forma automatizada, ¡así que tus agentes humanos pueden centrarse en otras cosas!"
+            description: "¿Quieres impulsar tu negocio y mejorar la experiencia de tus clientes al mismo tiempo? Descubre cómo nuestra tecnología puede ser tu aliado estratégico para alcanzar el éxito."
+        }
+    ],
+    checks: [
+        {
+            title: "<span class=\"content-highlight\">Ahorra dinero:</span><br>Nuestro Agente Inteligente puede gestionar las consultas de tus clientes de forma automatizada, ¡así que tus agentes humanos pueden centrarse en otras cosas!"
         },
         {
-            description: "<span class=\"content-topic\">Satisface a tus clientes:</span> con una disponibilidad 24/7, tus clientes pueden obtener ayuda cuando la necesitan de forma rápida y precisa; proporcionándoles una experiencia de atención personalizada, ¡lo que hace que tus clientes se sientan valorados!"
+            title: "<span class=\"content-highlight\">Satisface a tus clientes:</span><br>Con una disponibilidad 24/7, tus clientes pueden obtener ayuda cuando la necesitan de forma rápida y precisa; proporcionándoles una experiencia de atención personalizada, ¡lo que hace que tus clientes se sientan valorados!"
         }
     ],
     buttons: [
@@ -38,6 +43,16 @@
                     <%- paragraph.description %>
                 </p>
             <% }) %>
+            <ul class="mb-6">
+                <% content.checks.forEach((check) => { %>
+                    <li class="mb-4 flex">
+                        <%- include ('../components/bullet4') %>
+                        <span class="content-text">
+                            <%- check.title %>
+                        </span>
+                    </li>
+                <% }) %>
+            </ul>
             <ul class="flex justify-center mb-10 mt-10">
                 <% content.buttons.forEach ((button) => { %>
                     <a href="<%= button.link %>">

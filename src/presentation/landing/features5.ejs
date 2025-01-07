@@ -8,9 +8,11 @@
         },
         {
             description: "Por otro lado, las empresas que ofrecen múltiples canales de comunicación a sus clientes están en una mejor posición para proporcionar una experiencia de servicio de alta calidad y aumentar su satisfacción."
-        },
+        }
+    ],
+    checks: [
         {
-            description: "<span class=\"content-highlight\">¡Dales el poder de conectarse contigo de la forma que les resulte más conveniente!</span>"
+            title: "¡Dales el poder de conectarse contigo de la forma que les resulte más conveniente!"
         }
     ]
 } %>
@@ -29,6 +31,16 @@
                     <%- paragraph.description %>
                 </p>
             <% }) %>
+            <ul class="mb-6">
+                <% content.checks.forEach((check) => { %>
+                    <li class="mb-4 flex">
+                        <%- include ('../components/bullet1') %>
+                        <span class="content-item">
+                            <%- check.title %>
+                        </span>
+                    </li>
+                <% }) %>
+            </ul>
         </div>
         <div class="w-full lg:w-1/2 md:w-3/4 mx-auto lg:px-4">
             <div class="rounded lg:px-4 pt-4">

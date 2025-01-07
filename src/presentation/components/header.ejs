@@ -1,5 +1,5 @@
 <% const content = Object.assign ({
-    image: "logotype",
+    image: "logotype3",
     blocks: [
         {
             title: "Inicio",
@@ -35,7 +35,7 @@
         </a>
         <div class="hidden lg:flex pl-12 pb-2">
             <% content.blocks.forEach ((block) => { %>
-                <a class="navbar-link" href="<%= block.link %>">
+                <a class="content-navbar" href="<%= block.link %>">
                     <%= block.title %>
                 </a>
             <% }) %>
