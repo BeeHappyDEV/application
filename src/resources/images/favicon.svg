@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="180px" height="180px">
-    <path d="M 31.6 54.44 L 51.64 21.45 Q 53.2 18.89 56.2 18.89 L 123.8 18.89 Q 126.8 18.89 128.36 21.45 L 168.44 87.44 Q 170 90 168.44 92.56 L 128.36 158.55 Q 126.8 161.11 123.8 161.11 L 56.2 161.11 Q 53.2 161.11 51.64 158.55 L 11.56 92.56 Q 10 90 11.56 87.44 Z" fill="none" stroke="#efba0b" stroke-width="15" stroke-miterlimit="10" transform="rotate(-180,90,90)" pointer-events="all"/>
-    <path d="M 59.88 55 Q 59.88 55 120.12 55.73" fill="none" stroke="#efba0b" stroke-width="15" stroke-miterlimit="10" pointer-events="stroke"/>
-    <path d="M 59.88 124.64 Q 59.88 124.64 120.12 125.37" fill="none" stroke="#efba0b" stroke-width="15" stroke-miterlimit="10" pointer-events="stroke"/>
-    <path d="M 40 89.63 Q 40 89.63 140 90" fill="none" stroke="#efba0b" stroke-width="15" stroke-miterlimit="10" pointer-events="stroke"/>
-</svg>
