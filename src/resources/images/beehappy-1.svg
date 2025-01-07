@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns="http://www.w3.org/2000/svg"
+     version="1.1" width="290px" height="288px" viewBox="0 0 290 288">
+    <style>
+        .fill-yellow { fill: rgb(255 170 0); stroke: rgb(27 27 27); }
+        .fill-gray { fill: none; stroke: rgb(27 27 27); }
+        .fill-white { fill: rgb(255 255 255); stroke: rgb(27 27 27); }
+    </style>
+    <g>
+        <path class="fill-gray"
+              d="M 98.56 59 C 98.56 36.91 116.47 19 138.56 19"
+              stroke-width="10"
+              transform="translate(138.56,0)scale(-1,1)translate(-138.56,0)rotate(-25,138.56,59)"/>
+    </g>
+    <g>
+        <path class="fill-gray"
+              d="M 189.56 101 C 189.56 78.91 207.47 61 229.56 61"
+              stroke-width="10"
+              transform="rotate(25,229.56,101)"/>
+    </g>
+    <g>
+        <path class="fill-yellow"
+              d="M 64.56 230.5 L 64.56 224.25 Q 64.56 218 74.56 218 L 144.56 218 Q 154.56 218 154.56 228 L 154.56 235.5 Q 154.56 243 145.42 247.06 L 118.7 258.94 Q 109.56 263 100.42 258.94 L 73.7 247.06 Q 64.56 243 64.56 236.75 Z"
+              stroke-width="10"
+              transform="rotate(25,109.56,240.5)"/>
+    </g>
+
+    <g>
+        <rect class="fill-white"
+              x="73.56" y="205"
+              width="90" height="30"
+              stroke-width="10"
+              transform="rotate(25,118.56,220)"/>
+    </g>
+    <g>
+        <rect class="fill-yellow"
+              x="85.56" y="178"
+              width="90" height="30"
+              stroke-width="10"
+              transform="rotate(25,130.56,193)"/>
+    </g>
+    <g>
+        <rect class="fill-white"
+              x="98.56" y="151"
+              width="90" height="30"
+              stroke-width="10"
+              transform="rotate(25,143.56,166)"/>
+    </g>
+    <g>
+        <rect class="fill-yellow"
+              x="111.56" y="123"
+              width="90" height="30"
+              stroke-width="10"
+              transform="rotate(25,156.56,138)"/>
+    </g>
+    <g>
+        <path class="fill-yellow"
+              d="M 139.56 53 Q 209.56 53 209.56 98 Q 209.56 143 139.56 143 Q 174.56 98 139.56 53 Z"
+              stroke-width="10"
+              transform="rotate(-65,174.56,98)"/>
+    </g>
+    <g>
+        <path class="fill-white"
+              d="M 93.06 67 L 131.31 145.97 C 134.11 151.75 135.56 158.08 135.56 164.5 C 135.56 175.77 131.08 186.58 123.11 194.55 C 115.14 202.52 104.33 207 93.06 207 C 81.79 207 70.98 202.52 63.01 194.55 C 55.04 186.58 50.56 175.77 50.56 164.5 C 50.56 158.08 52.01 151.75 54.81 145.97 Z"
+              stroke-width="10"
+              transform="rotate(75,93.06,137)"/>
+    </g>
+    <g>
+        <path class="fill-white"
+              d="M 198.06 115 L 236.31 193.97 C 239.11 199.75 240.56 206.08 240.56 212.5 C 240.56 223.77 236.08 234.58 228.11 242.55 C 220.14 250.52 209.33 255 198.06 255 C 186.79 255 175.98 250.52 168.01 242.55 C 160.04 234.58 155.56 223.77 155.56 212.5 C 155.56 206.08 157.01 199.75 159.81 193.97 Z"
+              stroke-width="10"
+              transform="rotate(-25,198.06,185)"/>
+    </g>
+</svg>

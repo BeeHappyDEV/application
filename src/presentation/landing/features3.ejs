@@ -1,7 +1,7 @@
 <% const content = {
     subtitle: "Centra tu atención en lo importante",
     title: "Personalización y automatización de tareas",
-    image: "diagram3",
+    image: "features3",
     paragraphs: [
         {
             description: "A la medida y sin esfuerzo: respuestas hechas a tu medida. Nuestro chatbot adapta sus respuestas a lo que tú necesitas, para que sientas que estás en una conversación personalizada."
@@ -23,13 +23,13 @@
     ]
 } %>
 
-<section class="w-screen custom-background-section-2 pb-24 pt-24">
+<section class="w-screen background-section-2 pb-24 pt-24">
     <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
         <div class="w-full lg:w-1/2 px-4">
-            <span class="custom-block-subtitle">
+            <span class="content-subtitle">
                 <%= content.subtitle %>
             </span>
-            <h2 class="mt-6 mb-10 text-4xl lg:text-5xl custom-block-big-title">
+            <h2 class="mt-6 mb-10 text-4xl lg:text-5xl content-title">
                 <%= content.title %>
             </h2>
             <% content.paragraphs.forEach((paragraph) => { %>
@@ -37,7 +37,7 @@
                     <%- paragraph.description %>
                 </p>
             <% }) %>
-            <ul class="mb-6 custom-content-check">
+            <ul class="mb-6 content-symbol2">
                 <% content.checks.forEach((check) => { %>
                     <li class="mb-4 flex">
                         <%- include ('../components/check') %>

@@ -130,26 +130,30 @@ class Launcher {
                 logTool.comment ("Private host:", privateHost);
                 logTool.finalize ();
 
-                logTool = new LogTool ();
-                logTool.initialize (reflectionStrings, traceObject);
+                if (await PropertiesTool.get ("system.tunnel.enable") === true) {
 
-                let subdomainString = await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain");
-                subdomainString = subdomainString.toString ().toLowerCase ().replace (".", "");
+                    logTool = new LogTool ();
+                    logTool.initialize (reflectionStrings, traceObject);
 
-                let tunnel = await localTunnel ({port: privatePort, subdomain: subdomainString});
+                    let subdomainString = await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain");
+                    subdomainString = subdomainString.toString ().toLowerCase ().replace (".", "");
 
-                logTool.comment ("Service host:", tunnel.url);
-                logTool.finalize ();
+                    let tunnel = await localTunnel ({port: privatePort, subdomain: subdomainString});
 
-                logTool = new LogTool ();
-                logTool.initialize (reflectionStrings, traceObject);
+                    logTool.comment ("Tunnel host:", tunnel.url);
+                    logTool.finalize ();
 
-                let superAgent = superagent.get (await PropertiesTool.get ("integration.public"));
+                    logTool = new LogTool ();
+                    logTool.initialize (reflectionStrings, traceObject);
 
-                let serviceObject = await superAgent.then ();
+                    let superAgent = superagent.get (await PropertiesTool.get ("integration.public"));
 
-                logTool.comment ("Service address:", serviceObject.body.ip);
-                logTool.finalize ();
+                    let serviceObject = await superAgent.then ();
+
+                    logTool.comment ("Service address:", serviceObject.body.ip);
+                    logTool.finalize ();
+
+                }
 
                 break;
 
