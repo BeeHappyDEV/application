@@ -24,36 +24,36 @@ class FrontendModule {
     private constructor () {
     }
 
-    public async getLandingPage (paramsObject: JsonObject, traceObject: JsonObject) {
+public async getLandingPage (paramsObject: JsonObject, traceObject: JsonObject) {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+    let reflectionStrings = ReflectionTool.getMethodName ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+    let logTool = new LogTool ();
+    logTool.initialize (reflectionStrings, traceObject);
 
-        paramsObject.set ("txt_function", "frontend_landing_page");
+    paramsObject.set ("txt_function", "frontend_landing_page");
 
-        let resultObject = new ResultObject ();
+    let resultObject = new ResultObject ();
 
-        try {
+    try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.run (paramsObject, logTool.trace ());
+        let postgresTool = PostgresTool.getInstance ();
+        resultObject = await postgresTool.run (paramsObject, logTool.trace ());
 
-        } catch (exception) {
+    } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+        resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
 
-            logTool.exception ();
-
-        }
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-        return resultObject;
+        logTool.exception ();
 
     }
+
+    logTool.response (resultObject);
+    logTool.finalize ();
+
+    return resultObject;
+
+}
 
 
     public async getCallUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
