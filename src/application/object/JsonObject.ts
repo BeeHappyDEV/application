@@ -38,6 +38,12 @@ class JsonObject {
 
     }
 
+    public use () {
+
+        return this.jsonObject ["method"];
+
+    }
+
 }
 
 export default JsonObject;

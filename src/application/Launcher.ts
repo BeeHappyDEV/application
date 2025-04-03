@@ -56,13 +56,13 @@ class Launcher {
     private async loadWebsite () {
 
         let backendController = BackendController.getInstance ();
-        await backendController.initialize (this.expressApplication);
+        await backendController.execute (this.expressApplication);
 
         let frontendController = FrontendController.getInstance ();
-        await frontendController.initialize (this.expressApplication);
+        await frontendController.execute (this.expressApplication);
 
         let scheduleController = ScheduleController.getInstance ();
-        await scheduleController.initialize ();
+        await scheduleController.execute ();
 
     }
 

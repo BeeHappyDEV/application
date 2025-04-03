@@ -199,6 +199,7 @@ class LogTool {
 
         traceObject.set ("thread", this.logObject.get ("thread"));
         traceObject.set ("depth", this.logObject.get ("depth"));
+        traceObject.set ("method", this.logObject.get ("method"));
 
         return traceObject;
 

@@ -25,7 +25,7 @@ class BackendController {
     private constructor () {
     }
 
-    public async initialize (expressApplication: typeof express.application) {
+    public async execute (expressApplication: typeof express.application) {
 
         expressApplication.post ("/backend/system/wakeup", this.postWakeupApplication.bind (this));
         expressApplication.post ("/backend/cache/delete", this.postCacheDelete.bind (this));
@@ -47,7 +47,7 @@ class BackendController {
         let paramsObject = new JsonObject ();
 
         let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.postWakeupApplication (paramsObject, logTool.trace ());
+        let resultObject = await backendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -66,7 +66,7 @@ class BackendController {
         logTool.request (expressRequest);
 
         let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.postCacheDelete (logTool.trace ());
+        let resultObject = await backendModule.execute (new JsonObject (), logTool.trace ());
 
         resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -87,7 +87,7 @@ class BackendController {
         logTool.request (expressRequest);
 
         let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.postRebuildDocumental (logTool.trace ());
+        let resultObject = await backendModule.execute (new JsonObject (), logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -106,7 +106,7 @@ class BackendController {
         logTool.request (expressRequest);
 
         let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.postRebuildRelational (logTool.trace ());
+        let resultObject = await backendModule.execute (new JsonObject (), logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -125,7 +125,7 @@ class BackendController {
         logTool.request (expressRequest);
 
         let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.postReloadIndicators (logTool.trace ());
+        let resultObject = await backendModule.execute (new JsonObject (), logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 

@@ -112,7 +112,7 @@ class BackendSupport {
         try {
 
             let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.exe (paramsObject, logTool.trace ());
+            await postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -155,7 +155,7 @@ class BackendSupport {
             paramsObject.set ("txt_function", "backend_update_dollar_values");
 
             let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.run (paramsObject, logTool.trace ());
+            await postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -202,7 +202,7 @@ class BackendSupport {
             paramsObject.set ("txt_function", "backend_update_euro_values");
 
             let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.run (paramsObject, logTool.trace ());
+            await postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -249,7 +249,7 @@ class BackendSupport {
             paramsObject.set ("txt_function", "backend_update_foment_unit_values");
 
             let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.run (paramsObject, logTool.trace ());
+            await postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -296,7 +296,7 @@ class BackendSupport {
             paramsObject.set ("txt_function", "backend_update_monthly_tax_unit_values");
 
             let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.run (paramsObject, logTool.trace ());
+            await postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 

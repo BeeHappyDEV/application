@@ -36,29 +36,29 @@ class ServiceTool {
 
         try {
 
-            let superAgent = superagent.delete (hostString.toString ());
+            let requestObject = superagent.delete (hostString.toString ());
 
             if (headersObject !== null && !headersObject.empty ()) {
 
-                superAgent.set (headersObject.all ());
+                requestObject.set (headersObject.all ());
 
             }
 
             if (paramsObject !== null && !paramsObject.empty ()) {
 
-                superAgent.query (paramsObject.all ());
+                requestObject.query (paramsObject.all ());
 
             }
 
             if (bodyObject !== null && !bodyObject.empty ()) {
 
-                superAgent.send (bodyObject.all ());
+                requestObject.send (bodyObject.all ());
 
             }
 
-            let serviceObject = await superAgent.then ();
+            let responseObject = await requestObject.then ();
 
-            resultObject.setServiceObject (paramsObject, serviceObject);
+            resultObject.setServiceObject (paramsObject, responseObject);
 
         } catch (exception) {
 
@@ -86,31 +86,31 @@ class ServiceTool {
 
         try {
 
-            let superAgent = superagent.get (hostString.toString ());
+            let requestObject = superagent.get (hostString.toString ());
 
             logTool.resource (hostString.toString ());
 
             if (headersObject !== null) {
 
-                superAgent.set (headersObject.all ());
+                requestObject.set (headersObject.all ());
 
             }
 
             if (paramsObject !== null) {
 
-                superAgent.query (paramsObject.all ());
+                requestObject.query (paramsObject.all ());
 
             }
 
             if (bodyObject !== null && !bodyObject.empty ()) {
 
-                superAgent.send (bodyObject.all ());
+                requestObject.send (bodyObject.all ());
 
             }
 
-            let serviceObject = await superAgent.then ();
+            let responseObject = await requestObject.then ();
 
-            resultObject.setServiceObject (paramsObject, serviceObject);
+            resultObject.setServiceObject (paramsObject, responseObject);
 
         } catch (exception) {
 
@@ -138,31 +138,31 @@ class ServiceTool {
 
         try {
 
-            let superAgent = superagent.post (hostString.toString ());
+            let requestObject = superagent.post (hostString.toString ());
 
             logTool.resource (hostString.toString ());
 
             if (headersObject !== null) {
 
-                superAgent.set (headersObject.all ());
+                requestObject.set (headersObject.all ());
 
             }
 
             if (paramsObject !== null) {
 
-                superAgent.query (paramsObject.all ());
+                requestObject.query (paramsObject.all ());
 
             }
 
             if (bodyObject !== null && !bodyObject.empty ()) {
 
-                superAgent.send (bodyObject.all ());
+                requestObject.send (bodyObject.all ());
 
             }
 
-            let serviceObject = await superAgent.then ();
+            let responseObject = await requestObject.then ();
 
-            resultObject.setServiceObject (paramsObject, serviceObject);
+            resultObject.setServiceObject (paramsObject, responseObject);
 
         } catch (exception) {
 

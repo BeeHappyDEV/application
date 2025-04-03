@@ -25,6 +25,19 @@ class ScheduleModule {
     private constructor () {
     }
 
+    public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
+
+        switch (traceObject.use ()) {
+
+            case "exeWakeup": return this.exeWakeup (traceObject);
+            case "exeIndicators": return this.exeIndicators (traceObject);
+            case "exeInspirational": return this.exeInspirational (traceObject);
+            default: return null;
+
+        }
+
+    }
+
     public async exeWakeup (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();

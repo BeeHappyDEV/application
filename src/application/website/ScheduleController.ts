@@ -24,7 +24,7 @@ class ScheduleController {
     private constructor () {
     }
 
-    public async initialize () {
+    public async execute () {
 
         if (await PropertiesTool.get ("scheduler.exeMetrics.enable") === true) {
 

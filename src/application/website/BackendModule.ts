@@ -28,7 +28,22 @@ class BackendModule {
     private constructor () {
     }
 
-    public async postWakeupApplication (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
+
+        switch (traceObject.use ()) {
+
+            case "postWakeupApplication": return this.postWakeupApplication (paramsObject, traceObject);
+            case "postCacheDelete": return this.postCacheDelete (traceObject);
+            case "postRebuildDocumental": return this.postRebuildDocumental (traceObject);
+            case "postRebuildRelational": return this.postRebuildRelational (traceObject);
+            case "postReloadIndicators": return this.postReloadIndicators (traceObject);
+            default: return null;
+
+        }
+
+    }
+
+    private async postWakeupApplication (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -42,7 +57,7 @@ class BackendModule {
         try {
 
             let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.run (paramsObject, logTool.trace ());
+            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -59,7 +74,7 @@ class BackendModule {
 
     }
 
-    public async postCacheDelete (traceObject: JsonObject) {
+    private async postCacheDelete (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -97,7 +112,7 @@ class BackendModule {
 
     }
 
-    public async postRebuildDocumental (traceObject: JsonObject) {
+    private async postRebuildDocumental (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -128,7 +143,7 @@ class BackendModule {
 
     }
 
-    public async postRebuildRelational (traceObject: JsonObject) {
+    private async postRebuildRelational (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -139,8 +154,8 @@ class BackendModule {
 
         try {
 
-            let backendAssistance = BackendSupport.getInstance ();
-            await backendAssistance.readMainFile (logTool.trace ());
+            let backendSupport = BackendSupport.getInstance ();
+            await backendSupport.readMainFile (logTool.trace ());
 
             resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -159,7 +174,7 @@ class BackendModule {
 
     }
 
-    public async postReloadIndicators (traceObject: JsonObject) {
+    private async postReloadIndicators (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -170,11 +185,11 @@ class BackendModule {
 
         try {
 
-            let backendAssistance = BackendSupport.getInstance ();
-            await backendAssistance.reloadDollarIndicators (logTool.trace ());
-            await backendAssistance.reloadEuroIndicators (logTool.trace ());
-            await backendAssistance.reloadFomentUnitIndicators (logTool.trace ());
-            await backendAssistance.reloadMonthlyTaxUnitIndicators (logTool.trace ());
+            let backendSupport = BackendSupport.getInstance ();
+            await backendSupport.reloadDollarIndicators (logTool.trace ());
+            await backendSupport.reloadEuroIndicators (logTool.trace ());
+            await backendSupport.reloadFomentUnitIndicators (logTool.trace ());
+            await backendSupport.reloadMonthlyTaxUnitIndicators (logTool.trace ());
 
             resultObject.result (ExceptionTool.SUCCESSFUL ());
 
