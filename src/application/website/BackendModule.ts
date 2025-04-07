@@ -37,7 +37,7 @@ class BackendModule {
             case "postRebuildDocumental": return this.postRebuildDocumental (traceObject);
             case "postRebuildRelational": return this.postRebuildRelational (traceObject);
             case "postReloadIndicators": return this.postReloadIndicators (traceObject);
-            default: return null;
+            default: return new ResultObject ();
 
         }
 

@@ -89,7 +89,7 @@ class LogTool {
 
         }
 
-        if (urlObject.query != null && Object.keys (urlObject.query).length > 0) {
+        if (Object.keys (urlObject.query).length > 0) {
 
             this.logObject.set ("query", urlObject.query);
 
@@ -185,7 +185,7 @@ class LogTool {
         this.logObject.set ("verb", "TCP");
         this.logObject.set ("url", expressRequest.url);
 
-        if (expressRequest.params != null && Object.keys (expressRequest.params).length !== 0) {
+        if (Object.keys (expressRequest.params).length !== 0) {
 
             this.logObject.set ("request", expressRequest.params);
 
