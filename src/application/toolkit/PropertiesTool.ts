@@ -62,7 +62,7 @@ class PropertiesTool {
 
     }
 
-    private static async mergeConfigurations (yamlObject1: any, yamlObject2: any): Promise<any> {
+    private static async mergeConfigurations (yamlObject1: any, yamlObject2: any) {
 
         for (let key in yamlObject2) {
 
