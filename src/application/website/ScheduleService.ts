@@ -2,19 +2,19 @@ import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
 import PropertiesTool from "../toolkit/PropertiesTool";
-import ReflectionTool from "../toolkit/ReflectionTool";
+import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 import ServiceTool from "../toolkit/ServiceTool";
 
-class ScheduleModule {
+class ScheduleService {
 
-    private static instance: ScheduleModule;
+    private static instance: ScheduleService;
 
     public static getInstance () {
 
         if (!this.instance) {
 
-            this.instance = new ScheduleModule ();
+            this.instance = new ScheduleService ();
 
         }
 
@@ -25,6 +25,7 @@ class ScheduleModule {
     private constructor () {
     }
 
+    // @ts-ignore
     public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
 
         switch (traceObject.use ()) {
@@ -139,4 +140,4 @@ class ScheduleModule {
 
 }
 
-export default ScheduleModule;
+export default ScheduleService;

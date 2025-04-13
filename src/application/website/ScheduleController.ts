@@ -1,28 +1,14 @@
+import {singleton} from "tsyringe";
+
 import nodeCron from "node-cron";
 
 import LogTool from "../toolkit/LogTool";
 import PropertiesTool from "../toolkit/PropertiesTool"
-import ReflectionTool from "../toolkit/ReflectionTool";
-import ScheduleModule from "../website/ScheduleModule";
+import {ReflectionTool} from "../toolkit/ReflectionTool";
+import ScheduleService from "./ScheduleService";
 
-class ScheduleController {
-
-    private static instance: ScheduleController;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new ScheduleController ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
+@singleton ()
+export class ScheduleController {
 
     public async execute () {
 
@@ -70,7 +56,7 @@ class ScheduleController {
         let logTool = new LogTool ();
         logTool.initialize (reflectionStrings);
 
-        let scheduleModule = ScheduleModule.getInstance ();
+        let scheduleModule = ScheduleService.getInstance ();
         await scheduleModule.exeWakeup (logTool.trace ());
 
         logTool.comment (await PropertiesTool.get ("scheduler.wakeup.comment"), await PropertiesTool.get ("scheduler.wakeup.verbose"));
@@ -85,7 +71,7 @@ class ScheduleController {
         let logTool = new LogTool ();
         logTool.initialize (reflectionStrings);
 
-        let scheduleModule = ScheduleModule.getInstance ();
+        let scheduleModule = ScheduleService.getInstance ();
         await scheduleModule.exeIndicators (logTool.trace ());
 
         logTool.comment (await PropertiesTool.get ("scheduler.indicators.comment"), await PropertiesTool.get ("scheduler.indicators.verbose"));
@@ -100,7 +86,7 @@ class ScheduleController {
         let logTool = new LogTool ();
         logTool.initialize (reflectionStrings);
 
-        let scheduleModule = ScheduleModule.getInstance ();
+        let scheduleModule = ScheduleService.getInstance ();
         await scheduleModule.exeInspirational (logTool.trace ());
 
         logTool.comment (await PropertiesTool.get ("scheduler.inspirational.comment"), await PropertiesTool.get ("scheduler.inspirational.verbose"));
@@ -109,5 +95,3 @@ class ScheduleController {
     }
 
 }
-
-export default ScheduleController;

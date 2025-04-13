@@ -4,27 +4,12 @@ import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
 import PropertiesTool from "../toolkit/PropertiesTool";
-import ReflectionTool from "./ReflectionTool";
+import {ReflectionTool} from "./ReflectionTool";
 import ResultObject from "../object/ResultObject";
+import {singleton} from "tsyringe";
 
-class PostgresTool {
-
-    private static instance: PostgresTool;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new PostgresTool ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
+@singleton ()
+export class PostgresTool {
 
     public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
 
@@ -111,5 +96,3 @@ class PostgresTool {
     }
 
 }
-
-export default PostgresTool;

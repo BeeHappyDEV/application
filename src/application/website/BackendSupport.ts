@@ -3,30 +3,19 @@ import fsExtra from "fs-extra";
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
-import PostgresTool from "../toolkit/PostgresTool";
+import {PostgresTool} from "../toolkit/PostgresTool";
 import PropertiesTool from "../toolkit/PropertiesTool";
-import ReflectionTool from "../toolkit/ReflectionTool";
+import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 import ServiceTool from "../toolkit/ServiceTool";
+import {inject, injectable} from "tsyringe";
 
+@injectable ()
 class BackendSupport {
 
-    private static instance: BackendSupport;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new BackendSupport ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
+    constructor (
+        @inject (PostgresTool) private postgresTool: PostgresTool
+    ) {}
 
     public async readMainFile (traceObject: JsonObject) {
 
@@ -111,8 +100,7 @@ class BackendSupport {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.execute (paramsObject, logTool.trace ());
+            await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -154,8 +142,7 @@ class BackendSupport {
             paramsObject.set ("jsn_data", serviceObject.get ("outgoing"));
             paramsObject.set ("txt_function", "backend_update_dollar_values");
 
-            let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.execute (paramsObject, logTool.trace ());
+            await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -201,8 +188,7 @@ class BackendSupport {
             paramsObject.set ("jsn_data", serviceObject.get ("outgoing"));
             paramsObject.set ("txt_function", "backend_update_euro_values");
 
-            let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.execute (paramsObject, logTool.trace ());
+            await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -248,8 +234,7 @@ class BackendSupport {
             paramsObject.set ("jsn_data", serviceObject.get ("outgoing"));
             paramsObject.set ("txt_function", "backend_update_foment_unit_values");
 
-            let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.execute (paramsObject, logTool.trace ());
+            await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -295,8 +280,7 @@ class BackendSupport {
             paramsObject.set ("jsn_data", serviceObject.get ("outgoing"));
             paramsObject.set ("txt_function", "backend_update_monthly_tax_unit_values");
 
-            let postgresTool = PostgresTool.getInstance ();
-            await postgresTool.execute (paramsObject, logTool.trace ());
+            await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 

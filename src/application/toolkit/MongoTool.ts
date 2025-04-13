@@ -4,7 +4,7 @@ import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
 import PropertiesTool from "../toolkit/PropertiesTool";
-import ReflectionTool from "../toolkit/ReflectionTool";
+import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 
 class MongoTool {

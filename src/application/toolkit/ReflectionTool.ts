@@ -1,4 +1,4 @@
-class ReflectionTool {
+export class ReflectionTool {
 
     public static getMethodName () {
 
@@ -48,5 +48,3 @@ class ReflectionTool {
     }
 
 }
-
-export default ReflectionTool;

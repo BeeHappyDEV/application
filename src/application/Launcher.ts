@@ -1,21 +1,31 @@
+import "reflect-metadata";
+
+import {container, inject, singleton} from "tsyringe";
+
 import childProcess from "child_process";
 import express from "express";
 import localTunnel from "localtunnel";
 import superagent from "superagent";
 
-import BackendController from "./website/BackendController";
-import FrontendController from "./website/FrontendController";
 import JsonObject from "./object/JsonObject";
 import LogTool from "./toolkit/LogTool";
 import PropertiesTool from "./toolkit/PropertiesTool";
-import ReflectionTool from "./toolkit/ReflectionTool";
-import ScheduleController from "./website/ScheduleController";
+import {ReflectionTool} from "./toolkit/ReflectionTool";
 
-class Launcher {
+import {BackendController} from "./website/BackendController";
+import {FrontendController} from "./website/FrontendController";
+import {ScheduleController} from "./website/ScheduleController";
+
+@singleton ()
+export class Launcher {
 
     private readonly expressApplication: express.Application;
 
-    constructor () {
+    constructor (
+        @inject (BackendController) private backendController: BackendController,
+        @inject (FrontendController) private frontendController: FrontendController,
+        @inject (ScheduleController) private scheduleController: ScheduleController
+    ) {
 
         this.expressApplication = express ();
 
@@ -55,14 +65,11 @@ class Launcher {
 
     private async loadWebsite () {
 
-        let backendController = BackendController.getInstance ();
-        await backendController.execute (this.expressApplication);
+        await this.backendController.execute (this.expressApplication);
 
-        let frontendController = FrontendController.getInstance ();
-        await frontendController.execute (this.expressApplication);
+        await this.frontendController.execute (this.expressApplication);
 
-        let scheduleController = ScheduleController.getInstance ();
-        await scheduleController.execute ();
+        await this.scheduleController.execute ();
 
     }
 
@@ -180,5 +187,5 @@ class Launcher {
 
 }
 
-let launcher = new Launcher ();
+const launcher = container.resolve (Launcher);
 launcher.initialize ().then ();

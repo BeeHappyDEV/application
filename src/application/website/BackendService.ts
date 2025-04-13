@@ -4,29 +4,19 @@ import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
 import MongoTool from "../toolkit/MongoTool";
 import PropertiesTool from "../toolkit/PropertiesTool";
-import ReflectionTool from "../toolkit/ReflectionTool";
+import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 import ServiceTool from "../toolkit/ServiceTool";
-import PostgresTool from "../toolkit/PostgresTool";
+import {PostgresTool} from "../toolkit/PostgresTool";
+import {inject, injectable} from "tsyringe";
 
-class BackendModule {
+@injectable ()
+export class BackendService {
 
-    private static instance: BackendModule;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new BackendModule ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
+    constructor (
+        @inject (BackendSupport) private backendSupport: BackendSupport,
+        @inject (PostgresTool) private postgresTool: PostgresTool
+    ) {}
 
     public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
 
@@ -56,8 +46,7 @@ class BackendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -154,8 +143,7 @@ class BackendModule {
 
         try {
 
-            let backendSupport = BackendSupport.getInstance ();
-            await backendSupport.readMainFile (logTool.trace ());
+            await this.backendSupport.readMainFile (logTool.trace ());
 
             resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -185,11 +173,10 @@ class BackendModule {
 
         try {
 
-            let backendSupport = BackendSupport.getInstance ();
-            await backendSupport.reloadDollarIndicators (logTool.trace ());
-            await backendSupport.reloadEuroIndicators (logTool.trace ());
-            await backendSupport.reloadFomentUnitIndicators (logTool.trace ());
-            await backendSupport.reloadMonthlyTaxUnitIndicators (logTool.trace ());
+            await this.backendSupport.reloadDollarIndicators (logTool.trace ());
+            await this.backendSupport.reloadEuroIndicators (logTool.trace ());
+            await this.backendSupport.reloadFomentUnitIndicators (logTool.trace ());
+            await this.backendSupport.reloadMonthlyTaxUnitIndicators (logTool.trace ());
 
             resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -209,5 +196,3 @@ class BackendModule {
     }
 
 }
-
-export default BackendModule;

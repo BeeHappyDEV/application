@@ -1,34 +1,23 @@
+import {inject, singleton} from "tsyringe";
+
 import express from "express";
 
-import FrontendModule from "./FrontendModule";
+import {FrontendService} from "./FrontendService";
 import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
 import PropertiesTool from "../toolkit/PropertiesTool";
-import ReflectionTool from "../toolkit/ReflectionTool";
+import {ReflectionTool} from "../toolkit/ReflectionTool";
 
-class FrontendController {
+@singleton ()
+export class FrontendController {
 
-    private static instance: FrontendController;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new FrontendController ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
+    constructor (
+        @inject (FrontendService) private frontendModule: FrontendService
+    ) {}
 
     public async execute (expressApplication: typeof express.application) {
 
-        expressApplication.all ("/", this.getLandingPage.bind (this));
-
+        //expressApplication.all ("/", this.getLandingPage.bind (this));
         expressApplication.get ("/", this.getLandingPage.bind (this));
         expressApplication.get ("/contacto/llamanos", this.getCallUsLink.bind (this));
         expressApplication.get ("/contacto/escribenos", this.getWriteUsLink.bind (this));
@@ -52,47 +41,46 @@ class FrontendController {
 
     }
 
-private async getLandingPage (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async getLandingPage (expressRequest: typeof express.request, expressResponse: typeof express.response) {
 
-    let reflectionStrings = ReflectionTool.getMethodName ();
+        let reflectionStrings = ReflectionTool.getMethodName ();
 
-    let logTool = new LogTool ();
-    logTool.initialize (reflectionStrings);
-    logTool.request (expressRequest);
+        let logTool = new LogTool ();
+        logTool.initialize (reflectionStrings);
+        logTool.request (expressRequest);
 
-    let paramsObject = new JsonObject ();
+        let paramsObject = new JsonObject ();
 
-    let frontendModule = FrontendModule.getInstance ();
-    let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
-    let environmentString = process.argv [2].slice (2);
+        let environmentString = process.argv [2].slice (2);
 
-    switch (environmentString) {
+        switch (environmentString) {
 
-        case "dev":
+            case "dev":
 
-            resultObject.setPath (await PropertiesTool.get ("system.host") + ":" + await PropertiesTool.get ("system.port"));
+                resultObject.setPath (await PropertiesTool.get ("system.host") + ":" + await PropertiesTool.get ("system.port"));
 
-            break;
+                break;
 
-        case "prd":
+            case "prd":
 
-            resultObject.setPath (await PropertiesTool.get ("system.host"));
+                resultObject.setPath (await PropertiesTool.get ("system.host"));
 
-            break;
+                break;
+
+        }
+
+        resultObject.setVersion (await PropertiesTool.get ("application.version"));
+        resultObject.setWebsite (await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain"));
+        resultObject.setRender ("landing/index.ejs");
+
+        expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
+
+        logTool.response (resultObject);
+        logTool.finalize ();
 
     }
-
-    resultObject.setVersion (await PropertiesTool.get ("application.version"));
-    resultObject.setWebsite (await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain"));
-    resultObject.setRender ("landing/index.ejs");
-
-    expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
-
-    logTool.response (resultObject);
-    logTool.finalize ();
-
-}
 
     private async getCallUsLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
 
@@ -104,8 +92,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -124,8 +111,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -144,8 +130,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -164,8 +149,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -184,8 +168,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -204,8 +187,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -224,8 +206,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -244,8 +225,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -264,8 +244,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         let environmentString = process.argv [2].slice (2);
 
@@ -306,8 +285,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -326,8 +304,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         let environmentString = process.argv [2].slice (2);
 
@@ -368,8 +345,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -390,8 +366,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
         paramsObject.set ("txt_path", await PropertiesTool.get ("system.path"));
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
@@ -443,8 +418,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
@@ -473,8 +447,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -494,8 +467,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -515,8 +487,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -537,8 +508,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
         paramsObject.set ("txt_path", await PropertiesTool.get ("system.path"));
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
@@ -587,8 +557,7 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
 
         let paramsObject = new JsonObject ();
 
-        let frontendModule = FrontendModule.getInstance ();
-        let resultObject = await frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.redirect (await PropertiesTool.get ("system.path"));
 
@@ -598,5 +567,3 @@ private async getLandingPage (expressRequest: typeof express.request, expressRes
     }
 
 }
-
-export default FrontendController;

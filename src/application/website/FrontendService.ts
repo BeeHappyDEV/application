@@ -1,28 +1,18 @@
+import {inject, singleton} from "tsyringe";
+
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
-import PostgresTool from "../toolkit/PostgresTool";
+import {PostgresTool} from "../toolkit/PostgresTool";
 import ResultObject from "../object/ResultObject";
-import ReflectionTool from "../toolkit/ReflectionTool";
+import {ReflectionTool} from "../toolkit/ReflectionTool";
 
-class FrontendModule {
+@singleton ()
+export class FrontendService {
 
-    private static instance: FrontendModule;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new FrontendModule ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
+    constructor (
+        @inject (PostgresTool) public postgresTool: PostgresTool
+    ) {}
 
     public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
 
@@ -53,7 +43,7 @@ class FrontendModule {
 
     }
 
-    private async getLandingPage (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getLandingPage (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -66,8 +56,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -84,7 +73,7 @@ class FrontendModule {
 
     }
 
-    private async getCallUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getCallUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -97,8 +86,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -115,7 +103,7 @@ class FrontendModule {
 
     }
 
-    private async getWriteUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getWriteUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -128,8 +116,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -146,7 +133,7 @@ class FrontendModule {
 
     }
 
-    private async getTextUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getTextUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -159,8 +146,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -177,7 +163,7 @@ class FrontendModule {
 
     }
 
-    private async getVisitUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getVisitUsLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -190,8 +176,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -208,7 +193,7 @@ class FrontendModule {
 
     }
 
-    private async getFacebookLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getFacebookLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -221,8 +206,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -239,7 +223,7 @@ class FrontendModule {
 
     }
 
-    private async getInstagramLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getInstagramLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -252,8 +236,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -270,7 +253,7 @@ class FrontendModule {
 
     }
 
-    private async getXLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getXLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -283,8 +266,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -301,7 +283,7 @@ class FrontendModule {
 
     }
 
-    private async getLinkedinLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getLinkedinLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -314,8 +296,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -332,7 +313,7 @@ class FrontendModule {
 
     }
 
-    private async getPolicyPage (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getPolicyPage (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -345,8 +326,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -363,7 +343,7 @@ class FrontendModule {
 
     }
 
-    private async getPolicyVideoLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getPolicyVideoLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -376,8 +356,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -394,7 +373,7 @@ class FrontendModule {
 
     }
 
-    private async getTermsPage (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getTermsPage (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -407,8 +386,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -425,7 +403,7 @@ class FrontendModule {
 
     }
 
-    private async getTermsVideoLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getTermsVideoLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -438,8 +416,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -456,7 +433,7 @@ class FrontendModule {
 
     }
 
-    private async getCollaboratorPage (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getCollaboratorPage (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -469,8 +446,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -487,7 +463,7 @@ class FrontendModule {
 
     }
 
-    private async getVcardFile (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getVcardFile (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -500,8 +476,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -518,7 +493,7 @@ class FrontendModule {
 
     }
 
-    private async getCallMeLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getCallMeLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -531,8 +506,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -549,7 +523,7 @@ class FrontendModule {
 
     }
 
-    private async getWriteMeLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getWriteMeLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -562,8 +536,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -580,7 +553,7 @@ class FrontendModule {
 
     }
 
-    private async getTextMeLink (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getTextMeLink (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -593,8 +566,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -611,7 +583,7 @@ class FrontendModule {
 
     }
 
-    private async getQRCodePage (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getQRCodePage (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -624,8 +596,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -642,7 +613,7 @@ class FrontendModule {
 
     }
 
-    private async getRedirectPage (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async getRedirectPage (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -655,8 +626,7 @@ class FrontendModule {
 
         try {
 
-            let postgresTool = PostgresTool.getInstance ();
-            resultObject = await postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -674,5 +644,3 @@ class FrontendModule {
     }
 
 }
-
-export default FrontendModule;

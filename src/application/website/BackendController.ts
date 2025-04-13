@@ -1,29 +1,19 @@
+import {inject, singleton} from "tsyringe";
+
 import express from "express";
 
-import BackendModule from "../website/BackendModule";
+import {BackendService} from "./BackendService";
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
-import ReflectionTool from "../toolkit/ReflectionTool";
+import {ReflectionTool} from "../toolkit/ReflectionTool";
 
-class BackendController {
+@singleton ()
+export class BackendController {
 
-    private static instance: BackendController;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new BackendController ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
+    constructor (
+        @inject (BackendService) private backendModule: BackendService
+    ) {}
 
     public async execute (expressApplication: typeof express.application) {
 
@@ -46,8 +36,7 @@ class BackendController {
 
         let paramsObject = new JsonObject ();
 
-        let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.backendModule.execute (paramsObject, logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -65,8 +54,7 @@ class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.execute (new JsonObject (), logTool.trace ());
+        let resultObject = await this.backendModule.execute (new JsonObject (), logTool.trace ());
 
         resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -86,8 +74,7 @@ class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.execute (new JsonObject (), logTool.trace ());
+        let resultObject = await this.backendModule.execute (new JsonObject (), logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -105,8 +92,7 @@ class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.execute (new JsonObject (), logTool.trace ());
+        let resultObject = await this.backendModule.execute (new JsonObject (), logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -124,8 +110,7 @@ class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let backendModule = BackendModule.getInstance ();
-        let resultObject = await backendModule.execute (new JsonObject (), logTool.trace ());
+        let resultObject = await this.backendModule.execute (new JsonObject (), logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -135,5 +120,3 @@ class BackendController {
     }
 
 }
-
-export default BackendController;
