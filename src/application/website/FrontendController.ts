@@ -51,7 +51,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getLandingPage (paramsObject, logTool.trace ());
 
         let environmentString = process.argv [2].slice (2);
 
@@ -92,7 +92,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getCallUsLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -111,7 +111,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getWriteUsLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -130,7 +130,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getTextUsLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -149,7 +149,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getVisitUsLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -168,7 +168,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getFacebookLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -187,7 +187,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getInstagramLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -206,7 +206,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getXLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -225,7 +225,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getLinkedinLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -244,7 +244,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getPolicyPage (paramsObject, logTool.trace ());
 
         let environmentString = process.argv [2].slice (2);
 
@@ -285,7 +285,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getPolicyVideoLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -304,7 +304,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getTermsPage (paramsObject, logTool.trace ());
 
         let environmentString = process.argv [2].slice (2);
 
@@ -345,7 +345,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getTermsVideoLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -366,7 +366,7 @@ export class FrontendController {
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
         paramsObject.set ("txt_path", await PropertiesTool.get ("system.path"));
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getCollaboratorPage (paramsObject, logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
@@ -418,7 +418,7 @@ export class FrontendController {
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getVcardFile (paramsObject, logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
@@ -447,7 +447,7 @@ export class FrontendController {
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getCallMeLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -467,7 +467,7 @@ export class FrontendController {
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getWriteMeLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -487,7 +487,7 @@ export class FrontendController {
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getTextMeLink (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -508,7 +508,7 @@ export class FrontendController {
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
         paramsObject.set ("txt_path", await PropertiesTool.get ("system.path"));
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getQRCodePage (paramsObject, logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
@@ -557,7 +557,7 @@ export class FrontendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.frontendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.frontendModule.getRedirectPage (paramsObject, logTool.trace ());
 
         expressResponse.redirect (await PropertiesTool.get ("system.path"));
 

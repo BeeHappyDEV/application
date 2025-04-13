@@ -1,14 +1,18 @@
-import {singleton} from "tsyringe";
+import {inject, singleton} from "tsyringe";
 
 import nodeCron from "node-cron";
 
 import LogTool from "../toolkit/LogTool";
 import PropertiesTool from "../toolkit/PropertiesTool"
 import {ReflectionTool} from "../toolkit/ReflectionTool";
-import ScheduleService from "./ScheduleService";
+import {ScheduleService} from "./ScheduleService";
 
 @singleton ()
 export class ScheduleController {
+
+    constructor (
+        @inject (ScheduleService) private scheduleService: ScheduleService
+    ) {}
 
     public async execute () {
 
@@ -56,8 +60,7 @@ export class ScheduleController {
         let logTool = new LogTool ();
         logTool.initialize (reflectionStrings);
 
-        let scheduleModule = ScheduleService.getInstance ();
-        await scheduleModule.exeWakeup (logTool.trace ());
+        await this.scheduleService.exeWakeup (logTool.trace ());
 
         logTool.comment (await PropertiesTool.get ("scheduler.wakeup.comment"), await PropertiesTool.get ("scheduler.wakeup.verbose"));
         logTool.finalize ();
@@ -71,8 +74,7 @@ export class ScheduleController {
         let logTool = new LogTool ();
         logTool.initialize (reflectionStrings);
 
-        let scheduleModule = ScheduleService.getInstance ();
-        await scheduleModule.exeIndicators (logTool.trace ());
+        await this.scheduleService.exeIndicators (logTool.trace ());
 
         logTool.comment (await PropertiesTool.get ("scheduler.indicators.comment"), await PropertiesTool.get ("scheduler.indicators.verbose"));
         logTool.finalize ();
@@ -86,8 +88,7 @@ export class ScheduleController {
         let logTool = new LogTool ();
         logTool.initialize (reflectionStrings);
 
-        let scheduleModule = ScheduleService.getInstance ();
-        await scheduleModule.exeInspirational (logTool.trace ());
+        await this.scheduleService.exeInspirational (logTool.trace ());
 
         logTool.comment (await PropertiesTool.get ("scheduler.inspirational.comment"), await PropertiesTool.get ("scheduler.inspirational.verbose"));
         logTool.finalize ();

@@ -8,10 +8,10 @@ import PropertiesTool from "../toolkit/PropertiesTool";
 import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 import ServiceTool from "../toolkit/ServiceTool";
-import {inject, injectable} from "tsyringe";
+import {inject, singleton} from "tsyringe";
 
-@injectable ()
-class BackendSupport {
+@singleton ()
+export class BackendHelper {
 
     constructor (
         @inject (PostgresTool) private postgresTool: PostgresTool
@@ -298,5 +298,3 @@ class BackendSupport {
     }
 
 }
-
-export default BackendSupport;

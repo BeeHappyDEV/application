@@ -14,35 +14,6 @@ export class FrontendService {
         @inject (PostgresTool) public postgresTool: PostgresTool
     ) {}
 
-    public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
-
-        switch (traceObject.use ()) {
-
-            case "getLandingPage": return this.getLandingPage (paramsObject, traceObject);
-            case "getCallUsLink": return this.getCallUsLink (paramsObject, traceObject);
-            case "getWriteUsLink": return this.getWriteUsLink (paramsObject, traceObject);
-            case "getTextUsLink": return this.getTextUsLink (paramsObject, traceObject);
-            case "getVisitUsLink": return this.getVisitUsLink (paramsObject, traceObject);
-            case "getFacebookLink": return this.getFacebookLink (paramsObject, traceObject);
-            case "getInstagramLink": return this.getInstagramLink (paramsObject, traceObject);
-            case "getXLink": return this.getXLink (paramsObject, traceObject);
-            case "getLinkedinLink": return this.getLinkedinLink (paramsObject, traceObject);
-            case "getPolicyPage": return this.getPolicyPage (paramsObject, traceObject);
-            case "getPolicyVideoLink": return this.getPolicyVideoLink (paramsObject, traceObject);
-            case "getTermsPage": return this.getTermsPage (paramsObject, traceObject);
-            case "getTermsVideoLink": return this.getTermsVideoLink (paramsObject, traceObject);
-            case "getCollaboratorPage": return this.getCollaboratorPage (paramsObject, traceObject);
-            case "getVcardFile": return this.getVcardFile (paramsObject, traceObject);
-            case "getCallMeLink": return this.getCallMeLink (paramsObject, traceObject);
-            case "getWriteMeLink": return this.getWriteMeLink (paramsObject, traceObject);
-            case "getTextMeLink": return this.getTextMeLink (paramsObject, traceObject);
-            case "getQRCodePage": return this.getQRCodePage (paramsObject, traceObject);
-            default: return this.getRedirectPage (paramsObject, traceObject);
-
-        }
-
-    }
-
     public async getLandingPage (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();

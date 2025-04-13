@@ -5,39 +5,10 @@ import PropertiesTool from "../toolkit/PropertiesTool";
 import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 import ServiceTool from "../toolkit/ServiceTool";
+import {singleton} from "tsyringe";
 
-class ScheduleService {
-
-    private static instance: ScheduleService;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new ScheduleService ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
-
-    // @ts-ignore
-    public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
-
-        switch (traceObject.use ()) {
-
-            case "exeWakeup": return this.exeWakeup (traceObject);
-            case "exeIndicators": return this.exeIndicators (traceObject);
-            case "exeInspirational": return this.exeInspirational (traceObject);
-            default: return null;
-
-        }
-
-    }
+@singleton ()
+export class ScheduleService {
 
     public async exeWakeup (traceObject: JsonObject) {
 
@@ -139,5 +110,3 @@ class ScheduleService {
     }
 
 }
-
-export default ScheduleService;

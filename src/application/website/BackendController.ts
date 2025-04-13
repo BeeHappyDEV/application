@@ -36,7 +36,7 @@ export class BackendController {
 
         let paramsObject = new JsonObject ();
 
-        let resultObject = await this.backendModule.execute (paramsObject, logTool.trace ());
+        let resultObject = await this.backendModule.postWakeupApplication (paramsObject, logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -54,7 +54,7 @@ export class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let resultObject = await this.backendModule.execute (new JsonObject (), logTool.trace ());
+        let resultObject = await this.backendModule.postCacheDelete (logTool.trace ());
 
         resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -74,7 +74,7 @@ export class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let resultObject = await this.backendModule.execute (new JsonObject (), logTool.trace ());
+        let resultObject = await this.backendModule.postRebuildDocumental (logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -92,7 +92,7 @@ export class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let resultObject = await this.backendModule.execute (new JsonObject (), logTool.trace ());
+        let resultObject = await this.backendModule.postRebuildRelational (logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -110,7 +110,7 @@ export class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let resultObject = await this.backendModule.execute (new JsonObject (), logTool.trace ());
+        let resultObject = await this.backendModule.postReloadIndicators (logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 

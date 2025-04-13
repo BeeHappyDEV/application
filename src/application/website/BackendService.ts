@@ -1,4 +1,6 @@
-import BackendSupport from "../website/BackendSupport";
+import {inject, injectable} from "tsyringe";
+
+import {BackendHelper} from "./BackendHelper";
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
 import LogTool from "../toolkit/LogTool";
@@ -8,32 +10,16 @@ import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 import ServiceTool from "../toolkit/ServiceTool";
 import {PostgresTool} from "../toolkit/PostgresTool";
-import {inject, injectable} from "tsyringe";
 
 @injectable ()
 export class BackendService {
 
     constructor (
-        @inject (BackendSupport) private backendSupport: BackendSupport,
-        @inject (PostgresTool) private postgresTool: PostgresTool
+        @inject (BackendHelper) public backendSupport: BackendHelper,
+        @inject (PostgresTool) public postgresTool: PostgresTool
     ) {}
 
-    public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
-
-        switch (traceObject.use ()) {
-
-            case "postWakeupApplication": return this.postWakeupApplication (paramsObject, traceObject);
-            case "postCacheDelete": return this.postCacheDelete (traceObject);
-            case "postRebuildDocumental": return this.postRebuildDocumental (traceObject);
-            case "postRebuildRelational": return this.postRebuildRelational (traceObject);
-            case "postReloadIndicators": return this.postReloadIndicators (traceObject);
-            default: return new ResultObject ();
-
-        }
-
-    }
-
-    private async postWakeupApplication (paramsObject: JsonObject, traceObject: JsonObject) {
+    public async postWakeupApplication (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -63,7 +49,7 @@ export class BackendService {
 
     }
 
-    private async postCacheDelete (traceObject: JsonObject) {
+    public async postCacheDelete (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -101,7 +87,7 @@ export class BackendService {
 
     }
 
-    private async postRebuildDocumental (traceObject: JsonObject) {
+    public async postRebuildDocumental (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -132,7 +118,7 @@ export class BackendService {
 
     }
 
-    private async postRebuildRelational (traceObject: JsonObject) {
+    public async postRebuildRelational (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
@@ -162,7 +148,7 @@ export class BackendService {
 
     }
 
-    private async postReloadIndicators (traceObject: JsonObject) {
+    public async postReloadIndicators (traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
