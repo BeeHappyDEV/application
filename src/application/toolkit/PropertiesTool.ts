@@ -1,83 +1,99 @@
+import { singleton } from "tsyringe";
 import fsExtra from "fs-extra";
 import jsYaml from "js-yaml";
 
-class PropertiesTool {
+@singleton()
+export class PropertiesTool {
+    private properties: any = {};
+    private loaded = false;
 
-    public static async get (propertyString: String) {
+    public async load(): Promise<void> {
+        try {
+            let fileString = "./src/configuration/config.yml";
+            const environmentString = process.argv[2]?.slice(2) || 'dev';
 
-        let fileString = "./src/configuration/config.yml";
+            // Cargar configuración base
+            const yamlObject1 = jsYaml.load(fsExtra.readFileSync(fileString, "utf8"), {});
 
-        let yamlObject1 = jsYaml.load (fsExtra.readFileSync (fileString, "utf8"), {});
-
-        let environmentString = process.argv [2].slice (2);
-
-        switch (environmentString) {
-
-            case "dev":
-
-                fileString = "./src/configuration/config.dev.yml";
-
-                break;
-
-            case "qas":
-
-                fileString = "./src/configuration/config.qas.yml";
-
-                break;
-
-            case "prd":
-
-                fileString = "./src/configuration/config.prd.yml";
-
-                break;
-
-        }
-
-        let yamlObject2 = jsYaml.load (fsExtra.readFileSync (fileString, "utf8"), {});
-
-        let yamlObject = await this.mergeConfigurations (yamlObject1, yamlObject2);
-
-        let arrayStrings: String [] = propertyString.split (".");
-
-        let resultString;
-
-        let keyString: String;
-
-        for (keyString of arrayStrings) {
-
-            if (!yamlObject || !Object.prototype.hasOwnProperty.call (yamlObject, keyString.toString ())) {
-
-                return null;
+            // Cargar configuración específica del entorno
+            switch (environmentString) {
+                case "dev":
+                    fileString = "./src/configuration/config.dev.yml";
+                    break;
+                case "qas":
+                    fileString = "./src/configuration/config.qas.yml";
+                    break;
+                case "prd":
+                    fileString = "./src/configuration/config.prd.yml";
+                    break;
             }
 
-            let pairObject: any = yamlObject;
-
-            resultString = pairObject [keyString.toString ()];
-
-            yamlObject = pairObject [keyString.toString ()];
-
+            const yamlObject2 = jsYaml.load(fsExtra.readFileSync(fileString, "utf8"), {});
+            this.properties = this.deepMerge(yamlObject1, yamlObject2);
+            this.loaded = true;
+        } catch (error) {
+            console.error('Error loading properties:', error);
+            this.properties = {};
+            this.loaded = false;
+            throw error;
         }
-
-        return resultString;
-
     }
 
-    private static async mergeConfigurations (yamlObject1: any, yamlObject2: any) {
+    private deepMerge(target: any, source: any): any {
+        if (typeof target !== 'object' || typeof source !== 'object') {
+            return source;
+        }
 
-        for (let key in yamlObject2) {
-
-            if (yamlObject2[key] instanceof Object && key in yamlObject1) {
-
-                Object.assign (yamlObject2[key], await this.mergeConfigurations (yamlObject1[key], yamlObject2[key]));
-
+        const result = { ...target };
+        for (const key in source) {
+            if (source.hasOwnProperty(key)) {
+                if (target.hasOwnProperty(key)) {
+                    result[key] = this.deepMerge(target[key], source[key]);
+                } else {
+                    result[key] = source[key];
+                }
             }
-
         }
-
-        return {...yamlObject1, ...yamlObject2};
-
+        return result;
     }
 
+    public async get(propertyString: string, defaultValue: any = null): Promise<any> {
+        if (!this.loaded) {
+            await this.load();
+        }
+
+        // Primero verifica variables de entorno
+        const envKey = propertyString.toUpperCase().replace(/\./g, '_');
+        if (process.env[envKey] !== undefined) {
+            return this.parseValue(process.env[envKey]);
+        }
+
+        // Luego verifica propiedades cargadas
+        const keys = propertyString.split('.');
+        let value = this.properties;
+
+        for (const key of keys) {
+            if (!value || typeof value !== 'object' || !value.hasOwnProperty(key)) {
+                return defaultValue;
+            }
+            value = value[key];
+        }
+
+        return value !== undefined ? value : defaultValue;
+    }
+
+    public async require(propertyString: string): Promise<any> {
+        const value = await this.get(propertyString);
+        if (value === null || value === undefined) {
+            throw new Error(`Required property ${propertyString} is not defined`);
+        }
+        return value;
+    }
+
+    private parseValue(value: string): any {
+        if (value.toLowerCase() === 'true') return true;
+        if (value.toLowerCase() === 'false') return false;
+        if (!isNaN(Number(value))) return Number(value);
+        return value;
+    }
 }
-
-export default PropertiesTool;

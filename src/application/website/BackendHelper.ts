@@ -2,9 +2,9 @@ import fsExtra from "fs-extra";
 
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
-import LogTool from "../toolkit/LogTool";
+import {LogTool} from "../toolkit/LogTool";
 import {PostgresTool} from "../toolkit/PostgresTool";
-import PropertiesTool from "../toolkit/PropertiesTool";
+import {PropertiesTool} from "../toolkit/PropertiesTool";
 import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 import ServiceTool from "../toolkit/ServiceTool";
@@ -14,7 +14,8 @@ import {inject, singleton} from "tsyringe";
 export class BackendHelper {
 
     constructor (
-        @inject (PostgresTool) private postgresTool: PostgresTool
+        @inject (PostgresTool) private postgresTool: PostgresTool,
+        @inject (PropertiesTool) public propertiesTool: PropertiesTool
     ) {}
 
     public async readMainFile (traceObject: JsonObject) {
@@ -22,7 +23,7 @@ export class BackendHelper {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_file", "index.txt");
@@ -57,7 +58,7 @@ export class BackendHelper {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         paramsObject.set ("txt_folder", paramsObject.get ("txt_folder").split ("/") [0] + "/");
 
@@ -91,7 +92,7 @@ export class BackendHelper {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let contentBuffer = fsExtra.readFileSync (paramsObject.get ("txt_path") + paramsObject.get ("txt_folder") + paramsObject.get ("txt_script"));
         let contentString = contentBuffer.toString ();
@@ -118,13 +119,13 @@ export class BackendHelper {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let headersObject = null;
 
         let paramsObject = new JsonObject ();
         paramsObject.del ("jsn_data");
-        paramsObject.set ("apikey", await PropertiesTool.get ("scheduler.indicators.token"));
+        paramsObject.set ("apikey", await this.propertiesTool.get ("scheduler.indicators.token"));
         paramsObject.set ("formato", "json");
 
         let resultObject = new ResultObject ();
@@ -132,7 +133,7 @@ export class BackendHelper {
         try {
 
             let serviceTool = ServiceTool.getInstance ();
-            let serviceObject = await serviceTool.get (await PropertiesTool.get ("scheduler.indicators.host.dollar") + "/" + new Date ().getFullYear ().toString (), headersObject, paramsObject, null, logTool.trace ());
+            let serviceObject = await serviceTool.get (await this.propertiesTool.get ("scheduler.indicators.host.dollar") + "/" + new Date ().getFullYear ().toString (), headersObject, paramsObject, null, logTool.trace ());
             serviceObject.set ("outgoing", serviceObject.get (["outgoing", "Dolares"]));
             serviceObject.rename ("Fecha", "date");
             serviceObject.rename ("Valor", "value");
@@ -164,13 +165,13 @@ export class BackendHelper {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let headersObject = null;
 
         let paramsObject = new JsonObject ();
         paramsObject.del ("jsn_data");
-        paramsObject.set ("apikey", await PropertiesTool.get ("scheduler.indicators.token"));
+        paramsObject.set ("apikey", await this.propertiesTool.get ("scheduler.indicators.token"));
         paramsObject.set ("formato", "json");
 
         let resultObject = new ResultObject ();
@@ -178,7 +179,7 @@ export class BackendHelper {
         try {
 
             let serviceTool = ServiceTool.getInstance ();
-            let serviceObject = await serviceTool.get (await PropertiesTool.get ("scheduler.indicators.host.euro") + "/" + new Date ().getFullYear ().toString (), headersObject, paramsObject, null, logTool.trace ());
+            let serviceObject = await serviceTool.get (await this.propertiesTool.get ("scheduler.indicators.host.euro") + "/" + new Date ().getFullYear ().toString (), headersObject, paramsObject, null, logTool.trace ());
             serviceObject.set ("outgoing", serviceObject.get (["outgoing", "Euros"]));
             serviceObject.rename ("Fecha", "date");
             serviceObject.rename ("Valor", "value");
@@ -210,13 +211,13 @@ export class BackendHelper {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let headersObject = null;
 
         let paramsObject = new JsonObject ();
         paramsObject.del ("jsn_data");
-        paramsObject.set ("apikey", await PropertiesTool.get ("scheduler.indicators.token"));
+        paramsObject.set ("apikey", await this.propertiesTool.get ("scheduler.indicators.token"));
         paramsObject.set ("formato", "json");
 
         let resultObject = new ResultObject ();
@@ -224,7 +225,7 @@ export class BackendHelper {
         try {
 
             let serviceTool = ServiceTool.getInstance ();
-            let serviceObject = await serviceTool.get (await PropertiesTool.get ("scheduler.indicators.host.foment_unit") + "/" + new Date ().getFullYear ().toString (), headersObject, paramsObject, null, logTool.trace ());
+            let serviceObject = await serviceTool.get (await this.propertiesTool.get ("scheduler.indicators.host.foment_unit") + "/" + new Date ().getFullYear ().toString (), headersObject, paramsObject, null, logTool.trace ());
             serviceObject.set ("outgoing", serviceObject.get (["outgoing", "UFs"]));
             serviceObject.rename ("Fecha", "date");
             serviceObject.rename ("Valor", "value");
@@ -256,13 +257,13 @@ export class BackendHelper {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let headersObject = null;
 
         let paramsObject = new JsonObject ();
         paramsObject.del ("jsn_data");
-        paramsObject.set ("apikey", await PropertiesTool.get ("scheduler.indicators.token"));
+        paramsObject.set ("apikey", await this.propertiesTool.get ("scheduler.indicators.token"));
         paramsObject.set ("formato", "json");
 
         let resultObject = new ResultObject ();
@@ -270,7 +271,7 @@ export class BackendHelper {
         try {
 
             let serviceTool = ServiceTool.getInstance ();
-            let serviceObject = await serviceTool.get (await PropertiesTool.get ("scheduler.indicators.host.monthly_tax_unit") + "/" + new Date ().getFullYear ().toString (), headersObject, paramsObject, null, logTool.trace ());
+            let serviceObject = await serviceTool.get (await this.propertiesTool.get ("scheduler.indicators.host.monthly_tax_unit") + "/" + new Date ().getFullYear ().toString (), headersObject, paramsObject, null, logTool.trace ());
             serviceObject.set ("outgoing", serviceObject.get (["outgoing", "UTMs"]));
             serviceObject.rename ("Fecha", "date");
             serviceObject.rename ("Valor", "value");

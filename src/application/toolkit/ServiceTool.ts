@@ -2,7 +2,7 @@ import superagent from "superagent";
 
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
-import LogTool from "../toolkit/LogTool";
+import {LogTool} from "../toolkit/LogTool";
 import ResultObject from "../object/ResultObject";
 import {ReflectionTool} from "../toolkit/ReflectionTool";
 
@@ -30,7 +30,7 @@ class ServiceTool {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
@@ -80,7 +80,7 @@ class ServiceTool {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
@@ -132,7 +132,7 @@ class ServiceTool {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 

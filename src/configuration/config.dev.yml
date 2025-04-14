@@ -6,7 +6,7 @@ system:
   port: 8080
   websocket: ws://localhost
   tunnel:
-    enable: false
+    enable: true
 
 # INTEGRATIONS #
 

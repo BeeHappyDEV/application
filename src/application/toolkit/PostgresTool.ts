@@ -2,29 +2,33 @@ import pg from "pg";
 
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
-import LogTool from "../toolkit/LogTool";
-import PropertiesTool from "../toolkit/PropertiesTool";
+import {LogTool} from "./LogTool";
+import {PropertiesTool} from "./PropertiesTool";
 import {ReflectionTool} from "./ReflectionTool";
 import ResultObject from "../object/ResultObject";
-import {singleton} from "tsyringe";
+import {inject, singleton} from "tsyringe";
 
 @singleton ()
 export class PostgresTool {
+
+    constructor (
+        @inject (PropertiesTool) public propertiesTool: PropertiesTool
+    ) {}
 
     public async execute (paramsObject: JsonObject, traceObject: JsonObject) {
 
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let postgresPool = new pg.Pool ({
-            database: await PropertiesTool.get ("integration.postgres.database"),
-            host: await PropertiesTool.get ("integration.postgres.host"),
-            max: await PropertiesTool.get ("integration.postgres.connections"),
-            password: await PropertiesTool.get ("integration.postgres.pass"),
-            port: await PropertiesTool.get ("integration.postgres.port"),
-            user: await PropertiesTool.get ("integration.postgres.user")
+            database: await this.propertiesTool.get ("integration.postgres.database"),
+            host: await this.propertiesTool.get ("integration.postgres.host"),
+            max: await this.propertiesTool.get ("integration.postgres.connections"),
+            password: await this.propertiesTool.get ("integration.postgres.pass"),
+            port: await this.propertiesTool.get ("integration.postgres.port"),
+            user: await this.propertiesTool.get ("integration.postgres.user")
         });
 
         let resultObject = new ResultObject ();

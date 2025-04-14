@@ -3,9 +3,9 @@ import {inject, injectable} from "tsyringe";
 import {BackendHelper} from "./BackendHelper";
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
-import LogTool from "../toolkit/LogTool";
-import MongoTool from "../toolkit/MongoTool";
-import PropertiesTool from "../toolkit/PropertiesTool";
+import {LogTool} from "../toolkit/LogTool";
+import {MongoTool} from "../toolkit/MongoTool";
+import {PropertiesTool} from "../toolkit/PropertiesTool";
 import {ReflectionTool} from "../toolkit/ReflectionTool";
 import ResultObject from "../object/ResultObject";
 import ServiceTool from "../toolkit/ServiceTool";
@@ -16,7 +16,9 @@ export class BackendService {
 
     constructor (
         @inject (BackendHelper) public backendSupport: BackendHelper,
-        @inject (PostgresTool) public postgresTool: PostgresTool
+        @inject (PostgresTool) public postgresTool: PostgresTool,
+        @inject (MongoTool) public mongoTool: MongoTool,
+        @inject (PropertiesTool) public propertiesTool: PropertiesTool
     ) {}
 
     public async postWakeupApplication (paramsObject: JsonObject, traceObject: JsonObject) {
@@ -24,7 +26,7 @@ export class BackendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         paramsObject.set ("txt_function", "backend_wakeup_application");
 
@@ -54,10 +56,10 @@ export class BackendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let headersObject = new JsonObject ();
-        headersObject.set ("authorization", "Bearer " + await PropertiesTool.get ("cloudflare.token"));
+        headersObject.set ("authorization", "Bearer " + await this.propertiesTool.get ("cloudflare.token"));
         headersObject.set ("content-type", "application/json");
 
         let bodyObject = new JsonObject ();
@@ -68,7 +70,7 @@ export class BackendService {
         try {
 
             let serviceTool = ServiceTool.getInstance ();
-            await serviceTool.delete (await PropertiesTool.get ("cloudflare.host"), headersObject, null, bodyObject, logTool.trace ());
+            await serviceTool.delete (await this.propertiesTool.get ("cloudflare.host"), headersObject, null, bodyObject, logTool.trace ());
 
             resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -92,14 +94,13 @@ export class BackendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
 
-            let mongoTool = MongoTool.getInstance ();
-            await mongoTool.rebuild (logTool.trace ());
+            await this.mongoTool.rebuild (logTool.trace ());
 
             resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -123,7 +124,7 @@ export class BackendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
@@ -153,7 +154,7 @@ export class BackendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 

@@ -5,7 +5,7 @@ import express from "express";
 import {BackendService} from "./BackendService";
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
-import LogTool from "../toolkit/LogTool";
+import {LogTool} from "../toolkit/LogTool";
 import {ReflectionTool} from "../toolkit/ReflectionTool";
 
 @singleton ()
@@ -30,7 +30,7 @@ export class BackendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
@@ -50,7 +50,7 @@ export class BackendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
@@ -70,7 +70,7 @@ export class BackendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
@@ -88,7 +88,7 @@ export class BackendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
@@ -106,7 +106,7 @@ export class BackendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 

@@ -1,20 +1,14 @@
 import "reflect-metadata";
 
 import {container, inject, singleton} from "tsyringe";
-
 import childProcess from "child_process";
 import express from "express";
 import localTunnel from "localtunnel";
 import superagent from "superagent";
-
-import JsonObject from "./object/JsonObject";
-import LogTool from "./toolkit/LogTool";
-import PropertiesTool from "./toolkit/PropertiesTool";
+import {PropertiesTool} from "./toolkit/PropertiesTool";
+import {LogTool} from "./toolkit/LogTool";
 import {ReflectionTool} from "./toolkit/ReflectionTool";
-
-import {BackendController} from "./website/BackendController";
-import {FrontendController} from "./website/FrontendController";
-import {ScheduleController} from "./website/ScheduleController";
+import JsonObject from "./object/JsonObject";
 
 @singleton ()
 export class Launcher {
@@ -22,166 +16,193 @@ export class Launcher {
     private readonly expressApplication: express.Application;
 
     constructor (
-        @inject (BackendController) private backendController: BackendController,
-        @inject (FrontendController) private frontendController: FrontendController,
-        @inject (ScheduleController) private scheduleController: ScheduleController
+        @inject (PropertiesTool) private readonly propertiesTool: PropertiesTool,
+        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
     ) {
-
         this.expressApplication = express ();
-
     }
 
-    public async initialize () {
+    public async initialize (): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = this.reflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.comment ("Application:", "Starting");
         logTool.finalize ();
 
-        await this.loadConfiguration ();
-        await this.loadWebsite ();
-        await this.engineInformation (logTool.trace ());
-        await this.environmentInformation (logTool.trace ());
+        await this.propertiesTool.load ();
+
+        await Promise.all ([
+            this.loadConfiguration (),
+            this.engineInformation (logTool.trace ()),
+            this.environmentInformation (logTool.trace ()),
+            this.loadWebsite ()
+        ]);
 
         logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.comment ("Application:", "Started");
         logTool.finalize ();
 
     }
 
-    private async loadConfiguration () {
+    private async loadConfiguration (): Promise<void> {
 
         this.expressApplication.set ("view engine", "ejs");
         this.expressApplication.set ("views", "src/presentation/");
-
-        this.expressApplication.use (express.json ())
+        this.expressApplication.use (express.json ());
         this.expressApplication.use (express.static ("src/resources/"));
         this.expressApplication.use (express.urlencoded ({extended: true}));
 
     }
 
     private async loadWebsite () {
-
-        await this.backendController.execute (this.expressApplication);
-
-        await this.frontendController.execute (this.expressApplication);
-
-        await this.scheduleController.execute ();
-
+        /*
+                await Promise.all ([
+                    this.backendController.execute (this.expressApplication),
+                    this.frontendController.execute (this.expressApplication),
+                    this.scheduleController.execute ()
+                ]);
+        */
     }
 
-    private async engineInformation (traceObject: JsonObject) {
+    private async engineInformation (traceObject: JsonObject): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = this.reflectionTool.getMethodName ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-        logTool.comment ("Node:", childProcess.execSync ("node -v").toString ().trim ().slice (1));
-        logTool.finalize ();
+        const logTool = new LogTool ();
+        logTool.initialize (traceObject, reflectionStrings);
 
-        logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-        logTool.comment ("Yarn:", childProcess.execSync ("yarn -v").toString ().trim ());
-        logTool.finalize ();
+        const versionsMap = {
+            "Node": childProcess.execSync ("node -v").toString ().trim ().slice (1),
+            "Yarn": childProcess.execSync ("yarn -v").toString ().trim (),
+            "Npm": childProcess.execSync ("npm -v").toString ().trim (),
+            "Typescript": childProcess.execSync ("tsc --version").toString ().replace ("Version ", "").trim ()
+        };
 
-        logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-        logTool.comment ("Npm:", childProcess.execSync ("npm -v").toString ().trim ());
-        logTool.finalize ();
+        for (const [keyString, valueString] of Object.entries (versionsMap)) {
 
-        logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-        logTool.comment ("Typescript:", childProcess.execSync ("tsc --version").toString ().replace ("Version ", "").trim ());
-        logTool.finalize ();
-
-    }
-
-    private async environmentInformation (traceObject: JsonObject) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-        logTool.comment ("Version:", await PropertiesTool.get ("application.version"));
-        logTool.finalize ();
-
-        let privatePort = process.env.PORT || await PropertiesTool.get ("system.port");
-
-        let privateHost = await PropertiesTool.get ("system.host");
-
-        if (privatePort != "80") {
-
-            privateHost = privateHost + ":" + privatePort;
+            logTool.comment (keyString + ":", valueString);
+            logTool.finalize ();
 
         }
 
-        let environmentString = process.argv [2].slice (2);
+    }
 
-        switch (environmentString) {
+    private async environmentInformation (traceObject: JsonObject): Promise<void> {
 
-            case "dev":
+        const reflectionStrings = this.reflectionTool.getMethodName ();
 
-                logTool = new LogTool ();
-                logTool.initialize (reflectionStrings, traceObject);
-                logTool.comment ("Environment:", "DEVELOPMENT");
-                logTool.finalize ();
+        const logTool = new LogTool ();
+        logTool.initialize (traceObject, reflectionStrings);
 
-                logTool = new LogTool ();
-                logTool.initialize (reflectionStrings, traceObject);
+        try {
 
-                this.expressApplication.listen (privatePort);
+            const versionString = await this.propertiesTool.require ("application.version");
 
-                logTool.comment ("Private host:", privateHost);
-                logTool.finalize ();
+            logTool.comment ("Version:", versionString);
+            logTool.finalize ();
 
-                if (await PropertiesTool.get ("system.tunnel.enable") === true) {
+            let hostString = await this.propertiesTool.require ("system.host");
 
-                    logTool = new LogTool ();
-                    logTool.initialize (reflectionStrings, traceObject);
+            const portString = process.env.PORT || await this.propertiesTool.get ("system.port");
 
-                    let subdomainString = await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain");
-                    subdomainString = subdomainString.toString ().toLowerCase ().replace (".", "");
+            if (portString !== "80") {
 
-                    let tunnel = await localTunnel ({port: privatePort, subdomain: subdomainString});
+                hostString += ":" + portString;
 
-                    logTool.comment ("Tunnel host:", tunnel.url);
-                    logTool.finalize ();
+            }
 
-                    logTool = new LogTool ();
-                    logTool.initialize (reflectionStrings, traceObject);
+            const environmentString = process.argv[2].slice (2);
 
-                    let superAgent = superagent.get (await PropertiesTool.get ("integration.public"));
+            switch (environmentString) {
 
-                    let serviceObject = await superAgent.then ();
+                case "dev":
 
-                    logTool.comment ("Service address:", serviceObject.body.ip);
-                    logTool.finalize ();
+                    await this.startDevelopmentEnvironment (logTool, traceObject, reflectionStrings, portString, hostString);
 
-                }
+                    break;
 
-                break;
+                case "prd":
 
-            case "prd":
+                    await this.startProductionEnvironment (logTool, traceObject, reflectionStrings, portString, hostString);
 
-                logTool = new LogTool ();
-                logTool.initialize (reflectionStrings, traceObject);
-                logTool.comment ("Environment:", "PRODUCTION");
-                logTool.finalize ();
+                    break;
 
-                logTool = new LogTool ();
-                logTool.initialize (reflectionStrings, traceObject);
+            }
 
-                this.expressApplication.listen (privatePort);
+        } catch (error) {
 
-                logTool.comment ("Public host:", await PropertiesTool.get ("system.host"));
-                logTool.finalize ();
-
-                break;
+            logTool.comment ("Error:", "Failed to load environment information");
+            logTool.exception ();
+            logTool.finalize ();
 
         }
+
+    }
+
+    private async startDevelopmentEnvironment (logTool: LogTool, traceObject: JsonObject, reflectionStrings: string[], portString: string, hostString: string): Promise<void> {
+
+        logTool.initialize (traceObject, reflectionStrings);
+        logTool.comment ("Environment:", "DEVELOPMENT");
+        logTool.finalize ();
+
+        this.expressApplication.listen (portString, () => {
+
+            logTool.initialize (traceObject, reflectionStrings);
+            logTool.comment ("Private host:", hostString);
+            logTool.finalize ();
+
+        });
+
+        if (await this.propertiesTool.get ("system.tunnel.enable", true)) {
+
+            try {
+
+                const subdomainString = (await this.propertiesTool.require ("application.name") + await this.propertiesTool.require ("application.domain")).toLowerCase ().replace (".", "");
+
+                const developmentTunnel = await localTunnel ({
+                    port: Number (portString),
+                    subdomain: subdomainString
+                });
+
+                logTool.initialize (traceObject, reflectionStrings);
+                logTool.comment ("Tunnel host:", developmentTunnel.url);
+                logTool.finalize ();
+
+                const addressString = await superagent.get (await this.propertiesTool.require ("integration.public")).then (responseObject => responseObject.body.ip);
+
+                logTool.initialize (traceObject, reflectionStrings);
+                logTool.comment ("Public address:", addressString);
+                logTool.finalize ();
+
+            } catch (error) {
+
+                logTool.initialize (traceObject, reflectionStrings);
+                logTool.exception ();
+                logTool.comment ("Tunnel host:", "Failed to start tunnel");
+                logTool.finalize ();
+
+            }
+
+        }
+
+    }
+
+    private async startProductionEnvironment (logTool: LogTool, traceObject: JsonObject, reflectionStrings: string[], portString: string, hostString: string): Promise<void> {
+
+        logTool.initialize (traceObject, reflectionStrings);
+        logTool.comment ("Environment:", "PRODUCTION");
+        logTool.finalize ();
+
+        this.expressApplication.listen (portString, () => {
+
+            logTool.initialize (traceObject, reflectionStrings);
+            logTool.comment ("Public host:", hostString);
+            logTool.finalize ();
+
+        });
 
     }
 

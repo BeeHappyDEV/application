@@ -1,23 +1,23 @@
 import {inject, singleton} from "tsyringe";
-
 import express from "express";
 
 import {FrontendService} from "./FrontendService";
 import JsonObject from "../object/JsonObject";
-import LogTool from "../toolkit/LogTool";
-import PropertiesTool from "../toolkit/PropertiesTool";
+import {LogTool} from "../toolkit/LogTool";
+import {PropertiesTool} from "../toolkit/PropertiesTool";
 import {ReflectionTool} from "../toolkit/ReflectionTool";
 
 @singleton ()
 export class FrontendController {
 
     constructor (
-        @inject (FrontendService) private frontendModule: FrontendService
+        @inject (FrontendService) private frontendModule: FrontendService,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {}
 
     public async execute (expressApplication: typeof express.application) {
 
-        //expressApplication.all ("/", this.getLandingPage.bind (this));
+        expressApplication.all ("/", this.getLandingPage.bind (this));
         expressApplication.get ("/", this.getLandingPage.bind (this));
         expressApplication.get ("/contacto/llamanos", this.getCallUsLink.bind (this));
         expressApplication.get ("/contacto/escribenos", this.getWriteUsLink.bind (this));
@@ -46,7 +46,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -59,20 +59,20 @@ export class FrontendController {
 
             case "dev":
 
-                resultObject.setPath (await PropertiesTool.get ("system.host") + ":" + await PropertiesTool.get ("system.port"));
+                resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
 
                 break;
 
             case "prd":
 
-                resultObject.setPath (await PropertiesTool.get ("system.host"));
+                resultObject.setPath (await this.propertiesTool.get ("system.host"));
 
                 break;
 
         }
 
-        resultObject.setVersion (await PropertiesTool.get ("application.version"));
-        resultObject.setWebsite (await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain"));
+        resultObject.setVersion (await this.propertiesTool.get ("application.version"));
+        resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
         resultObject.setRender ("landing/index.ejs");
 
         expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
@@ -87,7 +87,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -106,7 +106,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -125,7 +125,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -144,7 +144,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -163,7 +163,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -182,7 +182,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -201,7 +201,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -220,7 +220,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -239,7 +239,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -252,20 +252,20 @@ export class FrontendController {
 
             case "dev":
 
-                resultObject.setPath (await PropertiesTool.get ("system.host") + ":" + await PropertiesTool.get ("system.port"));
+                resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
 
                 break;
 
             case "prd":
 
-                resultObject.setPath (await PropertiesTool.get ("system.host"));
+                resultObject.setPath (await this.propertiesTool.get ("system.host"));
 
                 break;
 
         }
 
-        resultObject.setVersion (await PropertiesTool.get ("application.version"));
-        resultObject.setWebsite (await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain"));
+        resultObject.setVersion (await this.propertiesTool.get ("application.version"));
+        resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
         resultObject.setRender ("policy/index.ejs");
 
         expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
@@ -280,7 +280,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -299,7 +299,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -312,20 +312,20 @@ export class FrontendController {
 
             case "dev":
 
-                resultObject.setPath (await PropertiesTool.get ("system.host") + ":" + await PropertiesTool.get ("system.port"));
+                resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
 
                 break;
 
             case "prd":
 
-                resultObject.setPath (await PropertiesTool.get ("system.host"));
+                resultObject.setPath (await this.propertiesTool.get ("system.host"));
 
                 break;
 
         }
 
-        resultObject.setVersion (await PropertiesTool.get ("application.version"));
-        resultObject.setWebsite (await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain"));
+        resultObject.setVersion (await this.propertiesTool.get ("application.version"));
+        resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
         resultObject.setRender ("terms/index.ejs");
 
         expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
@@ -340,7 +340,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -359,12 +359,12 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
-        paramsObject.set ("txt_path", await PropertiesTool.get ("system.path"));
+        paramsObject.set ("txt_path", await this.propertiesTool.get ("system.path"));
 
         let resultObject = await this.frontendModule.getCollaboratorPage (paramsObject, logTool.trace ());
 
@@ -376,20 +376,20 @@ export class FrontendController {
 
                 case "dev":
 
-                    resultObject.setPath (await PropertiesTool.get ("system.host") + ":" + await PropertiesTool.get ("system.port"));
+                    resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
 
                     break;
 
                 case "prd":
 
-                    resultObject.setPath (await PropertiesTool.get ("system.host"));
+                    resultObject.setPath (await this.propertiesTool.get ("system.host"));
 
                     break;
 
             }
 
-            resultObject.setVersion (await PropertiesTool.get ("application.version"));
-            resultObject.setWebsite (await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain"));
+            resultObject.setVersion (await this.propertiesTool.get ("application.version"));
+            resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
             resultObject.setRender ("collaborator/index.ejs");
 
             expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
@@ -412,7 +412,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -441,7 +441,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -461,7 +461,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -481,7 +481,7 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
@@ -501,12 +501,12 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
         paramsObject.set ("txt_name", expressRequest.params ["name"]);
-        paramsObject.set ("txt_path", await PropertiesTool.get ("system.path"));
+        paramsObject.set ("txt_path", await this.propertiesTool.get ("system.path"));
 
         let resultObject = await this.frontendModule.getQRCodePage (paramsObject, logTool.trace ());
 
@@ -518,20 +518,20 @@ export class FrontendController {
 
                 case "dev":
 
-                    resultObject.setPath (await PropertiesTool.get ("system.host") + ":" + await PropertiesTool.get ("system.port"));
+                    resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
 
                     break;
 
                 case "prd":
 
-                    resultObject.setPath (await PropertiesTool.get ("system.host"));
+                    resultObject.setPath (await this.propertiesTool.get ("system.host"));
 
                     break;
 
             }
 
-            resultObject.setVersion (await PropertiesTool.get ("application.version"));
-            resultObject.setWebsite (await PropertiesTool.get ("application.name") + await PropertiesTool.get ("application.domain"));
+            resultObject.setVersion (await this.propertiesTool.get ("application.version"));
+            resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
             resultObject.setRender ("qr/index.ejs");
 
             expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
@@ -552,14 +552,14 @@ export class FrontendController {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings);
+        logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
         let paramsObject = new JsonObject ();
 
         let resultObject = await this.frontendModule.getRedirectPage (paramsObject, logTool.trace ());
 
-        expressResponse.redirect (await PropertiesTool.get ("system.path"));
+        expressResponse.redirect (await this.propertiesTool.get ("system.path"));
 
         logTool.response (resultObject);
         logTool.finalize ();

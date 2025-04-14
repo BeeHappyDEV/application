@@ -2,16 +2,18 @@ import {inject, singleton} from "tsyringe";
 
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
-import LogTool from "../toolkit/LogTool";
+import {LogTool} from "../toolkit/LogTool";
 import {PostgresTool} from "../toolkit/PostgresTool";
 import ResultObject from "../object/ResultObject";
 import {ReflectionTool} from "../toolkit/ReflectionTool";
+import {PropertiesTool} from "../toolkit/PropertiesTool";
 
 @singleton ()
 export class FrontendService {
 
     constructor (
-        @inject (PostgresTool) public postgresTool: PostgresTool
+        @inject (PostgresTool) public postgresTool: PostgresTool,
+        @inject (PropertiesTool) public propertiesTool: PropertiesTool
     ) {}
 
     public async getLandingPage (paramsObject: JsonObject, traceObject: JsonObject) {
@@ -19,13 +21,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_landing_page");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_landing_page");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -49,13 +51,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_call_us_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_call_us_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -79,13 +81,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_write_us_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_write_us_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -109,13 +111,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_text_us_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_text_us_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -139,13 +141,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_visit_us_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_visit_us_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -169,13 +171,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_facebook_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_facebook_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -199,13 +201,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_instagram_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_instagram_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -229,13 +231,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_x_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_x_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -259,13 +261,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_linkedin_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_linkedin_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -289,13 +291,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_policy_page");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_policy_page");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -319,13 +321,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_policy_video_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_policy_video_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -349,13 +351,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_terms_page");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_terms_page");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -379,13 +381,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_terms_video_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_terms_video_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -409,13 +411,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_collaborator_page");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_collaborator_page");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -439,13 +441,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_vcard_file");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_vcard_file");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -469,13 +471,13 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
-
-        paramsObject.set ("txt_function", "frontend_call_me_link");
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
         try {
+
+            paramsObject.set ("txt_function", "frontend_call_me_link");
 
             resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
 
@@ -499,7 +501,7 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         paramsObject.set ("txt_function", "frontend_write_me_link");
 
@@ -529,7 +531,7 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         paramsObject.set ("txt_function", "frontend_text_me_link");
 
@@ -559,7 +561,7 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         paramsObject.set ("txt_function", "frontend_qrcode_page");
 
@@ -589,7 +591,7 @@ export class FrontendService {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         paramsObject.set ("txt_function", "frontend_redirect_page");
 

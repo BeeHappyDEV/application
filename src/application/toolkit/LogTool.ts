@@ -1,18 +1,21 @@
+import { injectable } from "tsyringe";
+
 import crypto from "crypto";
 import express from "express";
 import kleur from "kleur";
 import url from "url";
 
 import JsonObject from "../object/JsonObject";
-import MongoTool from "../toolkit/MongoTool";
+//import {MongoTool} from "./MongoTool";
 import ObservabilityTool from "../toolkit/ObservabilityTool";
 import ResultObject from "../object/ResultObject";
 
-class LogTool {
+@injectable ()
+export class LogTool {
 
     private logObject = new JsonObject ();
 
-    public initialize (reflectionStrings: String[], traceObject?: JsonObject) {
+    public initialize (traceObject: JsonObject | null, reflectionStrings: String[]) {
 
         let observabilityTool = ObservabilityTool.getInstance ();
 
@@ -46,7 +49,7 @@ class LogTool {
 
         }
 
-        if (traceObject === undefined) {
+        if (traceObject == null) {
 
             this.logObject.set ("depth", 1);
             this.logObject.set ("thread", crypto.randomUUID ().split ("-").join (""));
@@ -368,15 +371,15 @@ class LogTool {
         this.logObject.set ("interval", parseFloat (this.logObject.get ("interval")));
 
         console.log (captionString);
+        //logger.info (captionString);
 
-        let observabilityTool = ObservabilityTool.getInstance ();
-        observabilityTool.after (this.logObject);
 
-        let mongoTool = MongoTool.getInstance ();
-        mongoTool.insertTrace (this.logObject).then ();
+        //let observabilityTool = ObservabilityTool.getInstance ();
+        //observabilityTool.after (this.logObject);
+
+        //let mongoTool = MongoTool.getInstance ();
+        //mongoTool.insertTrace (this.logObject).then ();
 
     }
 
 }
-
-export default LogTool;

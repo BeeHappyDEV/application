@@ -1,54 +1,44 @@
+import {inject, singleton} from "tsyringe";
+
 import {MongoClient} from "mongodb";
 
 import ExceptionTool from "../toolkit/ExceptionTool";
 import JsonObject from "../object/JsonObject";
-import LogTool from "../toolkit/LogTool";
-import PropertiesTool from "../toolkit/PropertiesTool";
-import {ReflectionTool} from "../toolkit/ReflectionTool";
+import {LogTool} from "./LogTool";
+import {PropertiesTool} from "./PropertiesTool";
+import {ReflectionTool} from "./ReflectionTool";
 import ResultObject from "../object/ResultObject";
 
-class MongoTool {
+@singleton ()
+export class MongoTool {
 
-    private static instance: MongoTool;
-
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new MongoTool ();
-
-        }
-
-        return this.instance;
-
-    }
-
-    private constructor () {
-    }
-
+    constructor (
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+    ) {}
+/*
     public async insertMetric (logObject: JsonObject) {
 
-        let mongoClient = new MongoClient (await PropertiesTool.get ("integration.mongo.host"));
+        let mongoClient = new MongoClient (await this.propertiesTool.get ("integration.mongo.host"));
         await mongoClient.connect ();
 
-        let mongoDatabase = await mongoClient.db (await PropertiesTool.get ("integration.mongo.database"));
+        let mongoDatabase = await mongoClient.db (await this.propertiesTool.get ("integration.mongo.database"));
 
-        let mongoCollection = await mongoDatabase.collection (await PropertiesTool.get ("integration.mongo.metrics"));
+        let mongoCollection = await mongoDatabase.collection (await this.propertiesTool.get ("integration.mongo.metrics"));
 
         await mongoCollection.insertOne (logObject.all ());
 
         await mongoClient.close ();
 
     }
-
+*/
     public async insertTrace (logObject: JsonObject) {
 
-        let mongoClient = new MongoClient (await PropertiesTool.get ("integration.mongo.host"));
+        let mongoClient = new MongoClient (await this.propertiesTool.get ("integration.mongo.host"));
         await mongoClient.connect ();
 
-        let mongoDatabase = await mongoClient.db (await PropertiesTool.get ("integration.mongo.database"));
+        let mongoDatabase = await mongoClient.db (await this.propertiesTool.get ("integration.mongo.database"));
 
-        let mongoCollection = await mongoDatabase.collection (await PropertiesTool.get ("integration.mongo.traces"));
+        let mongoCollection = await mongoDatabase.collection (await this.propertiesTool.get ("integration.mongo.traces"));
 
         await mongoCollection.insertOne (logObject.all ());
 
@@ -61,16 +51,16 @@ class MongoTool {
         let reflectionStrings = ReflectionTool.getMethodName ();
 
         let logTool = new LogTool ();
-        logTool.initialize (reflectionStrings, traceObject);
+        logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
-        let mongoClient = new MongoClient (await PropertiesTool.get ("integration.mongo.host"));
+        let mongoClient = new MongoClient (await this.propertiesTool.get ("integration.mongo.host"));
         await mongoClient.connect ();
 
-        let mongoDatabase = mongoClient.db (await PropertiesTool.get ("integration.mongo.database"));
-        await mongoDatabase.dropCollection (await PropertiesTool.get ("integration.mongo.collection"));
-        await mongoDatabase.createCollection (await PropertiesTool.get ("integration.mongo.collection"));
+        let mongoDatabase = mongoClient.db (await this.propertiesTool.get ("integration.mongo.database"));
+        await mongoDatabase.dropCollection (await this.propertiesTool.get ("integration.mongo.collection"));
+        await mongoDatabase.createCollection (await this.propertiesTool.get ("integration.mongo.collection"));
 
         await mongoClient.close ();
 
@@ -83,5 +73,3 @@ class MongoTool {
     }
 
 }
-
-export default MongoTool;
