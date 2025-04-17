@@ -1,42 +1,58 @@
-import {inject, singleton} from "tsyringe";
+import {inject, injectable} from 'tsyringe';
 
-import express from "express";
+import express from 'express';
 
-import {BackendService} from "./BackendService";
-import ExceptionTool from "../toolkit/ExceptionTool";
-import JsonObject from "../object/JsonObject";
-import {LogTool} from "../toolkit/LogTool";
-import {ReflectionTool} from "../toolkit/ReflectionTool";
+import {BackendService} from '@website/BackendService';
+import {ExceptionTool} from '@toolkit/ExceptionTool';
+import {LogTool} from '@toolkit/LogTool';
+import {ReflectionTool} from '@toolkit/ReflectionTool';
+import {JsonObject} from '@object/JsonObject';
 
-@singleton ()
+@injectable ()
 export class BackendController {
 
     constructor (
-        @inject (BackendService) private backendModule: BackendService
-    ) {}
+        @inject (BackendService) private readonly backendModule: BackendService,
+        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
+    ) {
+    }
 
-    public async execute (expressApplication: typeof express.application) {
+    public async initialize (expressApplication: typeof express.application): Promise<void> {
 
-        expressApplication.post ("/backend/system/wakeup", this.postWakeupApplication.bind (this));
-        expressApplication.post ("/backend/cache/delete", this.postCacheDelete.bind (this));
-        expressApplication.post ("/backend/rebuild/documental", this.postRebuildDocumental.bind (this));
-        expressApplication.post ("/backend/rebuild/relational", this.postRebuildRelational.bind (this));
-        expressApplication.post ("/backend/reload/indicators", this.postReloadIndicators.bind (this));
+        expressApplication.post ('/backend/system/wakeup', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            this.postWakeupApplication (expressRequest, expressResponse);
+        });
+
+        expressApplication.post ('/backend/cache/delete', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            this.postCacheDelete (expressRequest, expressResponse);
+        });
+
+        expressApplication.post ('/backend/rebuild/documental', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            this.postRebuildDocumental (expressRequest, expressResponse);
+        });
+
+        expressApplication.post ('/backend/rebuild/relational', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            this.postRebuildRelational (expressRequest, expressResponse);
+        });
+
+        expressApplication.post ('/backend/reload/indicators', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            this.postReloadIndicators (expressRequest, expressResponse);
+        });
 
     }
 
-    private async postWakeupApplication (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async postWakeupApplication (expressRequest: typeof express.request, expressResponse: typeof express.response): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let paramsObject = new JsonObject ();
+        const paramsObject = new JsonObject ();
 
-        let resultObject = await this.backendModule.postWakeupApplication (paramsObject, logTool.trace ());
+        const resultObject = await this.backendModule.postWakeupApplication (paramsObject, logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -45,16 +61,16 @@ export class BackendController {
 
     }
 
-    private async postCacheDelete (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async postCacheDelete (expressRequest: typeof express.request, expressResponse: typeof express.response): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let resultObject = await this.backendModule.postCacheDelete (logTool.trace ());
+        const resultObject = await this.backendModule.postCacheDelete (logTool.trace ());
 
         resultObject.result (ExceptionTool.SUCCESSFUL ());
 
@@ -65,16 +81,16 @@ export class BackendController {
 
     }
 
-    private async postRebuildDocumental (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async postRebuildDocumental (expressRequest: typeof express.request, expressResponse: typeof express.response): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let resultObject = await this.backendModule.postRebuildDocumental (logTool.trace ());
+        const resultObject = await this.backendModule.postRebuildDocumental (logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -83,16 +99,16 @@ export class BackendController {
 
     }
 
-    private async postRebuildRelational (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async postRebuildRelational (expressRequest: typeof express.request, expressResponse: typeof express.response): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let resultObject = await this.backendModule.postRebuildRelational (logTool.trace ());
+        const resultObject = await this.backendModule.postRebuildRelational (logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 
@@ -101,16 +117,16 @@ export class BackendController {
 
     }
 
-    private async postReloadIndicators (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async postReloadIndicators (expressRequest: typeof express.request, expressResponse: typeof express.response): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        let resultObject = await this.backendModule.postReloadIndicators (logTool.trace ());
+        const resultObject = await this.backendModule.postReloadIndicators (logTool.trace ());
 
         expressResponse.send (resultObject.all ());
 

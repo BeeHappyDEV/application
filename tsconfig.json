@@ -2,7 +2,13 @@
     "compilerOptions": {
         "target": "ESNext",
         "module": "CommonJS",
-        "baseUrl": "./src",
+        "baseUrl": "./",
+        "paths": {
+            "@middleware/*": ["src/application/middleware/*"],
+            "@object/*": ["src/application/object/*"],
+            "@toolkit/*": ["src/application/toolkit/*"],
+            "@website/*": ["src/application/website/*"]
+        },
         "rootDir": "./src",
         "outDir": "./out",
         "emitDecoratorMetadata": true,
@@ -16,6 +22,6 @@
         "noUnusedParameters": true,
         "resolveJsonModule": true,
         "skipLibCheck": true,
-        "strict": true,
+        "strict": true
     }
 }

@@ -2,25 +2,6 @@
 /* D E F I N I T I O N */
 /* * * * * * * * * * * */
 
-definition/functions/frontend_landing_page.sql
-definition/functions/frontend_call_us_link.sql
-definition/functions/frontend_text_us_link.sql
-definition/functions/frontend_write_us_link.sql
-definition/functions/frontend_visit_us_link.sql
-definition/functions/frontend_questions_link.sql
-definition/functions/frontend_facebook_link.sql
-definition/functions/frontend_instagram_link.sql
-definition/functions/frontend_linkedin_link.sql
-definition/functions/frontend_x_link.sql
-definition/functions/frontend_policy_page.sql
-definition/functions/frontend_policy_video_link.sql
-definition/functions/frontend_terms_page.sql
-definition/functions/frontend_terms_video_link.sql
-definition/functions/frontend_collaborator_page.sql
-definition/functions/frontend_qrcode_page.sql
-definition/functions/frontend_vcard_file.sql
-definition/functions/frontend_call_me_link.sql
-definition/functions/frontend_text_me_link.sql
-definition/functions/frontend_write_me_link.sql
-definition/functions/frontend_documentation_page.sql
-definition/functions/frontend_redirect_page.sql
+definition/functions/frontend_file_action.sql
+definition/functions/frontend_link_action.sql
+definition/functions/frontend_page_action.sql

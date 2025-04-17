@@ -1,33 +1,24 @@
-import superagent from "superagent";
+import {inject, injectable} from 'tsyringe';
 
-import ExceptionTool from "../toolkit/ExceptionTool";
-import JsonObject from "../object/JsonObject";
-import {LogTool} from "../toolkit/LogTool";
-import ResultObject from "../object/ResultObject";
-import {ReflectionTool} from "../toolkit/ReflectionTool";
+import superagent from 'superagent';
 
-class ServiceTool {
+import {ExceptionTool} from '@toolkit/ExceptionTool';
+import {JsonObject} from '@object/JsonObject';
+import {LogTool} from '@toolkit/LogTool';
+import {ResultObject} from '@object/ResultObject';
+import {ReflectionTool} from '@toolkit/ReflectionTool';
 
-    private static instance: ServiceTool;
+@injectable ()
+export class WebserviceModule {
 
-    public static getInstance () {
-
-        if (!this.instance) {
-
-            this.instance = new ServiceTool ();
-
-        }
-
-        return this.instance;
-
+    constructor (
+        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
+    ) {
     }
 
-    private constructor () {
-    }
+    public async delete (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-    public async delete (hostString: String, headersObject: JsonObject | null, paramsObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
         let logTool = new LogTool ();
         logTool.initialize (traceObject, reflectionStrings);
@@ -44,9 +35,9 @@ class ServiceTool {
 
             }
 
-            if (paramsObject !== null && !paramsObject.empty ()) {
+            if (queryObject !== null && !queryObject.empty ()) {
 
-                requestObject.query (paramsObject.all ());
+                requestObject.query (queryObject.all ());
 
             }
 
@@ -58,11 +49,11 @@ class ServiceTool {
 
             let responseObject = await requestObject.then ();
 
-            resultObject.setServiceObject (paramsObject, responseObject);
+            resultObject.setServiceObject (queryObject, responseObject);
 
         } catch (exception) {
 
-            //resultObject.result (ExceptionTool.SERVICE_EXCEPTION (this.classString, methodString));
+            resultObject.result (ExceptionTool.SERVICE_EXCEPTION (reflectionStrings));
 
             logTool.exception ();
 
@@ -75,9 +66,9 @@ class ServiceTool {
 
     }
 
-    public async get (hostString: String, headersObject: JsonObject | null, paramsObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject) {
+    public async get (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
         let logTool = new LogTool ();
         logTool.initialize (traceObject, reflectionStrings);
@@ -96,9 +87,9 @@ class ServiceTool {
 
             }
 
-            if (paramsObject !== null) {
+            if (queryObject !== null) {
 
-                requestObject.query (paramsObject.all ());
+                requestObject.query (queryObject.all ());
 
             }
 
@@ -110,7 +101,7 @@ class ServiceTool {
 
             let responseObject = await requestObject.then ();
 
-            resultObject.setServiceObject (paramsObject, responseObject);
+            resultObject.setServiceObject (queryObject, responseObject);
 
         } catch (exception) {
 
@@ -127,9 +118,9 @@ class ServiceTool {
 
     }
 
-    public async post (hostString: String, headersObject: JsonObject | null, paramsObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject) {
+    public async post (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
         let logTool = new LogTool ();
         logTool.initialize (traceObject, reflectionStrings);
@@ -148,9 +139,9 @@ class ServiceTool {
 
             }
 
-            if (paramsObject !== null) {
+            if (queryObject !== null) {
 
-                requestObject.query (paramsObject.all ());
+                requestObject.query (queryObject.all ());
 
             }
 
@@ -162,7 +153,7 @@ class ServiceTool {
 
             let responseObject = await requestObject.then ();
 
-            resultObject.setServiceObject (paramsObject, responseObject);
+            resultObject.setServiceObject (queryObject, responseObject);
 
         } catch (exception) {
 
@@ -178,5 +169,3 @@ class ServiceTool {
     }
 
 }
-
-export default ServiceTool;

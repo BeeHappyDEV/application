@@ -1,65 +1,68 @@
-import { injectable } from "tsyringe";
+import {injectable} from 'tsyringe';
 
-import crypto from "crypto";
-import express from "express";
-import kleur from "kleur";
-import url from "url";
+import crypto from 'crypto';
+import express from 'express';
+import kleur from 'kleur';
+import url from 'url';
 
-import JsonObject from "../object/JsonObject";
-//import {MongoTool} from "./MongoTool";
-import ObservabilityTool from "../toolkit/ObservabilityTool";
-import ResultObject from "../object/ResultObject";
+//import {ObservabilityTool} from '@toolkit/ObservabilityTool';
+import {JsonObject} from '@object/JsonObject';
+//import {MongoTool} from './MongoTool';
+import {ResultObject} from '@object/ResultObject';
 
 @injectable ()
 export class LogTool {
-
+/*
+    constructor (
+        @inject (ObservabilityTool) private readonly observabilityTool: ObservabilityTool
+    ) {
+    }
+*/
     private logObject = new JsonObject ();
 
     public initialize (traceObject: JsonObject | null, reflectionStrings: String[]) {
 
-        let observabilityTool = ObservabilityTool.getInstance ();
-
-        this.logObject.set ("metrics", observabilityTool.before ());
-        this.logObject.set ("exception", false);
-        this.logObject.set ("carry", false);
-        this.logObject.set ("starting", Date.now ());
-        this.logObject.set ("offset", crypto.randomUUID ().split ("-").join (""));
-        this.logObject.set ("class", reflectionStrings [0]);
-        this.logObject.set ("method", reflectionStrings [1]);
+        //this.logObject.set ('metrics', this.observabilityTool.before ());
+        this.logObject.set ('exception', false);
+        this.logObject.set ('carry', false);
+        this.logObject.set ('starting', Date.now ());
+        this.logObject.set ('offset', crypto.randomUUID ().split ('-').join (''));
+        this.logObject.set ('class', reflectionStrings [0]);
+        this.logObject.set ('method', reflectionStrings [1]);
 
         switch (reflectionStrings [2]) {
 
-            case "frontend":
-            case "backend":
-            case "schedule":
+            case 'frontend':
+            case 'backend':
+            case 'schedule':
 
-                this.logObject.set ("source", reflectionStrings [2]);
+                this.logObject.set ('source', reflectionStrings [2]);
 
                 break;
 
-            case "launcher":
+            case 'launcher':
 
-                this.logObject.set ("source", "start");
+                this.logObject.set ('source', 'start');
 
                 break;
 
             default:
 
-                this.logObject.set ("source", "tool");
+                this.logObject.set ('source', 'tool');
 
         }
 
         if (traceObject == null) {
 
-            this.logObject.set ("depth", 1);
-            this.logObject.set ("thread", crypto.randomUUID ().split ("-").join (""));
+            this.logObject.set ('depth', 1);
+            this.logObject.set ('thread', crypto.randomUUID ().split ('-').join (''));
 
         } else {
 
-            let depthNumber = Number (traceObject.get ("depth"));
+            let depthNumber = Number (traceObject.get ('depth'));
 
-            this.logObject.set ("depth", Number (depthNumber + 1));
-            this.logObject.set ("thread", traceObject.get ("thread"));
+            this.logObject.set ('depth', Number (depthNumber + 1));
+            this.logObject.set ('thread', traceObject.get ('thread'));
 
         }
 
@@ -71,10 +74,10 @@ export class LogTool {
 
         if (Object.keys (expressRequest.query).length !== 0) {
 
-            let depthNumber = Number (expressRequest.query ["depth"]);
+            let depthNumber = Number (expressRequest.query ['depth']);
 
-            this.logObject.set ("depth", depthNumber + 1);
-            this.logObject.set ("thread", expressRequest.query ["thread"] || {});
+            this.logObject.set ('depth', depthNumber + 1);
+            this.logObject.set ('thread', expressRequest.query ['thread'] || {});
 
         }
 
@@ -84,17 +87,17 @@ export class LogTool {
 
         let urlObject = url.parse (expressRequest.url, true);
 
-        this.logObject.set ("verb", expressRequest.method);
+        this.logObject.set ('verb', expressRequest.method);
 
         if (urlObject.pathname != null) {
 
-            this.logObject.set ("url", urlObject.pathname);
+            this.logObject.set ('url', urlObject.pathname);
 
         }
 
         if (Object.keys (urlObject.query).length > 0) {
 
-            this.logObject.set ("query", urlObject.query);
+            this.logObject.set ('query', urlObject.query);
 
         }
 
@@ -111,7 +114,7 @@ export class LogTool {
 
             }
 
-            this.logObject.set ("params", arrayObject);
+            this.logObject.set ('params', arrayObject);
 
         }
 
@@ -121,11 +124,11 @@ export class LogTool {
 
         if (resultObject.getCarry () == true) {
 
-            this.logObject.set ("carry", true);
+            this.logObject.set ('carry', true);
 
         } else {
 
-            this.logObject.set ("carry", false);
+            this.logObject.set ('carry', false);
 
         }
 
@@ -137,19 +140,19 @@ export class LogTool {
 
             if (redirectString != null) {
 
-                this.logObject.set ("redirect", redirectString);
+                this.logObject.set ('redirect', redirectString);
 
             }
 
             if (renderString != null) {
 
-                this.logObject.set ("render", renderString);
+                this.logObject.set ('render', renderString);
 
             }
 
             if (redirectString == null && renderString == null) {
 
-                this.logObject.set ("status", statusString);
+                this.logObject.set ('status', statusString);
 
             }
 
@@ -159,14 +162,14 @@ export class LogTool {
 
     public resource (resourceString: String) {
 
-        this.logObject.set ("resource", resourceString);
+        this.logObject.set ('resource', resourceString);
 
     }
 
     public exception () {
 
-        this.logObject.set ("carry", true);
-        this.logObject.set ("exception", true);
+        this.logObject.set ('carry', true);
+        this.logObject.set ('exception', true);
 
     }
 
@@ -174,23 +177,23 @@ export class LogTool {
 
         if (exceptionBoolean) {
 
-            this.logObject.set ("carry", true);
+            this.logObject.set ('carry', true);
 
         }
 
-        this.logObject.set ("comment", commentString);
-        this.logObject.set ("highlight", highlightString);
+        this.logObject.set ('comment', commentString);
+        this.logObject.set ('highlight', highlightString);
 
     }
 
     public websocket (expressRequest: typeof express.request) {
 
-        this.logObject.set ("verb", "TCP");
-        this.logObject.set ("url", expressRequest.url);
+        this.logObject.set ('verb', 'TCP');
+        this.logObject.set ('url', expressRequest.url);
 
         if (Object.keys (expressRequest.params).length !== 0) {
 
-            this.logObject.set ("request", expressRequest.params);
+            this.logObject.set ('request', expressRequest.params);
 
         }
 
@@ -200,9 +203,9 @@ export class LogTool {
 
         let traceObject = new JsonObject ();
 
-        traceObject.set ("thread", this.logObject.get ("thread"));
-        traceObject.set ("depth", this.logObject.get ("depth"));
-        traceObject.set ("method", this.logObject.get ("method"));
+        traceObject.set ('thread', this.logObject.get ('thread'));
+        traceObject.set ('depth', this.logObject.get ('depth'));
+        traceObject.set ('method', this.logObject.get ('method'));
 
         return traceObject;
 
@@ -210,10 +213,10 @@ export class LogTool {
 
     public finalize () {
 
-        this.logObject.set ("ending", Date.now ());
-        this.logObject.set ("interval", ((new Date (this.logObject.get ("ending")).getTime () - new Date (this.logObject.get ("starting")).getTime ()) / 1000).toFixed (3));
+        this.logObject.set ('ending', Date.now ());
+        this.logObject.set ('interval', ((new Date (this.logObject.get ('ending')).getTime () - new Date (this.logObject.get ('starting')).getTime ()) / 1000).toFixed (3));
 
-        let daD1 =  new Date (Number (this.logObject.get ("starting")));
+        let daD1 = new Date (Number (this.logObject.get ('starting')));
 
         let yyD1 = daD1.getFullYear ();
         let mmD1 = String (daD1.getMonth () + 1).padStart (2, '0');
@@ -223,18 +226,18 @@ export class LogTool {
         let ssD1 = String (daD1.getSeconds ()).padStart (2, '0');
         let msD1 = String (daD1.getMilliseconds ()).padStart (3, '0');
 
-        let tiD1 = "";
-        tiD1 = tiD1 + yyD1 + "-";
-        tiD1 = tiD1 + mmD1 + "-";
-        tiD1 = tiD1 + ddD1 + " ";
-        tiD1 = tiD1 + hhD1 + ":";
-        tiD1 = tiD1 + miD1 + ":";
-        tiD1 = tiD1 + ssD1 + ".";
+        let tiD1 = '';
+        tiD1 = tiD1 + yyD1 + '-';
+        tiD1 = tiD1 + mmD1 + '-';
+        tiD1 = tiD1 + ddD1 + ' ';
+        tiD1 = tiD1 + hhD1 + ':';
+        tiD1 = tiD1 + miD1 + ':';
+        tiD1 = tiD1 + ssD1 + '.';
         tiD1 = tiD1 + msD1;
 
-        this.logObject.set ("starting", tiD1);
+        this.logObject.set ('starting', tiD1);
 
-        let daD2 =  new Date (Number (this.logObject.get ("ending")));
+        let daD2 = new Date (Number (this.logObject.get ('ending')));
 
         let yyD2 = daD2.getFullYear ();
         let mmD2 = String (daD2.getMonth () + 1).padStart (2, '0');
@@ -244,57 +247,57 @@ export class LogTool {
         let ssD2 = String (daD2.getSeconds ()).padStart (2, '0');
         let msD2 = String (daD2.getMilliseconds ()).padStart (3, '0');
 
-        let tiD2 = "";
-        tiD2 = tiD2 + yyD2 + "-";
-        tiD2 = tiD2 + mmD2 + "-";
-        tiD2 = tiD2 + ddD2 + " ";
-        tiD2 = tiD2 + hhD2 + ":";
-        tiD2 = tiD2 + miD2 + ":";
-        tiD2 = tiD2 + ssD2 + ".";
+        let tiD2 = '';
+        tiD2 = tiD2 + yyD2 + '-';
+        tiD2 = tiD2 + mmD2 + '-';
+        tiD2 = tiD2 + ddD2 + ' ';
+        tiD2 = tiD2 + hhD2 + ':';
+        tiD2 = tiD2 + miD2 + ':';
+        tiD2 = tiD2 + ssD2 + '.';
         tiD2 = tiD2 + msD2;
 
-        this.logObject.set ("ending", tiD2);
+        this.logObject.set ('ending', tiD2);
 
-        let captionString = "";
-        captionString = captionString + kleur.magenta (this.logObject.get ("thread")) + " [";
+        let captionString = '';
+        captionString = captionString + kleur.magenta (this.logObject.get ('thread')) + ' [';
 
-        if (this.logObject.get ("exception")) {
+        if (this.logObject.get ('exception')) {
 
-            this.logObject.set ("status", "ERR");
+            this.logObject.set ('status', 'ERR');
 
-            captionString = captionString + kleur.red ("ERR") + "] [";
+            captionString = captionString + kleur.red ('ERR') + '] [';
 
         } else {
 
-            if (this.logObject.get ("carry") == true) {
+            if (this.logObject.get ('carry') == true) {
 
-                this.logObject.set ("status", "NOK");
+                this.logObject.set ('status', 'NOK');
 
-                captionString = captionString + kleur.yellow ("NOK") + "] [";
+                captionString = captionString + kleur.yellow ('NOK') + '] [';
 
             } else {
 
-                this.logObject.set ("status", "OK");
+                this.logObject.set ('status', 'OK');
 
-                captionString = captionString + kleur.green ("OK ") + "] [";
+                captionString = captionString + kleur.green ('OK ') + '] [';
 
             }
 
         }
 
-        this.logObject.del ("carry");
-        this.logObject.del ("exception");
+        this.logObject.del ('carry');
+        this.logObject.del ('exception');
 
-        captionString = captionString + kleur.cyan (this.logObject.get ("interval")) + "] [";
-        captionString = captionString + kleur.cyan (this.logObject.get ("depth")) + "] ";
-        captionString = captionString + this.logObject.get ("class") + ".";
-        captionString = captionString + this.logObject.get ("method");
+        captionString = captionString + kleur.cyan (this.logObject.get ('interval')) + '] [';
+        captionString = captionString + kleur.cyan (this.logObject.get ('depth')) + '] ';
+        captionString = captionString + this.logObject.get ('class') + '.';
+        captionString = captionString + this.logObject.get ('method');
 
         let continueBoolean = true;
 
-        if (this.logObject.get ("comment") != null || this.logObject.get ("highlight") != null) {
+        if (this.logObject.get ('comment') != null || this.logObject.get ('highlight') != null) {
 
-            captionString = captionString + " - " + (this.logObject.get ("comment") + " " + kleur.blue (this.logObject.get ("highlight")).trim ());
+            captionString = captionString + ' - ' + (this.logObject.get ('comment') + ' ' + kleur.blue (this.logObject.get ('highlight')).trim ());
 
             continueBoolean = false;
 
@@ -302,73 +305,73 @@ export class LogTool {
 
         if (continueBoolean) {
 
-            if (this.logObject.get ("class").endsWith ("Controller")) {
+            if (this.logObject.get ('class').endsWith ('Controller')) {
 
-                if (this.logObject.get ("params") != null) {
+                if (this.logObject.get ('params') != null) {
 
-                    let paramsString = "{";
+                    let paramsString = '{';
 
-                    for (const paramObject of this.logObject.get ("params")) {
+                    for (const paramObject of this.logObject.get ('params')) {
 
-                        paramsString = paramsString + paramObject.key + ": ";
-                        paramsString = paramsString + paramObject.value + ", ";
+                        paramsString = paramsString + paramObject.key + ': ';
+                        paramsString = paramsString + paramObject.value + ', ';
 
                     }
 
                     paramsString = paramsString.slice (0, paramsString.length - 2);
-                    paramsString = paramsString + "}";
+                    paramsString = paramsString + '}';
 
-                    captionString = captionString + " - Params: " + kleur.blue (paramsString);
-
-                }
-
-                if (this.logObject.get ("redirect") != null) {
-
-                    captionString = captionString + " - Redirect: " + kleur.blue (this.logObject.get ("redirect"));
+                    captionString = captionString + ' - Params: ' + kleur.blue (paramsString);
 
                 }
 
-                if (this.logObject.get ("render") != null) {
+                if (this.logObject.get ('redirect') != null) {
 
-                    captionString = captionString + " - View: " + kleur.blue (this.logObject.get ("render"));
+                    captionString = captionString + ' - Redirect: ' + kleur.blue (this.logObject.get ('redirect'));
 
                 }
 
-                if (this.logObject.get ("redirect") == null && this.logObject.get ("render") == null) {
+                if (this.logObject.get ('render') != null) {
 
-                    let outgoingString = JSON.stringify (this.logObject.get ("outgoing"));
+                    captionString = captionString + ' - View: ' + kleur.blue (this.logObject.get ('render'));
+
+                }
+
+                if (this.logObject.get ('redirect') == null && this.logObject.get ('render') == null) {
+
+                    let outgoingString = JSON.stringify (this.logObject.get ('outgoing'));
 
                     if (outgoingString == null) {
 
-                        outgoingString = "void";
+                        outgoingString = 'void';
 
                     }
 
-                    captionString = captionString + " - Return: " + kleur.blue (outgoingString);
+                    captionString = captionString + ' - Return: ' + kleur.blue (outgoingString);
 
                 }
 
             }
 
-            if (this.logObject.get ("class").endsWith ("PostgresTool")) {
+            if (this.logObject.get ('class').endsWith ('PostgresTool')) {
 
-                if (this.logObject.get ("resource") != null) {
+                if (this.logObject.get ('resource') != null) {
 
-                    captionString = captionString + " - Function: " + kleur.blue (this.logObject.get ("resource"));
+                    captionString = captionString + ' - Function: ' + kleur.blue (this.logObject.get ('resource'));
 
                 }
 
             }
 
-            if (this.logObject.get ("class").endsWith ("ServiceTool")) {
+            if (this.logObject.get ('class').endsWith ('ServiceTool')) {
 
-                captionString = captionString + " - Endpoint: " + kleur.blue (this.logObject.get ("resource"));
+                captionString = captionString + ' - Endpoint: ' + kleur.blue (this.logObject.get ('resource'));
 
             }
 
         }
 
-        this.logObject.set ("interval", parseFloat (this.logObject.get ("interval")));
+        this.logObject.set ('interval', parseFloat (this.logObject.get ('interval')));
 
         console.log (captionString);
         //logger.info (captionString);

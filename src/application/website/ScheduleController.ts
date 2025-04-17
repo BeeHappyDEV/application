@@ -1,97 +1,69 @@
-import {inject, singleton} from "tsyringe";
+import {inject, injectable} from 'tsyringe';
 
-import nodeCron from "node-cron";
+import nodeCron from 'node-cron';
 
-import {LogTool} from "../toolkit/LogTool";
-import {PropertiesTool} from "../toolkit/PropertiesTool"
-import {ReflectionTool} from "../toolkit/ReflectionTool";
-import {ScheduleService} from "./ScheduleService";
+import {JsonObject} from "@object/JsonObject";
+import {LogTool} from '@toolkit/LogTool';
+import {PropertiesTool} from '@toolkit/PropertiesTool'
+import {ReflectionTool} from '@toolkit/ReflectionTool';
+import {ScheduleService} from '@website/ScheduleService';
 
-@singleton ()
+@injectable ()
 export class ScheduleController {
 
     constructor (
-        @inject (ScheduleService) private scheduleService: ScheduleService,
-        @inject (PropertiesTool) public propertiesTool: PropertiesTool
-    ) {}
+        @inject (PropertiesTool) public readonly propertiesTool: PropertiesTool,
+        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool,
+        @inject (ScheduleService) private readonly scheduleService: ScheduleService
+    ) {
+    }
 
-    public async execute () {
+    public async initialize () {
 
-        if (await this.propertiesTool.get ("scheduler.exeMetrics.enable") === true) {
+        const paramsObject = new JsonObject ();
 
-            nodeCron.schedule (await this.propertiesTool.get ("scheduler.exeMetrics.cron"), this.exeMetrics.bind (this));
-
+        if (await this.propertiesTool.get ('scheduler.wakeup.enable') === true) {
+            nodeCron.schedule (await this.propertiesTool.get ('scheduler.wakeup.cron'), (): void => {
+                paramsObject.set ('txt_action', 'wakeup');
+                paramsObject.set ('txt_comment', this.propertiesTool.get ('scheduler.wakeup.comment'));
+                paramsObject.set ('txt_verbose', this.propertiesTool.get ('scheduler.wakeup.verbose'));
+                paramsObject.set ('txt_webservice', this.propertiesTool.get ('scheduler.wakeup.webservice'));
+                this.cronScheduleAction (paramsObject);
+            });
         }
 
-        if (await this.propertiesTool.get ("scheduler.wakeup.enable") === true) {
-
-            nodeCron.schedule (await this.propertiesTool.get ("scheduler.wakeup.cron"), this.exeWakeup.bind (this));
-
+        if (await this.propertiesTool.get ('scheduler.indicators.enable') === true) {
+            nodeCron.schedule (await this.propertiesTool.get ('scheduler.indicators.cron'), (): void => {
+                paramsObject.set ('txt_action', 'indicators');
+                paramsObject.set ('txt_comment', this.propertiesTool.get ('scheduler.indicators.comment'));
+                paramsObject.set ('txt_verbose', this.propertiesTool.get ('scheduler.indicators.verbose'));
+                paramsObject.set ('txt_webservice', this.propertiesTool.get ('scheduler.indicators.webservice'));
+                this.cronScheduleAction (paramsObject);
+            });
         }
 
-        if (await this.propertiesTool.get ("scheduler.exeIndicators.enable") === true) {
-
-            nodeCron.schedule (await this.propertiesTool.get ("scheduler.exeIndicators.cron"), this.exeIndicators.bind (this));
-
-        }
-
-        if (await this.propertiesTool.get ("scheduler.exeInspirational.enable") === true) {
-
-            nodeCron.schedule (await this.propertiesTool.get ("scheduler.exeInspirational.cron"), this.exeInspirational.bind (this));
-
+        if (await this.propertiesTool.get ('scheduler.inspirational.enable') === true) {
+            nodeCron.schedule (await this.propertiesTool.get ('scheduler.inspirational.cron'), (): void => {
+                paramsObject.set ('txt_action', 'inspirational');
+                paramsObject.set ('txt_comment', this.propertiesTool.get ('scheduler.inspirational.comment'));
+                paramsObject.set ('txt_verbose', this.propertiesTool.get ('scheduler.inspirational.verbose'));
+                paramsObject.set ('txt_webservice', this.propertiesTool.get ('scheduler.inspirational.webservice'));
+                this.cronScheduleAction (paramsObject);
+            });
         }
 
     }
 
-    private async exeMetrics () {
+    private async cronScheduleAction (paramsObject: JsonObject): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.comment (await this.propertiesTool.get ("scheduler.metrics.comment"), await this.propertiesTool.get ("scheduler.metrics.verbose"));
-        logTool.finalize ();
-
-    }
-
-    private async exeWakeup () {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
 
-        await this.scheduleService.exeWakeup (logTool.trace ());
+        await this.scheduleService.cronScheduleAction (paramsObject, logTool.trace ());
 
-        logTool.comment (await this.propertiesTool.get ("scheduler.wakeup.comment"), await this.propertiesTool.get ("scheduler.wakeup.verbose"));
-        logTool.finalize ();
-
-    }
-
-    private async exeIndicators () {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-
-        await this.scheduleService.exeIndicators (logTool.trace ());
-
-        logTool.comment (await this.propertiesTool.get ("scheduler.indicators.comment"), await this.propertiesTool.get ("scheduler.indicators.verbose"));
-        logTool.finalize ();
-
-    }
-
-    private async exeInspirational () {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-
-        await this.scheduleService.exeInspirational (logTool.trace ());
-
-        logTool.comment (await this.propertiesTool.get ("scheduler.inspirational.comment"), await this.propertiesTool.get ("scheduler.inspirational.verbose"));
+        logTool.comment (paramsObject.get ('txt_comment'), paramsObject.get ('txt_verbose'));
         logTool.finalize ();
 
     }

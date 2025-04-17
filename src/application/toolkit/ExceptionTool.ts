@@ -1,6 +1,6 @@
-import JsonObject from "../object/JsonObject";
+import {JsonObject} from '@object/JsonObject';
 
-class ExceptionTool {
+export class ExceptionTool {
 
     public static SUCCESSFUL () {
 
@@ -8,11 +8,11 @@ class ExceptionTool {
 
         let statusObject = {
             sys_result: 0,
-            sys_message: "Successful",
+            sys_message: 'Successful',
             sys_carry: false
         }
 
-        jsonObject.set ("status", statusObject);
+        jsonObject.set ('status', statusObject);
 
         return jsonObject.all ();
 
@@ -24,11 +24,11 @@ class ExceptionTool {
 
         let statusObject = {
             sys_result: 100,
-            sys_message: "Function Exception: " + functionString,
+            sys_message: 'Function Exception: ' + functionString,
             sys_carry: true
         }
 
-        jsonObject.set ("status", statusObject);
+        jsonObject.set ('status', statusObject);
 
         return jsonObject.all ();
 
@@ -40,11 +40,11 @@ class ExceptionTool {
 
         let statusObject = {
             sys_result: 200,
-            sys_message: "Postgres Exception: " + reflectionStrings [0] + "." + reflectionStrings [1],
+            sys_message: 'Postgres Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
             sys_carry: true
         }
 
-        jsonObject.set ("status", statusObject);
+        jsonObject.set ('status', statusObject);
 
         return jsonObject.all ();
 
@@ -56,11 +56,11 @@ class ExceptionTool {
 
         let statusObject = {
             sys_result: 300,
-            sys_message: "Service Exception: " + reflectionStrings [0] + "." + reflectionStrings [1],
+            sys_message: 'Service Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
             sys_carry: true
         }
 
-        jsonObject.set ("status", statusObject);
+        jsonObject.set ('status', statusObject);
 
         return jsonObject.all ();
 
@@ -72,11 +72,11 @@ class ExceptionTool {
 
         let statusObject = {
             sys_result: 400,
-            sys_message: "Discord Exception: " + reflectionStrings [0] + "." + reflectionStrings [1],
+            sys_message: 'Discord Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
             sys_carry: true
         }
 
-        jsonObject.set ("status", statusObject);
+        jsonObject.set ('status', statusObject);
 
         return jsonObject.all ();
 
@@ -88,11 +88,11 @@ class ExceptionTool {
 
         let statusObject = {
             sys_result: 800,
-            sys_message: "Rebuild Exception: " + fileString,
+            sys_message: 'Rebuild Exception: ' + fileString,
             sys_carry: true
         }
 
-        jsonObject.set ("status", statusObject);
+        jsonObject.set ('status', statusObject);
 
         return jsonObject.all ();
 
@@ -104,16 +104,30 @@ class ExceptionTool {
 
         let statusObject = {
             sys_result: 900,
-            sys_message: "Application Exception: " + reflectionStrings [0] + "." + reflectionStrings [1],
+            sys_message: 'Application Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
             sys_carry: true
         }
 
-        jsonObject.set ("status", statusObject);
+        jsonObject.set ('status', statusObject);
+
+        return jsonObject;
+
+    }
+
+    public static INDICATORS_EXCEPTION (reflectionStrings: String []) {
+
+        let jsonObject = new JsonObject ();
+
+        let statusObject = {
+            sys_result: 900,
+            sys_message: 'Indicators Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
+            sys_carry: true
+        }
+
+        jsonObject.set ('status', statusObject);
 
         return jsonObject;
 
     }
 
 }
-
-export default ExceptionTool;

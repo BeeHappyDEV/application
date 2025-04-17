@@ -1,14 +1,14 @@
-import {inject, injectable} from 'tsyringe';
+import {inject, singleton} from 'tsyringe';
 
-import {WebserviceModule} from '@middleware/WebserviceModule';
-import {ExceptionTool} from '@toolkit/ExceptionTool';
 import {JsonObject} from '@object/JsonObject';
-import {LogTool} from '@toolkit/LogTool';
 import {ReflectionTool} from '@toolkit/ReflectionTool';
 import {ResultObject} from '@object/ResultObject';
+import {WebserviceModule} from '@integration/WebserviceModule';
+import {LogTool} from '@toolkit/LogTool';
+import {ExceptionTool} from '@toolkit/ExceptionTool';
 
-@injectable ()
-export class ScheduleService {
+@singleton ()
+export class Auth0Module {
 
     constructor (
         @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool,
@@ -16,7 +16,8 @@ export class ScheduleService {
     ) {
     }
 
-    public async cronScheduleAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    // @ts-ignore
+    public async test (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
         const reflectionStrings = await this.reflectionTool.getStackStrings ();
 

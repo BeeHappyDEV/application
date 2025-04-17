@@ -9,9 +9,6 @@ system:
 # INTEGRATIONS #
 
 integration:
-  cloudflare:
-    host: https://api.cloudflare.com/client/v4/zones/44fb5eb71c16f2cbc092adf56c43b37f/purge_cache
-    token: eOj_21qDH8ez59dn9Kjm2NOd2d9Y_VVO7sNCdiFs
   discord:
     beebee:
       notifications: https://discord.com/api/webhooks/1043051348381421598/oqytOEnH2Ms4cnVaOD5Q1_XDP-JysOCy1ArLC3fYGA1JZ8x3RkRXalCB3BdCJKNACefc
@@ -50,22 +47,18 @@ channel:
 # SCHEDULERS #
 
 scheduler:
-  metrics:
-    cron: 0,10,20,30,40,50 * * * * * UTC_OFFSET=0
-    enable: true
-    verbose: EVERY TEN SECONDS
   wakeup:
     cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
     enable: true
-    service: https://beehappy.dev/backend/system/wakeup
     verbose: EVERY TEN MINUTES
+    webservice: https://beehappy.dev/backend/system/wakeup
   indicators:
     cron: 0 0 0,6,12,18 * * * UTC_OFFSET=0
     enable: true
-    service: https://beehappy.dev/backend/reload/indicators
     verbose: MANY TIMES PER DAY
+    webservice: https://beehappy.dev/backend/reload/indicators
   inspirational:
     cron: 0 0 8 * * * UTC_OFFSET=0
     enable: false
-    service: https://beehappy.dev/backend/load/inspirational
     verbose: ONE TIME PER DAY
+    webservice: https://beehappy.dev/backend/load/inspirational

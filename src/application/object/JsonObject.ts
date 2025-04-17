@@ -1,4 +1,4 @@
-class JsonObject {
+export class JsonObject {
 
     private readonly jsonObject: any;
 
@@ -8,27 +8,27 @@ class JsonObject {
 
     }
 
-    public all () {
+    public all (): any {
 
         return this.jsonObject;
 
     }
 
-    public del (keyString: String) {
+    public del (keyString: string): void {
 
-        delete this.jsonObject [keyString.toString ()];
-
-    }
-
-    public get (keyString: String) {
-
-        return this.jsonObject [keyString.toString ()];
+        delete this.jsonObject [keyString];
 
     }
 
-    public set (keyString: String, valueString: Object) {
+    public get (keyString: string): any {
 
-        this.jsonObject [keyString.toString ()] = valueString;
+        return this.jsonObject [keyString];
+
+    }
+
+    public set (keyString: string, valueObject: Object): void {
+
+        this.jsonObject [keyString] = valueObject;
 
     }
 
@@ -45,5 +45,3 @@ class JsonObject {
     }
 
 }
-
-export default JsonObject;

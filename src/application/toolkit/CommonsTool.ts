@@ -1,4 +1,4 @@
-class UtilsTool {
+export class CommonsTool {
 
     public static async getRequestIdentifier (lengthInteger: Number) {
 
@@ -13,5 +13,3 @@ class UtilsTool {
     }
 
 }
-
-export default UtilsTool;

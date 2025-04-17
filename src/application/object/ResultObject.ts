@@ -1,8 +1,8 @@
 import superagent from "superagent";
 
-import JsonObject from "../object/JsonObject";
+import {JsonObject} from "@object/JsonObject";
 
-class ResultObject {
+export class ResultObject {
 
     private resultObject: any;
 
@@ -213,5 +213,3 @@ class ResultObject {
     }
 
 }
-
-export default ResultObject;

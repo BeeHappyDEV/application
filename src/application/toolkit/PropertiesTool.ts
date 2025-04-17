@@ -1,34 +1,36 @@
-import { singleton } from "tsyringe";
-import fsExtra from "fs-extra";
-import jsYaml from "js-yaml";
+import {injectable} from 'tsyringe';
 
-@singleton()
+import fsExtra from 'fs-extra';
+import jsYaml from 'js-yaml';
+
+@injectable()
 export class PropertiesTool {
+
     private properties: any = {};
     private loaded = false;
 
     public async load(): Promise<void> {
         try {
-            let fileString = "./src/configuration/config.yml";
+            let fileString = './src/configuration/config.yml';
             const environmentString = process.argv[2]?.slice(2) || 'dev';
 
             // Cargar configuración base
-            const yamlObject1 = jsYaml.load(fsExtra.readFileSync(fileString, "utf8"), {});
+            const yamlObject1 = jsYaml.load(fsExtra.readFileSync(fileString, 'utf8'), {});
 
             // Cargar configuración específica del entorno
             switch (environmentString) {
-                case "dev":
-                    fileString = "./src/configuration/config.dev.yml";
+                case 'dev':
+                    fileString = './src/configuration/config.dev.yml';
                     break;
-                case "qas":
-                    fileString = "./src/configuration/config.qas.yml";
+                case 'qas':
+                    fileString = './src/configuration/config.qas.yml';
                     break;
-                case "prd":
-                    fileString = "./src/configuration/config.prd.yml";
+                case 'prd':
+                    fileString = './src/configuration/config.prd.yml';
                     break;
             }
 
-            const yamlObject2 = jsYaml.load(fsExtra.readFileSync(fileString, "utf8"), {});
+            const yamlObject2 = jsYaml.load(fsExtra.readFileSync(fileString, 'utf8'), {});
             this.properties = this.deepMerge(yamlObject1, yamlObject2);
             this.loaded = true;
         } catch (error) {

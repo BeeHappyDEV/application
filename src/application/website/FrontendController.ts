@@ -1,79 +1,183 @@
-import {inject, singleton} from "tsyringe";
-import express from "express";
+import {inject, injectable} from 'tsyringe';
 
-import {FrontendService} from "./FrontendService";
-import JsonObject from "../object/JsonObject";
-import {LogTool} from "../toolkit/LogTool";
-import {PropertiesTool} from "../toolkit/PropertiesTool";
-import {ReflectionTool} from "../toolkit/ReflectionTool";
+import express from 'express';
 
-@singleton ()
+import {FrontendService} from '@website/FrontendService';
+import {PropertiesTool} from '@toolkit/PropertiesTool';
+import {ReflectionTool} from '@toolkit/ReflectionTool';
+import {JsonObject} from '@object/JsonObject';
+import {LogTool} from '@toolkit/LogTool';
+
+@injectable ()
 export class FrontendController {
 
     constructor (
-        @inject (FrontendService) private frontendModule: FrontendService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
-    ) {}
+        @inject (FrontendService) private readonly frontendModule: FrontendService,
+        @inject (PropertiesTool) private readonly propertiesTool: PropertiesTool,
+        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
+    ) {
+    }
 
-    public async execute (expressApplication: typeof express.application) {
+    public async initialize (expressApplication: typeof express.application): Promise<void> {
 
-        expressApplication.all ("/", this.getLandingPage.bind (this));
-        expressApplication.get ("/", this.getLandingPage.bind (this));
-        expressApplication.get ("/contacto/llamanos", this.getCallUsLink.bind (this));
-        expressApplication.get ("/contacto/escribenos", this.getWriteUsLink.bind (this));
-        expressApplication.get ("/contacto/texteanos", this.getTextUsLink.bind (this));
-        expressApplication.get ("/contacto/visitanos", this.getVisitUsLink.bind (this));
-        expressApplication.get ("/social/facebook", this.getFacebookLink.bind (this));
-        expressApplication.get ("/social/instagram", this.getInstagramLink.bind (this));
-        expressApplication.get ("/social/x", this.getXLink.bind (this));
-        expressApplication.get ("/social/linkedin", this.getLinkedinLink.bind (this));
-        expressApplication.get ("/politica-de-privacidad", this.getPolicyPage.bind (this));
-        expressApplication.get ("/politica-de-privacidad/video", this.getPolicyVideoLink.bind (this));
-        expressApplication.get ("/terminos-y-condiciones", this.getTermsPage.bind (this));
-        expressApplication.get ("/terminos-y-condiciones/video", this.getTermsVideoLink.bind (this));
-        expressApplication.get ("/colaborador/:name", this.getCollaboratorPage.bind (this));
-        expressApplication.get ("/colaborador/:name/vcard", this.getVcardFile.bind (this));
-        expressApplication.get ("/colaborador/:name/llamame", this.getCallMeLink.bind (this));
-        expressApplication.get ("/colaborador/:name/escribeme", this.getWriteMeLink.bind (this));
-        expressApplication.get ("/colaborador/:name/texteame", this.getTextMeLink.bind (this));
-        expressApplication.get ("/colaborador/:name/qr", this.getQRCodePage.bind (this));
-        expressApplication.use (this.getRedirectPage.bind (this));
+        const paramsObject = new JsonObject ();
+
+        expressApplication.all ('/', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'landing');
+            paramsObject.set ('txt_render', 'landing/index.ejs');
+            this.getPageAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'landing');
+            paramsObject.set ('txt_render', 'landing/index.ejs');
+            this.getPageAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/contacto/llamanos', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'call_us');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/contacto/escribenos', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'write_us');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/contacto/texteanos', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'text_us');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/contacto/visitanos', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'visit_us');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/social/facebook', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'facebook');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/social/instagram', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'instagram');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/social/x', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'x');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/social/linkedin', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'linkedin');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/social/discord', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'discord');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/politica-de-privacidad', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'privacy_policy');
+            paramsObject.set ('txt_render', 'policy/index.ejs');
+            this.getPageAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/politica-de-privacidad/video', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'privacy_policy_video');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/terminos-y-condiciones', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'terms_and_conditions');
+            paramsObject.set ('txt_render', 'terms/index.ejs');
+            this.getPageAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/terminos-y-condiciones/video', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'terms_and_conditions_video');
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/colaborador/:name', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'collaborator');
+            paramsObject.set ('txt_name', expressRequest.params ['name']);
+            paramsObject.set ('txt_render', 'collaborator/index.ejs');
+            this.getPageAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/colaborador/:name/vcard', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'vcard');
+            paramsObject.set ('txt_name', expressRequest.params ['name']);
+            this.getFileAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/colaborador/:name/qr', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'qr');
+            paramsObject.set ('txt_name', expressRequest.params ['name']);
+            paramsObject.set ('txt_render', 'qr/index.ejs');
+            this.getPageAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/colaborador/:name/llamame', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'call_me');
+            paramsObject.set ('txt_name', expressRequest.params ['name']);
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/colaborador/:name/escribeme', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'write_me');
+            paramsObject.set ('txt_name', expressRequest.params ['name']);
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.get ('/colaborador/:name/texteame', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'text_me');
+            paramsObject.set ('txt_name', expressRequest.params ['name']);
+            this.getLinkAction (expressRequest, expressResponse, paramsObject);
+        });
+
+        expressApplication.use ((expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            paramsObject.set ('txt_action', 'landing');
+            paramsObject.set ('txt_render', 'landing/index.ejs');
+            this.getPageAction (expressRequest, expressResponse, paramsObject);
+        });
 
     }
 
-    private async getLandingPage (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async getPageAction (expressRequest: typeof express.request, expressResponse: typeof express.response, paramsObject: JsonObject): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
-        let paramsObject = new JsonObject ();
+        const resultObject = await this.frontendModule.getPageAction (paramsObject, logTool.trace ());
 
-        let resultObject = await this.frontendModule.getLandingPage (paramsObject, logTool.trace ());
-
-        let environmentString = process.argv [2].slice (2);
+        const environmentString = process.argv [2].slice (2);
 
         switch (environmentString) {
 
-            case "dev":
+            case 'dev':
 
-                resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
+                resultObject.setPath (await this.propertiesTool.get ('system.host') + ':' + await this.propertiesTool.get ('system.port'));
 
                 break;
 
-            case "prd":
+            case 'prd':
 
-                resultObject.setPath (await this.propertiesTool.get ("system.host"));
+                resultObject.setPath (await this.propertiesTool.get ('system.host'));
 
                 break;
 
         }
 
-        resultObject.setVersion (await this.propertiesTool.get ("application.version"));
-        resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
-        resultObject.setRender ("landing/index.ejs");
+        resultObject.setVersion (await this.propertiesTool.get ('application.version'));
+        resultObject.setWebsite (await this.propertiesTool.get ('application.name') + await this.propertiesTool.get ('application.domain'));
+        resultObject.setRender (paramsObject.get ('txt_render'));
 
         expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
 
@@ -82,17 +186,15 @@ export class FrontendController {
 
     }
 
-    private async getCallUsLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async getLinkAction (expressRequest: typeof express.request, expressResponse: typeof express.response, paramsObject: JsonObject): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getCallUsLink (paramsObject, logTool.trace ());
+        const resultObject = await this.frontendModule.getLinkAction (paramsObject, logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
@@ -101,465 +203,26 @@ export class FrontendController {
 
     }
 
-    private async getWriteUsLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
+    private async getFileAction (expressRequest: typeof express.request, expressResponse: typeof express.response, paramsObject: JsonObject): Promise<void> {
 
-        let reflectionStrings = ReflectionTool.getMethodName ();
+        const reflectionStrings = await this.reflectionTool.getStackStrings ();
 
-        let logTool = new LogTool ();
+        const logTool = new LogTool ();
         logTool.initialize (null, reflectionStrings);
         logTool.request (expressRequest);
 
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getWriteUsLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getTextUsLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getTextUsLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getVisitUsLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getVisitUsLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getFacebookLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getFacebookLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getInstagramLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getInstagramLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getXLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getXLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getLinkedinLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getLinkedinLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getPolicyPage (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getPolicyPage (paramsObject, logTool.trace ());
-
-        let environmentString = process.argv [2].slice (2);
-
-        switch (environmentString) {
-
-            case "dev":
-
-                resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
-
-                break;
-
-            case "prd":
-
-                resultObject.setPath (await this.propertiesTool.get ("system.host"));
-
-                break;
-
-        }
-
-        resultObject.setVersion (await this.propertiesTool.get ("application.version"));
-        resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
-        resultObject.setRender ("policy/index.ejs");
-
-        expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getPolicyVideoLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getPolicyVideoLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getTermsPage (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getTermsPage (paramsObject, logTool.trace ());
-
-        let environmentString = process.argv [2].slice (2);
-
-        switch (environmentString) {
-
-            case "dev":
-
-                resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
-
-                break;
-
-            case "prd":
-
-                resultObject.setPath (await this.propertiesTool.get ("system.host"));
-
-                break;
-
-        }
-
-        resultObject.setVersion (await this.propertiesTool.get ("application.version"));
-        resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
-        resultObject.setRender ("terms/index.ejs");
-
-        expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getTermsVideoLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getTermsVideoLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getCollaboratorPage (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-        paramsObject.set ("txt_name", expressRequest.params ["name"]);
-        paramsObject.set ("txt_path", await this.propertiesTool.get ("system.path"));
-
-        let resultObject = await this.frontendModule.getCollaboratorPage (paramsObject, logTool.trace ());
+        const resultObject = await this.frontendModule.getFileAction (paramsObject, logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
-            let environmentString = process.argv [2].slice (2);
-
-            switch (environmentString) {
-
-                case "dev":
-
-                    resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
-
-                    break;
-
-                case "prd":
-
-                    resultObject.setPath (await this.propertiesTool.get ("system.host"));
-
-                    break;
-
-            }
-
-            resultObject.setVersion (await this.propertiesTool.get ("application.version"));
-            resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
-            resultObject.setRender ("collaborator/index.ejs");
-
-            expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
+            expressResponse.setHeader ('content-type', resultObject.getOutgoing () ['txt_mime']);
+            expressResponse.send (resultObject.getOutgoing () ['txt_vcard']);
 
         } else {
 
-            resultObject.setRedirect ("/");
-
-            expressResponse.redirect (resultObject.getRedirect ());
+            expressResponse.redirect ('/');
 
         }
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getVcardFile (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-        paramsObject.set ("txt_name", expressRequest.params ["name"]);
-
-        let resultObject = await this.frontendModule.getVcardFile (paramsObject, logTool.trace ());
-
-        if (resultObject.hasOutgoing ()) {
-
-            expressResponse.setHeader ("content-type", "text/x-vcard");
-            expressResponse.send (resultObject.getOutgoing () ["txt_vcard"]);
-
-        } else {
-
-            expressResponse.redirect ("/");
-
-        }
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getCallMeLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-        paramsObject.set ("txt_name", expressRequest.params ["name"]);
-
-        let resultObject = await this.frontendModule.getCallMeLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getWriteMeLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-        paramsObject.set ("txt_name", expressRequest.params ["name"]);
-
-        let resultObject = await this.frontendModule.getWriteMeLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getTextMeLink (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-        paramsObject.set ("txt_name", expressRequest.params ["name"]);
-
-        let resultObject = await this.frontendModule.getTextMeLink (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (resultObject.getRedirect ());
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getQRCodePage (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-        paramsObject.set ("txt_name", expressRequest.params ["name"]);
-        paramsObject.set ("txt_path", await this.propertiesTool.get ("system.path"));
-
-        let resultObject = await this.frontendModule.getQRCodePage (paramsObject, logTool.trace ());
-
-        if (resultObject.hasOutgoing ()) {
-
-            let environmentString = process.argv [2].slice (2);
-
-            switch (environmentString) {
-
-                case "dev":
-
-                    resultObject.setPath (await this.propertiesTool.get ("system.host") + ":" + await this.propertiesTool.get ("system.port"));
-
-                    break;
-
-                case "prd":
-
-                    resultObject.setPath (await this.propertiesTool.get ("system.host"));
-
-                    break;
-
-            }
-
-            resultObject.setVersion (await this.propertiesTool.get ("application.version"));
-            resultObject.setWebsite (await this.propertiesTool.get ("application.name") + await this.propertiesTool.get ("application.domain"));
-            resultObject.setRender ("qr/index.ejs");
-
-            expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
-
-        } else {
-
-            expressResponse.redirect ("/");
-
-        }
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-    }
-
-    private async getRedirectPage (expressRequest: typeof express.request, expressResponse: typeof express.response) {
-
-        let reflectionStrings = ReflectionTool.getMethodName ();
-
-        let logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
-        logTool.request (expressRequest);
-
-        let paramsObject = new JsonObject ();
-
-        let resultObject = await this.frontendModule.getRedirectPage (paramsObject, logTool.trace ());
-
-        expressResponse.redirect (await this.propertiesTool.get ("system.path"));
 
         logTool.response (resultObject);
         logTool.finalize ();

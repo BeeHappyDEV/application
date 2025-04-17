@@ -7,8 +7,8 @@ exception when others then null; end; end $$;
 drop function if exists action_before_update_users cascade;
 drop function if exists action_before_insert_users cascade;
 drop sequence if exists seq_users cascade;
-drop table if exists aud_users cascade;
-drop table if exists dat_users cascade;
+drop table if exists aud_users;
+drop table if exists dat_users;
 
 create table if not exists dat_users (
     idf_user       numeric,
@@ -17,6 +17,7 @@ create table if not exists dat_users (
     txt_first_name text,
     txt_last_name  text,
     txt_mail       text,
+    txt_location   text,
     constraint dat_users_pk primary key (idf_user)
 ) inherits (sys_default);
 
@@ -64,7 +65,8 @@ begin
         num_whatsapp,
         txt_first_name,
         txt_last_name,
-        txt_mail
+        txt_mail,
+        txt_location
     ) values (
         old.sys_status,
         old.sys_timestamp,
@@ -75,7 +77,8 @@ begin
         old.num_whatsapp,
         old.txt_first_name,
         old.txt_last_name,
-        old.txt_mail
+        old.txt_mail,
+        old.txt_location
     );
 
     new.sys_timestamp = core_get_timestamp_value ();
