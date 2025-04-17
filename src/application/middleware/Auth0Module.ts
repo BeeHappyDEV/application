@@ -3,7 +3,7 @@ import {inject, singleton} from 'tsyringe';
 import {JsonObject} from '@object/JsonObject';
 import {ReflectionTool} from '@toolkit/ReflectionTool';
 import {ResultObject} from '@object/ResultObject';
-import {WebserviceModule} from '@integration/WebserviceModule';
+import {WebserviceModule} from '@middleware/WebserviceModule';
 import {LogTool} from '@toolkit/LogTool';
 import {ExceptionTool} from '@toolkit/ExceptionTool';
 
