@@ -1,6 +1,6 @@
-import superagent from "superagent";
+import superagent from 'superagent';
 
-import {JsonObject} from "@object/JsonObject";
+import {JsonObject} from 'src/application/object/JsonObject';
 
 export class ResultObject {
 
@@ -24,7 +24,7 @@ export class ResultObject {
 
     public get (keyArray: any) {
 
-        if (typeof keyArray === "string") {
+        if (typeof keyArray === 'string') {
 
             return this.resultObject [keyArray.toString ()];
 
@@ -42,22 +42,22 @@ export class ResultObject {
 
     }
 
-    public set (keyString: String, valueString: Object) {
+    public set (keyString: string, valueString: object) {
 
-        this.resultObject [keyString.toString ()] = valueString;
+        this.resultObject [keyString] = valueString;
 
     }
 
-    public rename (oldString: String, newString: String) {
+    public rename (oldString: string, newString: string) {
 
         let resultObject = JSON.stringify (this.resultObject, null, 0);
-        resultObject = resultObject.replaceAll (oldString.toString (), newString.toString ());
+        resultObject = resultObject.replaceAll (oldString, newString);
 
         this.resultObject = JSON.parse (resultObject);
 
     }
 
-    public setPath (valueString: String) {
+    public setPath (valueString: string) {
 
         if (!this.resultObject.outgoing) {
 
@@ -65,11 +65,11 @@ export class ResultObject {
 
         }
 
-        this.resultObject.outgoing ["txt_path"] = valueString.trim ();
+        this.resultObject.outgoing ['txt_path'] = valueString;
 
     }
 
-    public setVersion (valueString: String) {
+    public setVersion (valueString: string) {
 
         if (!this.resultObject.outgoing) {
 
@@ -77,11 +77,11 @@ export class ResultObject {
 
         }
 
-        this.resultObject.outgoing ["txt_version"] = valueString.trim ();
+        this.resultObject.outgoing ['txt_version'] = valueString;
 
     }
 
-    public setWebsite (valueString: String) {
+    public setWebsite (valueString: string) {
 
         if (!this.resultObject.outgoing) {
 
@@ -89,37 +89,37 @@ export class ResultObject {
 
         }
 
-        this.resultObject.outgoing ["txt_website"] = valueString.trim ();
+        this.resultObject.outgoing ['txt_website'] = valueString;
 
     }
 
     public getCarry () {
 
-        return this.resultObject.status ["sys_carry"];
+        return this.resultObject.status ['sys_carry'];
 
     }
 
     public getOutgoing () {
 
-        return this.resultObject ["outgoing"];
+        return this.resultObject ['outgoing'];
 
     }
 
     public getRedirect () {
 
-        return this.resultObject.outgoing ["txt_redirect"];
+        return this.resultObject.outgoing ['txt_redirect'];
 
     }
 
     public getRender () {
 
-        return this.resultObject.outgoing ["txt_render"];
+        return this.resultObject.outgoing ['txt_render'];
 
     }
 
     public getStatus () {
 
-        return this.resultObject.outgoing ["status"];
+        return this.resultObject.outgoing ['status'];
 
     }
 
@@ -129,7 +129,7 @@ export class ResultObject {
 
     }
 
-    public setRedirect (valueString: String) {
+    public setRedirect (valueString: string) {
 
         if (!this.resultObject.outgoing) {
 
@@ -137,7 +137,7 @@ export class ResultObject {
 
         }
 
-        this.resultObject.outgoing ["txt_redirect"] = valueString.trim ();
+        this.resultObject.outgoing ['txt_redirect'] = valueString;
 
     }
 
@@ -149,14 +149,14 @@ export class ResultObject {
 
         }
 
-        if (this.resultObject.outgoing ["txt_version"] == null) {
+        if (this.resultObject.outgoing ['txt_version'] == null) {
 
-            this.resultObject.outgoing ["txt_render"] = "error/index.ejs";
-            this.resultObject.outgoing ["txt_version"] = "1.0.0";
+            this.resultObject.outgoing ['txt_render'] = 'error/index.ejs';
+            this.resultObject.outgoing ['txt_version'] = '1.0.0';
 
         } else {
 
-            this.resultObject.outgoing ["txt_render"] = valueString.trim ().split ("/") [0];
+            this.resultObject.outgoing ['txt_render'] = valueString.trim ().split ('/') [0];
 
         }
 
@@ -171,7 +171,7 @@ export class ResultObject {
                 outgoing: JSON.parse (serviceObject.text),
                 status: {
                     sys_result: 0,
-                    sys_message: "OK"
+                    sys_message: 'OK'
                 }
             }
 
@@ -181,7 +181,7 @@ export class ResultObject {
                 outgoing: JSON.parse (serviceObject.text),
                 status: {
                     sys_result: 0,
-                    sys_message: "OK"
+                    sys_message: 'OK'
                 }
             }
 
@@ -189,24 +189,13 @@ export class ResultObject {
 
     }
 
-    public setServiceException () {
-
-        this.resultObject = {
-            status: {
-                sys_result: 200,
-                sys_message: "Service Exception"
-            }
-        }
-
-    }
-
     public setWebsocket (valueString: String) {
 
-        this.resultObject.outgoing ["txt_websocket"] = valueString.trim ();
+        this.resultObject.outgoing ['txt_websocket'] = valueString.trim ();
 
     }
 
-    public result (jsonObject: JsonObject) {
+    public setResult (jsonObject: JsonObject) {
 
         this.resultObject = jsonObject;
 

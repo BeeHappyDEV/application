@@ -22,7 +22,9 @@ create table if not exists dat_organizations (
     constraint dat_organizations_fk2 foreign key (idf_region) references dat_regions (idf_region),
     constraint dat_organizations_fk3 foreign key (idf_province) references dat_provinces (idf_province),
     constraint dat_organizations_fk4 foreign key (idf_commune) references dat_communes (idf_commune)
-) inherits (sys_default);
+) inherits (sys_default)
+with (enable row level security);
+
 
 comment on table dat_organizations is 'org';
 

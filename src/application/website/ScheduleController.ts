@@ -1,65 +1,82 @@
-import {inject, injectable} from 'tsyringe';
+import {container, inject, injectable} from 'tsyringe';
 
 import nodeCron from 'node-cron';
 
-import {JsonObject} from "@object/JsonObject";
-import {LogTool} from '@toolkit/LogTool';
-import {PropertiesTool} from '@toolkit/PropertiesTool'
-import {ReflectionTool} from '@toolkit/ReflectionTool';
-import {ScheduleService} from '@website/ScheduleService';
+import {ScheduleService} from './ScheduleService';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool'
+import {JsonObject} from '../object/JsonObject';
 
 @injectable ()
 export class ScheduleController {
 
     constructor (
-        @inject (PropertiesTool) public readonly propertiesTool: PropertiesTool,
-        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool,
-        @inject (ScheduleService) private readonly scheduleService: ScheduleService
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
+        @inject (ScheduleService) private scheduleService: ScheduleService
     ) {
+        this.propertiesTool.initialize ().then ();
     }
 
-    public async initialize () {
+    public async initialize (): Promise<void> {
+
+        await this.propertiesTool.initialize();
 
         const paramsObject = new JsonObject ();
 
-        if (await this.propertiesTool.get ('scheduler.wakeup.enable') === true) {
-            nodeCron.schedule (await this.propertiesTool.get ('scheduler.wakeup.cron'), (): void => {
+        if (Boolean (await this.propertiesTool.get ('scheduler.wakeup.enable'))) {
+
+            nodeCron.schedule (await this.propertiesTool.get ('scheduler.wakeup.cron'), async (): Promise<void> => {
+
                 paramsObject.set ('txt_action', 'wakeup');
-                paramsObject.set ('txt_comment', this.propertiesTool.get ('scheduler.wakeup.comment'));
-                paramsObject.set ('txt_verbose', this.propertiesTool.get ('scheduler.wakeup.verbose'));
-                paramsObject.set ('txt_webservice', this.propertiesTool.get ('scheduler.wakeup.webservice'));
-                this.cronScheduleAction (paramsObject);
+                paramsObject.set ('txt_comment', await this.propertiesTool.get ('scheduler.wakeup.comment'));
+                paramsObject.set ('txt_host', await this.propertiesTool.get ('scheduler.wakeup.host'));
+                paramsObject.set ('txt_verbose', await this.propertiesTool.get ('scheduler.wakeup.verbose'));
+
+                await this.cronScheduleAction (paramsObject);
+
             });
+
         }
 
-        if (await this.propertiesTool.get ('scheduler.indicators.enable') === true) {
-            nodeCron.schedule (await this.propertiesTool.get ('scheduler.indicators.cron'), (): void => {
+        if (Boolean (await this.propertiesTool.get ('scheduler.indicators.enable'))) {
+
+            nodeCron.schedule (await this.propertiesTool.get ('scheduler.indicators.cron'), async (): Promise<void> => {
+
                 paramsObject.set ('txt_action', 'indicators');
-                paramsObject.set ('txt_comment', this.propertiesTool.get ('scheduler.indicators.comment'));
-                paramsObject.set ('txt_verbose', this.propertiesTool.get ('scheduler.indicators.verbose'));
-                paramsObject.set ('txt_webservice', this.propertiesTool.get ('scheduler.indicators.webservice'));
-                this.cronScheduleAction (paramsObject);
+                paramsObject.set ('txt_comment', await this.propertiesTool.get ('scheduler.indicators.comment'));
+                paramsObject.set ('txt_host', await this.propertiesTool.get ('scheduler.indicators.host'));
+                paramsObject.set ('txt_verbose', await this.propertiesTool.get ('scheduler.indicators.verbose'));
+
+                await this.cronScheduleAction (paramsObject);
+
             });
+
         }
 
-        if (await this.propertiesTool.get ('scheduler.inspirational.enable') === true) {
-            nodeCron.schedule (await this.propertiesTool.get ('scheduler.inspirational.cron'), (): void => {
+        if (Boolean (this.propertiesTool.get ('scheduler.inspirational.enable'))) {
+
+            nodeCron.schedule (await this.propertiesTool.get ('scheduler.inspirational.cron'), async (): Promise<void> => {
+
                 paramsObject.set ('txt_action', 'inspirational');
-                paramsObject.set ('txt_comment', this.propertiesTool.get ('scheduler.inspirational.comment'));
-                paramsObject.set ('txt_verbose', this.propertiesTool.get ('scheduler.inspirational.verbose'));
-                paramsObject.set ('txt_webservice', this.propertiesTool.get ('scheduler.inspirational.webservice'));
-                this.cronScheduleAction (paramsObject);
+                paramsObject.set ('txt_comment', await this.propertiesTool.get ('scheduler.inspirational.comment'));
+                paramsObject.set ('txt_host', await this.propertiesTool.get ('scheduler.inspirational.host'));
+                paramsObject.set ('txt_verbose', await this.propertiesTool.get ('scheduler.inspirational.verbose'));
+
+                await this.cronScheduleAction (paramsObject);
+
             });
+
         }
 
     }
 
     private async cronScheduleAction (paramsObject: JsonObject): Promise<void> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings);
 
         await this.scheduleService.cronScheduleAction (paramsObject, logTool.trace ());
 

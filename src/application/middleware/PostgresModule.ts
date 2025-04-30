@@ -1,36 +1,38 @@
-import {inject, injectable} from 'tsyringe';
+import {container, inject, injectable} from 'tsyringe';
 
 import pg from 'pg';
 
-import {ExceptionTool} from '@toolkit/ExceptionTool';
-import {JsonObject} from '@object/JsonObject';
-import {LogTool} from '@toolkit/LogTool';
-import {PropertiesTool} from '@toolkit/PropertiesTool';
-import {ReflectionTool} from '@toolkit/ReflectionTool';
-import {ResultObject} from '@object/ResultObject';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {JsonObject} from '../object/JsonObject';
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class PostgresModule {
 
     constructor (
-        @inject (PropertiesTool) private readonly propertiesTool: PropertiesTool,
-        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
+        propertiesTool.initialize ().then ();
     }
 
     public async execute (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        await this.propertiesTool.initialize ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const stackStrings = await CommonsTool.getStackStrings ();
+
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         const postgresPool = new pg.Pool ({
             database: await this.propertiesTool.get ('integration.postgres.database'),
             host: await this.propertiesTool.get ('integration.postgres.host'),
-            max: await this.propertiesTool.get ('integration.postgres.connections'),
+            max: Number (await this.propertiesTool.get ('integration.postgres.connections')),
             password: await this.propertiesTool.get ('integration.postgres.pass'),
-            port: await this.propertiesTool.get ('integration.postgres.port'),
+            port: Number (await this.propertiesTool.get ('integration.postgres.port')),
             user: await this.propertiesTool.get ('integration.postgres.user')
         });
 
@@ -42,11 +44,11 @@ export class PostgresModule {
 
                 await postgresPool.query (paramsObject.get ('txt_content'));
 
-                resultObject.result (ExceptionTool.SUCCESSFUL ());
+                resultObject.setResult (ExceptionTool.SUCCESSFUL ());
 
             } catch (exception) {
 
-                resultObject.result (ExceptionTool.REBUILD_EXCEPTION (paramsObject.get ('txt_line')));
+                resultObject.setResult (ExceptionTool.REBUILD_EXCEPTION (paramsObject.get ('txt_line')));
 
                 logTool.exception ();
 
@@ -73,17 +75,17 @@ export class PostgresModule {
 
                 if (databaseObject ['status'] ['boo_exception'] === false) {
 
-                    resultObject.result (databaseObject);
+                    resultObject.setResult (databaseObject);
 
                 } else {
 
-                    resultObject.result (ExceptionTool.FUNCTION_EXCEPTION (functionString));
+                    resultObject.setResult (ExceptionTool.FUNCTION_EXCEPTION (functionString));
 
                 }
 
             } catch (exception) {
 
-                resultObject.result (ExceptionTool.POSTGRES_EXCEPTION (reflectionStrings));
+                resultObject.setResult (ExceptionTool.POSTGRES_EXCEPTION (stackStrings));
 
                 logTool.exception ();
 

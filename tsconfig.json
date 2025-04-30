@@ -3,12 +3,6 @@
         "target": "ESNext",
         "module": "CommonJS",
         "baseUrl": "./",
-        "paths": {
-            "@middleware/*": ["src/application/middleware/*"],
-            "@object/*": ["src/application/object/*"],
-            "@toolkit/*": ["src/application/toolkit/*"],
-            "@website/*": ["src/application/website/*"]
-        },
         "rootDir": "./src",
         "outDir": "./out",
         "emitDecoratorMetadata": true,

@@ -1,37 +1,32 @@
-import {inject, injectable} from 'tsyringe';
+import {container, inject, injectable} from 'tsyringe';
 
 import fsExtra from 'fs-extra';
 
-import {MongoDbModule} from '@middleware/MongoDbModule';
-import {PostgresModule} from '@middleware/PostgresModule';
-import {WebserviceModule} from '@middleware/WebserviceModule';
-import {ExceptionTool} from '@toolkit/ExceptionTool';
-import {LogTool} from '@toolkit/LogTool';
-import {PropertiesTool} from '@toolkit/PropertiesTool';
-import {ReflectionTool} from '@toolkit/ReflectionTool';
-import {JsonObject} from '@object/JsonObject';
-import {ResultObject} from '@object/ResultObject';
+import {MongoDbModule} from '../middleware/MongoDbModule';
+import {PostgresModule} from '../middleware/PostgresModule';
+import {WebserviceModule} from '../middleware/WebserviceModule';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogTool} from '../toolkit/LogTool';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class BackendService {
 
     constructor (
-        @inject (PostgresModule) public readonly postgresModule: PostgresModule,
-        @inject (MongoDbModule) public readonly mongoDbModule: MongoDbModule,
-        @inject (PropertiesTool) public readonly propertiesTool: PropertiesTool,
-        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool,
-        @inject (WebserviceModule) public readonly webserviceModule: WebserviceModule
+        @inject (PostgresModule) public postgresModule: PostgresModule,
+        @inject (MongoDbModule) public mongoDbModule: MongoDbModule,
+        @inject (WebserviceModule) public webserviceModule: WebserviceModule
     ) {
     }
 
-    public async postWakeupApplication (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async postWakeupAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
-
-        paramsObject.set ('txt_function', 'backend_wakeup_application');
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let resultObject = new ResultObject ();
 
@@ -41,7 +36,7 @@ export class BackendService {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -54,15 +49,15 @@ export class BackendService {
 
     }
 
-    public async postCacheDelete (traceObject: JsonObject): Promise<ResultObject> {
+    public async postDeleteCacheAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         const headersObject = new JsonObject ();
-        headersObject.set ('authorization', 'Bearer ' + await this.propertiesTool.get ('cloudflare.token'));
+        headersObject.set ('authorization', 'Bearer ' + paramsObject.get ('txt_token'));
         headersObject.set ('content-type', 'application/json');
 
         const bodyObject = new JsonObject ();
@@ -72,13 +67,13 @@ export class BackendService {
 
         try {
 
-            await this.webserviceModule.delete (await this.propertiesTool.get ('cloudflare.host'), headersObject, null, bodyObject, logTool.trace ());
+            await this.webserviceModule.delete (paramsObject.get ('txt_host'), headersObject, null, bodyObject, logTool.trace ());
 
-            resultObject.result (ExceptionTool.SUCCESSFUL ());
+            resultObject.setResult (ExceptionTool.SUCCESSFUL ());
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -91,12 +86,12 @@ export class BackendService {
 
     }
 
-    public async postRebuildDocumental (traceObject: JsonObject): Promise<ResultObject> {
+    public async postRebuildDocumentalAction (traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         const resultObject = new ResultObject ();
 
@@ -104,11 +99,11 @@ export class BackendService {
 
             await this.mongoDbModule.rebuild (logTool.trace ());
 
-            resultObject.result (ExceptionTool.SUCCESSFUL ());
+            resultObject.setResult (ExceptionTool.SUCCESSFUL ());
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -121,24 +116,24 @@ export class BackendService {
 
     }
 
-    public async postRebuildRelational (traceObject: JsonObject): Promise<ResultObject> {
+    public async postRebuildRelationalAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         const resultObject = new ResultObject ();
 
         try {
 
-            await this.rebuildReadMainFile (logTool.trace ());
+            await this.rebuildReadMainFile (paramsObject, logTool.trace ());
 
-            resultObject.result (ExceptionTool.SUCCESSFUL ());
+            resultObject.setResult (ExceptionTool.SUCCESSFUL ());
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -151,49 +146,12 @@ export class BackendService {
 
     }
 
-    public async postReloadIndicators (traceObject: JsonObject): Promise<ResultObject> {
+    private async rebuildReadMainFile (paramsObject: JsonObject, traceObject: JsonObject): Promise<void> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
-
-        let resultObject = new ResultObject ();
-
-        try {
-
-            await this.reloadDollarIndicators (logTool.trace ());
-            await this.reloadEuroIndicators (logTool.trace ());
-            await this.reloadFomentUnitIndicators (logTool.trace ());
-            await this.reloadMonthlyTaxUnitIndicators (logTool.trace ());
-
-            resultObject.result (ExceptionTool.SUCCESSFUL ());
-
-        } catch (exception) {
-
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
-
-            logTool.exception ();
-
-        }
-
-        logTool.response (resultObject);
-        logTool.finalize ();
-
-        return resultObject;
-
-    }
-
-    private async rebuildReadMainFile (traceObject: JsonObject): Promise<void> {
-
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
-
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
-
-        const paramsObject = new JsonObject ();
-        paramsObject.set ('txt_file', 'index.txt');
-        paramsObject.set ('txt_path', './src/database/');
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         const contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_file'));
         const contentString = contentBuffer.toString ();
@@ -221,10 +179,10 @@ export class BackendService {
 
     private async rebuildReadFolderFile (paramsObject: JsonObject, traceObject: JsonObject): Promise<void> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         paramsObject.set ('txt_folder', paramsObject.get ('txt_folder').split ('/') [0] + '/');
 
@@ -255,10 +213,10 @@ export class BackendService {
 
     private async rebuildReadScriptFile (paramsObject: JsonObject, traceObject: JsonObject): Promise<void> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         const contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_folder') + paramsObject.get ('txt_script'));
         const contentString = contentBuffer.toString ();
@@ -280,25 +238,58 @@ export class BackendService {
 
     }
 
-    private async reloadDollarIndicators (traceObject: JsonObject): Promise<ResultObject> {
+    public async postReloadIndicatorsAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
+
+        let resultObject = new ResultObject ();
+
+        try {
+
+            await this.reloadDollarIndicators (paramsObject, logTool.trace ());
+            await this.reloadEuroIndicators (paramsObject, logTool.trace ());
+            await this.reloadFomentUnitIndicators (paramsObject, logTool.trace ());
+            await this.reloadMonthlyTaxUnitIndicators (paramsObject, logTool.trace ());
+
+            resultObject.setResult (ExceptionTool.SUCCESSFUL ());
+
+        } catch (exception) {
+
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
+
+            logTool.exception ();
+
+        }
+
+        logTool.response (resultObject);
+        logTool.finalize ();
+
+        return resultObject;
+
+    }
+
+    private async reloadDollarIndicators (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+
+        const stackStrings = await CommonsTool.getStackStrings ();
+
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         const headersObject = null;
 
         const queryObject = new JsonObject ();
         queryObject.del ('jsn_data');
-        queryObject.set ('apikey', await this.propertiesTool.get ('scheduler.indicators.token'));
+        queryObject.set ('apikey', paramsObject.get ('txt_token'));
         queryObject.set ('formato', 'json');
 
         let resultObject = new ResultObject ();
 
         try {
 
-            resultObject = await this.webserviceModule.get (await this.propertiesTool.get ('scheduler.indicators.host.dollar') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_dollar') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
             resultObject.set ('outgoing', resultObject.get (['outgoing', 'Dolares']));
             resultObject.rename ('Fecha', 'date');
             resultObject.rename ('Valor', 'value');
@@ -312,7 +303,7 @@ export class BackendService {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.INDICATORS_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.INDICATORS_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -325,25 +316,25 @@ export class BackendService {
 
     }
 
-    private async reloadEuroIndicators (traceObject: JsonObject): Promise<ResultObject> {
+    private async reloadEuroIndicators (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let headersObject = null;
 
         let queryObject = new JsonObject ();
         queryObject.del ('jsn_data');
-        queryObject.set ('apikey', await this.propertiesTool.get ('scheduler.indicators.token'));
+        queryObject.set ('apikey', paramsObject.get ('txt_token'));
         queryObject.set ('formato', 'json');
 
         let resultObject = new ResultObject ();
 
         try {
 
-            resultObject = await this.webserviceModule.get (await this.propertiesTool.get ('scheduler.indicators.host.euro') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_euro') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
             resultObject.set ('outgoing', resultObject.get (['outgoing', 'Euros']));
             resultObject.rename ('Fecha', 'date');
             resultObject.rename ('Valor', 'value');
@@ -357,7 +348,7 @@ export class BackendService {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.INDICATORS_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.INDICATORS_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -370,25 +361,25 @@ export class BackendService {
 
     }
 
-    private async reloadFomentUnitIndicators (traceObject: JsonObject): Promise<ResultObject> {
+    private async reloadFomentUnitIndicators (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let headersObject = null;
 
         let queryObject = new JsonObject ();
         queryObject.del ('jsn_data');
-        queryObject.set ('apikey', await this.propertiesTool.get ('scheduler.indicators.token'));
+        queryObject.set ('apikey', paramsObject.get ('txt_token'));
         queryObject.set ('formato', 'json');
 
         let resultObject = new ResultObject ();
 
         try {
 
-            resultObject = await this.webserviceModule.get (await this.propertiesTool.get ('scheduler.indicators.host.foment_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_foment_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
             resultObject.set ('outgoing', resultObject.get (['outgoing', 'UFs']));
             resultObject.rename ('Fecha', 'date');
             resultObject.rename ('Valor', 'value');
@@ -402,7 +393,7 @@ export class BackendService {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.INDICATORS_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.INDICATORS_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -415,25 +406,25 @@ export class BackendService {
 
     }
 
-    private async reloadMonthlyTaxUnitIndicators (traceObject: JsonObject): Promise<ResultObject> {
+    private async reloadMonthlyTaxUnitIndicators (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let headersObject = null;
 
         let queryObject = new JsonObject ();
         queryObject.del ('jsn_data');
-        queryObject.set ('apikey', await this.propertiesTool.get ('scheduler.indicators.token'));
+        queryObject.set ('apikey', paramsObject.get ('txt_token'));
         queryObject.set ('formato', 'json');
 
         let resultObject = new ResultObject ();
 
         try {
 
-            resultObject = await this.webserviceModule.get (await this.propertiesTool.get ('scheduler.indicators.host.monthly_tax_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_monthly_tax_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
             resultObject.set ('outgoing', resultObject.get (['outgoing', 'UTMs']));
             resultObject.rename ('Fecha', 'date');
             resultObject.rename ('Valor', 'value');
@@ -447,7 +438,7 @@ export class BackendService {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.INDICATORS_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.INDICATORS_EXCEPTION (stackStrings));
 
             logTool.exception ();
 

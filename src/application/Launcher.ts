@@ -1,5 +1,4 @@
 import 'reflect-metadata';
-import 'tsconfig-paths/register';
 
 import {container, inject, injectable} from 'tsyringe';
 
@@ -8,13 +7,13 @@ import express from 'express';
 import localTunnel from 'localtunnel';
 import superagent from 'superagent';
 
-import {BackendController} from '@website/BackendController';
-import {FrontendController} from '@website/FrontendController';
-import {ScheduleController} from '@website/ScheduleController';
-import {LogTool} from '@toolkit/LogTool';
-import {PropertiesTool} from '@toolkit/PropertiesTool';
-import {ReflectionTool} from '@toolkit/ReflectionTool';
-import {JsonObject} from '@object/JsonObject';
+import {BackendController} from './website/BackendController';
+import {FrontendController} from './website/FrontendController';
+import {ScheduleController} from './website/ScheduleController';
+import {CommonsTool} from './toolkit/CommonsTool';
+import {LogTool} from './toolkit/LogTool';
+import {PropertiesTool} from './toolkit/PropertiesTool';
+import {JsonObject} from "./object/JsonObject";
 
 @injectable ()
 export class Launcher {
@@ -22,63 +21,37 @@ export class Launcher {
     private readonly expressApplication: express.Application;
 
     constructor (
-        @inject (BackendController) private readonly backendController: BackendController,
-        @inject (FrontendController) private readonly frontendController: FrontendController,
-        @inject (ScheduleController) private readonly scheduleController: ScheduleController,
-        @inject (PropertiesTool) private readonly propertiesTool: PropertiesTool,
-        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
+        @inject (BackendController) private backendController: BackendController,
+        @inject (FrontendController) private frontendController: FrontendController,
+        @inject (ScheduleController) private scheduleController: ScheduleController,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
         this.expressApplication = express ();
+        propertiesTool.initialize ().then ();
     }
 
     public async initialize (): Promise<void> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (null, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings);
         logTool.comment ('Application:', 'Starting');
         logTool.finalize ();
 
-        await this.propertiesTool.load ();
-
-        await Promise.all ([
-            this.loadConfiguration (),
-            this.engineInformation (logTool.trace ()),
-            this.environmentInformation (logTool.trace ()),
-            this.loadWebsite ()
-        ]);
+        await this.engineInformation (logTool.trace ());
+        await this.environmentInformation (logTool.trace ());
+        await this.staticComponents ();
+        await this.dynamicComponents ();
 
         logTool.comment ('Application:', 'Started');
         logTool.finalize ();
 
     }
 
-    private async loadConfiguration (): Promise<void> {
-
-        this.expressApplication.set ('view engine', 'ejs');
-        this.expressApplication.set ('views', 'src/presentation/');
-        this.expressApplication.use (express.json ());
-        this.expressApplication.use (express.static ('src/resources/'));
-        this.expressApplication.use (express.urlencoded ({extended: true}));
-
-    }
-
-    private async loadWebsite (): Promise<void> {
-
-        await Promise.all ([
-            this.backendController.initialize (this.expressApplication),
-            this.frontendController.initialize (this.expressApplication),
-            this.scheduleController.initialize ()
-        ]);
-
-    }
-
     private async engineInformation (traceObject: JsonObject): Promise<void> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
-
-        const logTool = new LogTool ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
         const versionsMap = {
             'Node': childProcess.execSync ('node -v').toString ().trim ().slice (1),
@@ -89,7 +62,8 @@ export class Launcher {
 
         for (const [keyString, valueString] of Object.entries (versionsMap)) {
 
-            logTool.initialize (traceObject, reflectionStrings);
+            const logTool = container.resolve (LogTool);
+            logTool.initialize (stackStrings, traceObject, 2);
             logTool.comment (keyString + ':', valueString);
             logTool.finalize ();
 
@@ -99,94 +73,87 @@ export class Launcher {
 
     private async environmentInformation (traceObject: JsonObject): Promise<void> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject, 2);
+        logTool.comment ('Version:', await CommonsTool.getApplicationVersion ());
+        logTool.finalize ();
 
-        try {
+        let hostString = await this.propertiesTool.get ('system.host');
 
-            const versionString = await this.propertiesTool.require ('application.version');
+        const portString = process.env.PORT || await this.propertiesTool.get ('system.port');
 
-            logTool.comment ('Version:', versionString);
-            logTool.finalize ();
+        if (portString !== '80') {
 
-            let hostString = await this.propertiesTool.require ('system.host');
+            hostString += ':' + portString;
 
-            const portString = process.env.PORT || await this.propertiesTool.get ('system.port');
+        }
 
-            if (portString !== '80') {
+        const environmentString = process.argv[2].slice (2);
 
-                hostString += ':' + portString;
+        switch (environmentString) {
 
-            }
+            case 'dev':
 
-            const environmentString = process.argv[2].slice (2);
+                await this.startDevelopmentEnvironment (stackStrings, traceObject, portString, hostString);
 
-            switch (environmentString) {
+                break;
 
-                case 'dev':
+            case 'prd':
 
-                    await this.startDevelopmentEnvironment (logTool, traceObject, reflectionStrings, portString, hostString);
+                await this.startProductionEnvironment (stackStrings, traceObject, portString, hostString);
 
-                    break;
-
-                case 'prd':
-
-                    await this.startProductionEnvironment (logTool, traceObject, reflectionStrings, portString, hostString);
-
-                    break;
-
-            }
-
-        } catch (error) {
-
-            logTool.comment ('Error:', 'Failed to load environment information');
-            logTool.exception ();
-            logTool.finalize ();
+                break;
 
         }
 
     }
 
-    private async startDevelopmentEnvironment (logTool: LogTool, traceObject: JsonObject, reflectionStrings: string[], portString: string, hostString: string): Promise<void> {
+    private async startDevelopmentEnvironment (stackStrings: string[], traceObject: JsonObject, portString: string, hostString: string): Promise<void> {
 
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject, 2);
         logTool.comment ('Environment:', 'DEVELOPMENT');
         logTool.finalize ();
 
-        this.expressApplication.listen (portString, () => {
+        await new Promise<void> ((callback) => {
 
-            logTool.initialize (traceObject, reflectionStrings);
-            logTool.comment ('Private host:', hostString);
-            logTool.finalize ();
+            this.expressApplication.listen (portString, async () => {
 
+                logTool.initialize (stackStrings, traceObject, 2);
+                logTool.comment ('Private host:', hostString);
+                logTool.finalize ();
+
+                callback ();
+
+            })
         });
 
-        if (await this.propertiesTool.get ('system.tunnel.enable', true)) {
+        if (await this.propertiesTool.get ('system.tunnel.enable')) {
 
             try {
 
-                const subdomainString = (await this.propertiesTool.require ('application.name') + await this.propertiesTool.require ('application.domain')).toLowerCase ().replace ('.', '');
+                const subdomainString = (await this.propertiesTool.get ('application.name') + await this.propertiesTool.get ('application.domain')).toLowerCase ().replace ('.', '');
 
                 const developmentTunnel = await localTunnel ({
                     port: Number (portString),
                     subdomain: subdomainString
                 });
 
-                logTool.initialize (traceObject, reflectionStrings);
+                logTool.initialize (stackStrings, traceObject, 2);
                 logTool.comment ('Tunnel host:', developmentTunnel.url);
                 logTool.finalize ();
 
-                const addressString = await superagent.get (await this.propertiesTool.require ('integration.public')).then (responseObject => responseObject.body.ip);
+                const addressString = await superagent.get (await this.propertiesTool.get ('integration.public')).then (responseObject => responseObject.body.ip);
 
-                logTool.initialize (traceObject, reflectionStrings);
+                logTool.initialize (stackStrings, traceObject, 2);
                 logTool.comment ('Public address:', addressString);
                 logTool.finalize ();
 
-            } catch (error) {
+            } catch (exception) {
 
-                logTool.initialize (traceObject, reflectionStrings);
+                logTool.initialize (stackStrings, traceObject, 2);
                 logTool.exception ();
                 logTool.comment ('Tunnel host:', 'Failed to start tunnel');
                 logTool.finalize ();
@@ -197,19 +164,55 @@ export class Launcher {
 
     }
 
-    private async startProductionEnvironment (logTool: LogTool, traceObject: JsonObject, reflectionStrings: string[], portString: string, hostString: string): Promise<void> {
+    private async startProductionEnvironment (stackStrings: string[], traceObject: JsonObject, portString: string, hostString: string): Promise<void> {
 
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
         logTool.comment ('Environment:', 'PRODUCTION');
         logTool.finalize ();
 
-        this.expressApplication.listen (portString, () => {
+        await new Promise<void> ((callback) => {
 
-            logTool.initialize (traceObject, reflectionStrings);
-            logTool.comment ('Public host:', hostString);
-            logTool.finalize ();
+            this.expressApplication.listen (portString, async () => {
+
+                logTool.initialize (stackStrings, traceObject, 2);
+                logTool.comment ('Private host:', hostString);
+                logTool.finalize ();
+
+                callback ();
+
+            })
+        });
+
+        await new Promise<void> (() => {
+
+            this.expressApplication.listen (portString, () => {
+
+                logTool.initialize (stackStrings, traceObject);
+                logTool.comment ('Public host:', hostString);
+                logTool.finalize ();
+
+            });
 
         });
+
+    }
+
+    private async staticComponents (): Promise<void> {
+
+        this.expressApplication.set ('view engine', 'ejs');
+        this.expressApplication.set ('views', 'src/presentation/');
+        this.expressApplication.use (express.json ());
+        this.expressApplication.use (express.static ('src/resources/'));
+        this.expressApplication.use (express.urlencoded ({extended: true}));
+
+    }
+
+    private async dynamicComponents (): Promise<void> {
+
+        await this.backendController.initialize (this.expressApplication);
+        await this.frontendController.initialize (this.expressApplication);
+        await this.scheduleController.initialize ();
 
     }
 

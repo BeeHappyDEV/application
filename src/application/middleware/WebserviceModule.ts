@@ -1,27 +1,22 @@
-import {inject, injectable} from 'tsyringe';
+import {container, injectable} from 'tsyringe';
 
 import superagent from 'superagent';
 
-import {ExceptionTool} from '@toolkit/ExceptionTool';
-import {JsonObject} from '@object/JsonObject';
-import {LogTool} from '@toolkit/LogTool';
-import {ResultObject} from '@object/ResultObject';
-import {ReflectionTool} from '@toolkit/ReflectionTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogTool} from '../toolkit/LogTool';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class WebserviceModule {
 
-    constructor (
-        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
-    ) {
-    }
-
     public async delete (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let resultObject = new ResultObject ();
 
@@ -53,7 +48,7 @@ export class WebserviceModule {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.SERVICE_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -68,10 +63,10 @@ export class WebserviceModule {
 
     public async get (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let resultObject = new ResultObject ();
 
@@ -100,12 +95,11 @@ export class WebserviceModule {
             }
 
             let responseObject = await requestObject.then ();
-
             resultObject.setServiceObject (queryObject, responseObject);
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.SERVICE_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -120,10 +114,10 @@ export class WebserviceModule {
 
     public async post (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let resultObject = new ResultObject ();
 
@@ -157,7 +151,7 @@ export class WebserviceModule {
 
         } catch (exception) {
 
-            resultObject.setServiceException ();
+            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStrings));
 
         }
 

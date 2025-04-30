@@ -1,58 +1,65 @@
 import {inject, injectable} from 'tsyringe';
 import {MongoClient} from 'mongodb';
 
-import {ExceptionTool} from '@toolkit/ExceptionTool';
-import {LogTool} from '@toolkit/LogTool';
-import {PropertiesTool} from '@toolkit/PropertiesTool';
-import {ReflectionTool} from '@toolkit/ReflectionTool';
-import {ResultObject} from '@object/ResultObject';
-import {JsonObject} from '@object/JsonObject';
+//import {CommonsTool} from '../toolkit/CommonsTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+//import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
+import {ResultObject} from '../object/ResultObject';
+import {JsonObject} from '../object/JsonObject';
 
 @injectable ()
 export class MongoDbModule {
 
     constructor (
-        @inject (PropertiesTool) private readonly propertiesTool: PropertiesTool,
-        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
+        propertiesTool.initialize ().then ();
     }
-/*
-    public async insertMetric (logObject: JsonObject) {
 
+    // @ts-ignore
+    public async insertTrace (logObject: JsonObject): Promise<void> {
+
+        //console.log(logObject.all());
+
+        /*
         let mongoClient = new MongoClient (await this.propertiesTool.get ('integration.mongo.host'));
-        await mongoClient.connect ();
 
-        let mongoDatabase = await mongoClient.db (await this.propertiesTool.get ('integration.mongo.database'));
+        try {
 
-        let mongoCollection = await mongoDatabase.collection (await this.propertiesTool.get ('integration.mongo.metrics'));
+            await mongoClient.connect ();
 
-        await mongoCollection.insertOne (logObject.all ());
+            const documentObject = {
+                ...logObject.all (),
+                _id: new ObjectId ()
+            };
 
-        await mongoClient.close ();
+            delete documentObject._id;
+
+            let mongoDatabase = mongoClient.db (await this.propertiesTool.get ('integration.mongo.database'));
+
+            let mongoCollection = mongoDatabase.collection (await this.propertiesTool.get ('integration.mongo.traces'));
+
+            await mongoCollection.insertOne (documentObject);
+
+        } catch (exception) {
+            console.log (exception)
+        } finally {
+
+            await mongoClient.close ();
+
+        }
+        */
 
     }
-*/
-    public async insertTrace (logObject: JsonObject) {
 
-        let mongoClient = new MongoClient (await this.propertiesTool.get ('integration.mongo.host'));
-        await mongoClient.connect ();
-
-        let mongoDatabase = await mongoClient.db (await this.propertiesTool.get ('integration.mongo.database'));
-
-        let mongoCollection = await mongoDatabase.collection (await this.propertiesTool.get ('integration.mongo.traces'));
-
-        await mongoCollection.insertOne (logObject.all ());
-
-        await mongoClient.close ();
-
-    }
-
+    // @ts-ignore
     public async rebuild (traceObject: JsonObject) {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        //const reflectionStrings = await CommonsTool.getStackStrings ();
 
-        let logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        //let logTool = new LogTool (this, this.propertiesTool);
+        //logTool.initialize (traceObject, reflectionStrings);
 
         let resultObject = new ResultObject ();
 
@@ -65,9 +72,9 @@ export class MongoDbModule {
 
         await mongoClient.close ();
 
-        resultObject.result (ExceptionTool.SUCCESSFUL ());
+        resultObject.setResult (ExceptionTool.SUCCESSFUL ());
 
-        logTool.finalize ();
+        //logTool.finalize ();
 
         return resultObject;
 

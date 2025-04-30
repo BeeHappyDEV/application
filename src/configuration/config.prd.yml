@@ -5,6 +5,11 @@ system:
   host: https://beehappy.dev
   port: 3000
   websocket: ws://beehappy.dev
+  tunnel:
+    enable: false
+  log:
+    console: false
+    persist: true
 
 # INTEGRATIONS #
 
@@ -50,15 +55,15 @@ scheduler:
   wakeup:
     cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
     enable: true
+    host: https://beehappy.dev/backend/system/wakeup
     verbose: EVERY TEN MINUTES
-    webservice: https://beehappy.dev/backend/system/wakeup
   indicators:
     cron: 0 0 0,6,12,18 * * * UTC_OFFSET=0
     enable: true
+    host: https://beehappy.dev/backend/reload/indicators
     verbose: MANY TIMES PER DAY
-    webservice: https://beehappy.dev/backend/reload/indicators
   inspirational:
     cron: 0 0 8 * * * UTC_OFFSET=0
     enable: false
+    host: https://beehappy.dev/backend/load/inspirational
     verbose: ONE TIME PER DAY
-    webservice: https://beehappy.dev/backend/load/inspirational

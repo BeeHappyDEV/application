@@ -1,29 +1,29 @@
-import {inject, injectable} from 'tsyringe';
+import {container, inject, injectable} from 'tsyringe';
 
-import {PostgresModule} from '@middleware/PostgresModule';
-import {ExceptionTool} from '@toolkit/ExceptionTool';
-import {LogTool} from '@toolkit/LogTool';
-import {ResultObject} from '@object/ResultObject';
-import {ReflectionTool} from '@toolkit/ReflectionTool';
-import {PropertiesTool} from '@toolkit/PropertiesTool';
-import {JsonObject} from '@object/JsonObject';
+import {PostgresModule} from '../middleware/PostgresModule';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogTool} from '../toolkit/LogTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class FrontendService {
 
     constructor (
-        @inject (PostgresModule) public readonly postgresTool: PostgresModule,
-        @inject (PropertiesTool) public readonly propertiesTool: PropertiesTool,
-        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool
+        @inject (PostgresModule) public postgresTool: PostgresModule,
+        @inject (PropertiesTool) public propertiesTool: PropertiesTool
     ) {
+        this.propertiesTool.initialize ().then ();
     }
 
     public async getPageAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let resultObject = new ResultObject ();
 
@@ -35,7 +35,7 @@ export class FrontendService {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -50,10 +50,10 @@ export class FrontendService {
 
     public async getLinkAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let resultObject = new ResultObject ();
 
@@ -65,7 +65,7 @@ export class FrontendService {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
 
             logTool.exception ();
 
@@ -80,10 +80,10 @@ export class FrontendService {
 
     public async getFileAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         let resultObject = new ResultObject ();
 
@@ -95,7 +95,7 @@ export class FrontendService {
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
 
             logTool.exception ();
 

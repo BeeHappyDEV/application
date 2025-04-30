@@ -1,27 +1,26 @@
-import {inject, injectable} from 'tsyringe';
+import {container, inject, injectable} from 'tsyringe';
 
-import {WebserviceModule} from '@middleware/WebserviceModule';
-import {ExceptionTool} from '@toolkit/ExceptionTool';
-import {JsonObject} from '@object/JsonObject';
-import {LogTool} from '@toolkit/LogTool';
-import {ReflectionTool} from '@toolkit/ReflectionTool';
-import {ResultObject} from '@object/ResultObject';
+import {WebserviceModule} from '../middleware/WebserviceModule';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogTool} from '../toolkit/LogTool';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class ScheduleService {
 
     constructor (
-        @inject (ReflectionTool) private readonly reflectionTool: ReflectionTool,
-        @inject (WebserviceModule) private readonly webserviceModule: WebserviceModule
+        @inject (WebserviceModule) private webserviceModule: WebserviceModule
     ) {
     }
 
     public async cronScheduleAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const reflectionStrings = await this.reflectionTool.getStackStrings ();
+        const stackStrings = await CommonsTool.getStackStrings ();
 
-        const logTool = new LogTool ();
-        logTool.initialize (traceObject, reflectionStrings);
+        const logTool = container.resolve (LogTool);
+        logTool.initialize (stackStrings, traceObject);
 
         const queryObject = new JsonObject ();
         queryObject.set ('depth', '3');
@@ -31,11 +30,11 @@ export class ScheduleService {
 
         try {
 
-            resultObject = await this.webserviceModule.post (paramsObject.get ('txt_webservice'), null, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.post (await paramsObject.get ('txt_host'), null, queryObject, null, logTool.trace ());
 
         } catch (exception) {
 
-            resultObject.result (ExceptionTool.APPLICATION_EXCEPTION (reflectionStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
 
             logTool.exception ();
 

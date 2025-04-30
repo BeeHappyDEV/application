@@ -1,0 +1,21 @@
+/* * * * * * * * * * * */
+/* D E F I N I T I O N */
+/* * * * * * * * * * * */
+
+definition/tables/dat_constants.sql
+definition/tables/dat_countries.sql
+definition/tables/dat_regions.sql
+definition/tables/dat_provinces.sql
+definition/tables/dat_communes.sql
+definition/tables/dat_holidays.sql
+
+/* * * * * * * * * * * */
+/* P O P U L A T I O N */
+/* * * * * * * * * * * */
+
+population/tables/dat_constants.sql
+population/tables/dat_countries.sql
+population/tables/dat_regions.sql
+population/tables/dat_provinces.sql
+population/tables/dat_communes.sql
+population/tables/dat_holidays.sql

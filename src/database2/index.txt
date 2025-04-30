@@ -1,0 +1,8 @@
+/* * * * * * * * * * * * */
+/* I N S T A L A T I O N */
+/* * * * * * * * * * * * */
+
+system/index.txt
+core/index.txt
+commons/index.txt
+website/index.txt

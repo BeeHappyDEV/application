@@ -1,42 +1,52 @@
-import {injectable} from 'tsyringe';
+import {inject, injectable} from 'tsyringe';
 
 import crypto from 'crypto';
 import express from 'express';
 import kleur from 'kleur';
 import url from 'url';
 
-//import {ObservabilityTool} from '@toolkit/ObservabilityTool';
-import {JsonObject} from '@object/JsonObject';
-//import {MongoTool} from './MongoTool';
-import {ResultObject} from '@object/ResultObject';
+import {MongoDbModule} from '../middleware/MongoDbModule';
+import {PropertiesTool} from './PropertiesTool';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class LogTool {
-/*
+
+    private logObject: any = new JsonObject ();
+
     constructor (
-        @inject (ObservabilityTool) private readonly observabilityTool: ObservabilityTool
+        @inject (MongoDbModule) private mongoDbModule: MongoDbModule,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
-*/
-    private logObject = new JsonObject ();
 
-    public initialize (traceObject: JsonObject | null, reflectionStrings: String[]) {
+    public initialize (stackStrings: string[], traceObject: JsonObject | null = null, depthNumber?: number): void {
 
-        //this.logObject.set ('metrics', this.observabilityTool.before ());
+        if (traceObject === null) {
+
+            this.logObject = new JsonObject ();
+
+        } else {
+
+            this.logObject = traceObject;
+
+        }
+
         this.logObject.set ('exception', false);
         this.logObject.set ('carry', false);
         this.logObject.set ('starting', Date.now ());
         this.logObject.set ('offset', crypto.randomUUID ().split ('-').join (''));
-        this.logObject.set ('class', reflectionStrings [0]);
-        this.logObject.set ('method', reflectionStrings [1]);
+        this.logObject.set ('class', stackStrings [0]);
+        this.logObject.set ('method', stackStrings [1]);
 
-        switch (reflectionStrings [2]) {
+        switch (stackStrings [2]) {
 
             case 'frontend':
             case 'backend':
             case 'schedule':
 
-                this.logObject.set ('source', reflectionStrings [2]);
+                this.logObject.set ('source', stackStrings [2]);
 
                 break;
 
@@ -52,25 +62,36 @@ export class LogTool {
 
         }
 
-        if (traceObject == null) {
+        if (traceObject === null) {
 
             this.logObject.set ('depth', 1);
             this.logObject.set ('thread', crypto.randomUUID ().split ('-').join (''));
 
         } else {
 
-            let depthNumber = Number (traceObject.get ('depth'));
+            if (depthNumber !== null && depthNumber !== undefined) {
 
-            this.logObject.set ('depth', Number (depthNumber + 1));
-            this.logObject.set ('thread', traceObject.get ('thread'));
+                this.logObject.set ('depth', depthNumber);
+
+            } else {
+
+                if (this.logObject.get ('depth') === null) {
+
+                    this.logObject.set ('depth', 1);
+
+                } else {
+
+                    this.logObject.set ('depth', Number (Number (traceObject.get ('depth')) + 1));
+
+                }
+
+            }
 
         }
 
-        return this.logObject;
-
     }
 
-    public contextualize (expressRequest: typeof express.request) {
+    public contextualize (expressRequest: typeof express.request): void {
 
         if (Object.keys (expressRequest.query).length !== 0) {
 
@@ -120,7 +141,7 @@ export class LogTool {
 
     }
 
-    public response (resultObject: ResultObject) {
+    public response (resultObject: ResultObject): void {
 
         if (resultObject.getCarry () == true) {
 
@@ -160,20 +181,20 @@ export class LogTool {
 
     }
 
-    public resource (resourceString: String) {
+    public resource (resourceString: string): void {
 
         this.logObject.set ('resource', resourceString);
 
     }
 
-    public exception () {
+    public exception (): void {
 
         this.logObject.set ('carry', true);
         this.logObject.set ('exception', true);
 
     }
 
-    public comment (commentString: String, highlightString: String, exceptionBoolean?: Boolean) {
+    public comment (commentString: string, highlightString: string, exceptionBoolean?: boolean): void {
 
         if (exceptionBoolean) {
 
@@ -199,7 +220,7 @@ export class LogTool {
 
     }
 
-    public trace () {
+    public trace (): JsonObject {
 
         let traceObject = new JsonObject ();
 
@@ -211,20 +232,40 @@ export class LogTool {
 
     }
 
-    public finalize () {
+    public finalize (): void {
 
         this.logObject.set ('ending', Date.now ());
         this.logObject.set ('interval', ((new Date (this.logObject.get ('ending')).getTime () - new Date (this.logObject.get ('starting')).getTime ()) / 1000).toFixed (3));
 
-        let daD1 = new Date (Number (this.logObject.get ('starting')));
+        const daS1 = this.logObject.get ('starting');
 
-        let yyD1 = daD1.getFullYear ();
-        let mmD1 = String (daD1.getMonth () + 1).padStart (2, '0');
-        let ddD1 = String (daD1.getDate ()).padStart (2, '0');
-        let hhD1 = String (daD1.getHours ()).padStart (2, '0');
-        let miD1 = String (daD1.getMinutes ()).padStart (2, '0');
-        let ssD1 = String (daD1.getSeconds ()).padStart (2, '0');
-        let msD1 = String (daD1.getMilliseconds ()).padStart (3, '0');
+        let daD1: Date;
+
+        if (daS1 instanceof Date) {
+
+            daD1 = daS1;
+
+        } else if (typeof daS1 === 'number') {
+
+            daD1 = new Date (daS1);
+
+        } else if (typeof daS1 === 'string') {
+
+            daD1 = new Date (daS1.includes ('T') ? daS1 : daS1.replace (' ', 'T'));
+
+        } else {
+
+            throw new Error ();
+
+        }
+
+        const yyD1 = daD1.getFullYear ();
+        const mmD1 = String (daD1.getMonth () + 1).padStart (2, '0');
+        const ddD1 = String (daD1.getDate ()).padStart (2, '0');
+        const hhD1 = String (daD1.getHours ()).padStart (2, '0');
+        const miD1 = String (daD1.getMinutes ()).padStart (2, '0');
+        const ssD1 = String (daD1.getSeconds ()).padStart (2, '0');
+        const msD1 = String (daD1.getMilliseconds ()).padStart (3, '0');
 
         let tiD1 = '';
         tiD1 = tiD1 + yyD1 + '-';
@@ -237,7 +278,27 @@ export class LogTool {
 
         this.logObject.set ('starting', tiD1);
 
-        let daD2 = new Date (Number (this.logObject.get ('ending')));
+        const daS2 = this.logObject.get ('ending');
+
+        let daD2: Date;
+
+        if (daS2 instanceof Date) {
+
+            daD2 = daS2;
+
+        } else if (typeof daS2 === 'number') {
+
+            daD2 = new Date (daS2);
+
+        } else if (typeof daS2 === 'string') {
+
+            daD2 = new Date (daS2.includes ('T') ? daS2 : daS2.replace (' ', 'T'));
+
+        } else {
+
+            throw new Error ();
+
+        }
 
         let yyD2 = daD2.getFullYear ();
         let mmD2 = String (daD2.getMonth () + 1).padStart (2, '0');
@@ -353,7 +414,7 @@ export class LogTool {
 
             }
 
-            if (this.logObject.get ('class').endsWith ('PostgresTool')) {
+            if (this.logObject.get ('class').endsWith ('PostgresModule')) {
 
                 if (this.logObject.get ('resource') != null) {
 
@@ -363,7 +424,7 @@ export class LogTool {
 
             }
 
-            if (this.logObject.get ('class').endsWith ('ServiceTool')) {
+            if (this.logObject.get ('class').endsWith ('WebserviceModule')) {
 
                 captionString = captionString + ' - Endpoint: ' + kleur.blue (this.logObject.get ('resource'));
 
@@ -374,14 +435,12 @@ export class LogTool {
         this.logObject.set ('interval', parseFloat (this.logObject.get ('interval')));
 
         console.log (captionString);
-        //logger.info (captionString);
 
+        if (Boolean (this.propertiesTool.get ('system.log.persist'))) {
 
-        //let observabilityTool = ObservabilityTool.getInstance ();
-        //observabilityTool.after (this.logObject);
+            this.mongoDbModule.insertTrace (this.logObject).then ();
 
-        //let mongoTool = MongoTool.getInstance ();
-        //mongoTool.insertTrace (this.logObject).then ();
+        }
 
     }
 
