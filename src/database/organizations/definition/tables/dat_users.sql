@@ -19,7 +19,9 @@ create table if not exists dat_users (
     txt_mail       text,
     txt_location   text,
     constraint dat_users_pk primary key (idf_user)
-) inherits (sys_default);
+) inherits (dat_system);
+
+alter table dat_users enable row level security;
 
 comment on table dat_users is 'usr';
 
