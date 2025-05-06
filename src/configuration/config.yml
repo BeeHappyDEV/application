@@ -8,7 +8,7 @@ application:
 
 integration:
   auth:
-    suffix: @user.beehappy.dev
+    suffix: user.beehappy.dev
   cloudflare:
     host: https://api.cloudflare.com/client/v4/zones/9cd5ceaf174e17679d4d11bc8dfe0fe6/purge_cache
     token: Xj717vFt8wVLISFbMkQySM40d7SjRBrfuburg-3o

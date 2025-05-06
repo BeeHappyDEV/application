@@ -54,7 +54,7 @@ export class ScheduleController {
 
         }
 
-        if (Boolean (this.propertiesTool.get ('scheduler.inspirational.enable'))) {
+        if (Boolean (await this.propertiesTool.get ('scheduler.inspirational.enable'))) {
 
             nodeCron.schedule (await this.propertiesTool.get ('scheduler.inspirational.cron'), async (): Promise<void> => {
 

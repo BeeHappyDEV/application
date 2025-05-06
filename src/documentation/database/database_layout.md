@@ -1,8 +1,6 @@
 # [Start](../start.md) / Database Layout
 
 <br/>
-<br/>
-<br/>
 
 > General Layout
 
@@ -10,9 +8,6 @@
 |:-------------------------------------------------:|
 | ![](../resources/database_function_structure.png) |
 
-
-<br/>
-<br/>
 <br/>
 
 > Status Initializer
@@ -22,8 +17,6 @@
 | ![](../resources/database_status_initializer.png) |
 
 <br/>
-<br/>
-<br/>
 
 > Result Successfully
 
@@ -31,8 +24,6 @@
 |:--------------------------------------------------:|
 | ![](../resources/database_result_successfully.png) |
 
-<br/>
-<br/>
 <br/>
 
 > Result Failed

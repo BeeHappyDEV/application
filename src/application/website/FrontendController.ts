@@ -22,15 +22,6 @@ export class FrontendController {
 
         const paramsObject = new JsonObject ();
 
-        expressApplication.all ('/', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
-
-            paramsObject.set ('txt_action', 'landing');
-            paramsObject.set ('txt_render', 'landing/index.ejs');
-
-            this.getPageAction (expressRequest, expressResponse, paramsObject);
-
-        });
-
         expressApplication.get ('/', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
             paramsObject.set ('txt_action', 'landing');
@@ -204,8 +195,7 @@ export class FrontendController {
 
         expressApplication.use ((expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
-            paramsObject.set ('txt_action', 'landing');
-            paramsObject.set ('txt_render', 'landing/index.ejs');
+            paramsObject.set ('txt_action', '');
 
             this.getPageAction (expressRequest, expressResponse, paramsObject);
 
@@ -223,29 +213,41 @@ export class FrontendController {
 
         const resultObject = await this.frontendModule.getPageAction (paramsObject, logTool.trace ());
 
-        const environmentString = process.argv [2].slice (2);
+        if (resultObject.hasOutgoing ()) {
 
-        switch (environmentString) {
+            const environmentString = process.argv [2].slice (2);
 
-            case 'dev':
+            switch (environmentString) {
 
-                resultObject.setPath (await this.propertiesTool.get ('system.host') + ':' + await this.propertiesTool.get ('system.port'));
+                case 'dev':
 
-                break;
+                    resultObject.setPath (await this.propertiesTool.get ('system.host') + ':' + await this.propertiesTool.get ('system.port'));
 
-            case 'prd':
+                    break;
 
-                resultObject.setPath (await this.propertiesTool.get ('system.host'));
+                case 'prd':
 
-                break;
+                    resultObject.setPath (await this.propertiesTool.get ('system.host'));
+
+                    break;
+
+            }
+
+            resultObject.setVersion (await CommonsTool.getApplicationVersion ());
+            resultObject.setWebsite (await this.propertiesTool.get ('application.name') + await this.propertiesTool.get ('application.domain'));
+            resultObject.setRender (paramsObject.get ('txt_render'));
+
+            expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
+
+        } else {
+
+            resultObject.setRedirect ('/');
+
+            expressResponse.removeHeader ('cache-control');
+            expressResponse.removeHeader ('pragma');
+            expressResponse.redirect (resultObject.getRedirect ());
 
         }
-
-        resultObject.setVersion (await CommonsTool.getApplicationVersion ());
-        resultObject.setWebsite (await this.propertiesTool.get ('application.name') + await this.propertiesTool.get ('application.domain'));
-        resultObject.setRender (paramsObject.get ('txt_render'));
-
-        expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
 
         logTool.response (resultObject);
         logTool.finalize ();

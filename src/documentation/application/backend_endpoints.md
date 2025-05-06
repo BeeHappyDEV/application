@@ -1,8 +1,6 @@
 # [Start](../start.md) > Backend Endpoints
 
 <br/>
-<br/>
-<br/>
 
 > Wake Up Action
 
@@ -14,8 +12,6 @@
 |:--------------:|:----------:|:----------------------:|
 |    Backend     |    post    | /backend/system/wakeup |
 
-<br/>
-<br/>
 <br/>
 
 > Delete Cache Action
@@ -29,8 +25,6 @@
 |    Backend     |    post    | /backend/cache/delete |
 
 <br/>
-<br/>
-<br/>
 
 > Rebuild Documental Action
 
@@ -43,8 +37,6 @@
 |    Backend     |    post    | /backend/rebuild/documental |
 
 <br/>
-<br/>
-<br/>
 
 > Rebuild Relational Action
 
@@ -56,8 +48,6 @@
 |:--------------:|:----------:|:---------------------------:|
 |    Backend     |    post    | /backend/rebuild/relational |
 
-<br/>
-<br/>
 <br/>
 
 > Reload Indicators Action

@@ -1,8 +1,8 @@
-/* * * * * * * * * * * * */
-/* I N S T A L A T I O N */
-/* * * * * * * * * * * * */
+/* * * * * * * * */
+/* M O D U L E S */
+/* * * * * * * * */
 
-system/index.txt
-core/index.txt
-commons/index.txt
+--system/index.txt
+--commons/index.txt
+--members/index.txt
 website/index.txt

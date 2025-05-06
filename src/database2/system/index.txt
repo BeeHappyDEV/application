@@ -1,6 +1,34 @@
-/* * * * * * * * * * * */
-/* D E F I N I T I O N */
-/* * * * * * * * * * * */
+/* * * * * * * */
+/* S C H E M A */
+/* * * * * * * */
 
-definition/schema/set_system.sql
-definition/tables/dat_system.sql
+schema/schema.sql
+
+/* * * * * * * */
+/* T A B L E S */
+/* * * * * * * */
+
+tables/entities.sql
+
+/* * * * * * * * * * */
+/* F U N C T I O N S */
+/* * * * * * * * * * */
+
+functions/system_get_empty_node.sql
+functions/system_del_node.sql
+functions/system_get_array.sql
+functions/system_get_boolean.sql
+functions/system_get_node.sql
+functions/system_get_numeric.sql
+functions/system_get_text.sql
+functions/system_set_array.sql
+functions/system_set_boolean.sql
+functions/system_set_node.sql
+functions/system_set_numeric.sql
+functions/system_set_text.sql
+functions/system_get_time_difference.sql
+functions/system_get_time_object.sql
+functions/system_get_time_value.sql
+functions/result_initializer.sql
+functions/result_successfully.sql
+functions/result_failed.sql

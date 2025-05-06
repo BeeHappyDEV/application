@@ -1,8 +1,6 @@
 # Start
 
 <br/>
-<br/>
-<br/>
 
 > Application
 
@@ -13,8 +11,6 @@
 | Application    | [Backend Endpoints](./application/backend_endpoints.md)    |
 | Application    | [Schedule Endpoints](./application/schedule_endpoints.md)  |
 
-<br/>
-<br/>
 <br/>
 
 > Database

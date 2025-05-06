@@ -1,8 +1,6 @@
 # [Start](../start.md) > Frontend Endpoints
 
 <br/>
-<br/>
-<br/>
 
 > Page Actions
 
@@ -18,8 +16,6 @@
 |    Frontend    |    get     |   /colaborador/{name}   |
 |    Frontend    |    get     | /colaborador/{name}/qr  |
 
-<br/>
-<br/>
 <br/>
 
 > Link Actions
@@ -45,8 +41,6 @@
 |    Frontend    |    get     | /colaborador/{name}/escribeme |
 |    Frontend    |    get     | /colaborador/{name}/texteame  |
 
-<br/>
-<br/>
 <br/>
 
 > File Actions

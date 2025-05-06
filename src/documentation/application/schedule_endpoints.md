@@ -1,8 +1,6 @@
 # [Start](../start.md) > Schedule Endpoints
 
 <br/>
-<br/>
-<br/>
 
 > Schedule Action
 

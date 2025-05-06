@@ -1,0 +1,8 @@
+/* * * * * * * */
+/* T A B L E S */
+/* * * * * * * */
+
+tables/profiles.sql
+tables/organizations.sql
+tables/members.sql
+tables/members_organizations_profiles.sql

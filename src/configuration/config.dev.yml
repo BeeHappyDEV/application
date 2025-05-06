@@ -6,7 +6,7 @@ system:
   port: 8080
   websocket: ws://localhost
   tunnel:
-    enable: true
+    enable: false
   log:
     console: true
     persist: false
@@ -60,9 +60,8 @@ channel:
 
 scheduler:
   wakeup:
-    cron: 0 * * * * * UTC_OFFSET=0
-    #cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
-    enable: true
+    cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
+    enable: false
     host: http://localhost:8080/backend/system/wakeup
     verbose: EVERY TEN MINUTES
   indicators:
