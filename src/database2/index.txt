@@ -4,5 +4,5 @@
 
 --system/index.txt
 --commons/index.txt
---members/index.txt
+members/index.txt
 website/index.txt

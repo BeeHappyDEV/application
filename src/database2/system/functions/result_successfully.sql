@@ -25,7 +25,7 @@ begin
     in_jsn_status = system_set_text (in_jsn_status, 'tim_elapsed', var_tim_elapsed);
     in_jsn_status = system_set_boolean (in_jsn_status, 'boo_exception', false);
 
-    return json_build_object ('status', in_jsn_status, 'incoming', in_jsn_incoming, 'outgoing', in_jsn_outgoing);
+    return json_build_object ('status', in_jsn_status, 'incoming', in_jsn_incoming, 'outgoing', in_jsn_outgoing) :: jsonb;
 
 end;
 $body$ language plpgsql;

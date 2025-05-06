@@ -7,7 +7,7 @@ create table if not exists profiles (
     txt_code           text not null,
     txt_description_en text not null,
     txt_description_es text not null,
-    txt_icon           text not null
+    txt_icon           text
 ) inherits (entities);
 
 alter table profiles enable row level security;
@@ -17,25 +17,27 @@ comment on table profiles is 'prf';
 with tabled_data as (
     select *
     from (values
-        (true, true, 'BEE', 'Corporate Entity', 'Entidad Corporativa', 'profile_bee'),
+        (true, true, 'BEE', 'Corporate Entity', 'Entidad Corporativa', null),
         (true, true, 'AVA', 'Automated Virtual Assistant', 'Asistente Virtual Automatizado', 'profile_ava'),
         (true, true, 'CEO', 'Chief Operating Officer', 'Director Ejecutivo', 'profile_ceo'),
-        (true, true, 'CMO', 'Chief Marketing Officer', 'Director de Marketing', 'profile_cmo'),
-        (true, true, 'MKT', 'Marketing Assistant', 'Asistente de Marketing', 'profile_mkt'),
+        (true, true, 'CMO', 'Chief Marketing Officer', 'Director de Marketing', null),
+        (true, true, 'MKT', 'Marketing Assistant', 'Asistente de Marketing', 'profile_ast'),
         (true, true, 'CFO', 'Chief Financial Officer', 'Director Financiero', 'profile_cfo'),
-        (true, true, 'FIN', 'Finance Assistant', 'Asistente Financiero', 'profile_fin'),
+        (true, true, 'FIN', 'Finance Assistant', 'Asistente Financiero', 'profile_ast'),
         (true, true, 'CTO', 'Chief Technology Officer', 'Director de Tecnología', 'profile_cto'),
-        (true, true, 'TEC', 'Tech Assistant', 'Asistente Técnico', 'profile_tec'),
-        (true, true, 'CCO', 'Chief Communications Officer', 'Director de Comunicaciones', 'profile_cco'),
-        (true, true, 'COM', 'Communications Assistant', 'Asistente de Comunicaciones', 'profile_com'),
+        (true, true, 'TEC', 'Tech Assistant', 'Asistente Técnico', 'profile_ast'),
+        (true, true, 'CCO', 'Chief Communications Officer', 'Director de Comunicaciones', null),
+        (true, true, 'COM', 'Communications Assistant', 'Asistente de Comunicaciones', 'profile_ast'),
         (true, true, 'COO', 'Chief Operating Officer', 'Director de Operaciones', 'profile_coo'),
-        (true, true, 'OPS', 'Operations Assistant', 'Asistente de Operaciones', 'profile_ops'),
+        (true, true, 'OPS', 'Operations Assistant', 'Asistente de Operaciones', 'profile_ast'),
+        (true, true, 'CLO', 'Chief Legal Officer', 'Director Jurídico', 'profile_clo'),
+        (true, true, 'LEG', 'Legal Assistant', 'Asistente Jurídico', 'profile_ast'),
         (true, true, 'CSO', 'Chief Sales Officer', 'Director de Ventas', 'profile_cso'),
-        (true, true, 'SAL', 'Sales Assistant', 'Asistente de Ventas', 'profile_sal'),
-        (true, false, 'B2C', 'Consumer Customer', 'Cliente Individual', 'profile_b2c'),
-        (true, false, 'B2B', 'Business Customer', 'Cliente Empresarial', 'profile_b2b'),
-        (true, false, 'B2G', 'Government Customer', 'Cliente Gubernamental', 'profile_b2g'),
-        (true, false, 'TST', 'Test User', 'Usuario de Prueba', 'profile_tst')
+        (true, true, 'SAL', 'Sales Assistant', 'Asistente de Ventas', 'profile_ast'),
+        (true, false, 'B2C', 'Consumer Customer', 'Cliente Individual', null),
+        (true, false, 'B2B', 'Business Customer', 'Cliente Empresarial', null),
+        (true, false, 'B2G', 'Government Customer', 'Cliente Gubernamental', null),
+        (true, false, 'TST', 'Test User', 'Usuario de Prueba', null)
     ) as data (boo_active, boo_internal, txt_code, txt_description_en, txt_description_es, txt_icon)
 ),
 entities_insert as (

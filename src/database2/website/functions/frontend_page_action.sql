@@ -11,6 +11,7 @@ declare
     var_boo_action boolean;
     var_num_count numeric;
     var_txt_action text;
+    var_txt_address text;
     var_txt_first_name text;
     var_txt_full_name text;
     var_txt_icon text;
@@ -24,7 +25,7 @@ declare
 begin
 
     var_jsn_status = result_initializer ();
-    var_jsn_incoming = system_get_empty_node ((in_jsn_incoming) :: json);
+    var_jsn_incoming = system_get_empty_node ((in_jsn_incoming) :: json) :: jsonb;
     var_jsn_outgoing = system_get_empty_node (null :: json);
 
     var_txt_action = system_get_text (var_jsn_incoming, 'txt_action');
@@ -37,10 +38,12 @@ begin
 
         select
             mem.txt_mail,
-            mem.txt_phone
+            mem.txt_phone,
+            mem.txt_address
         into
             var_txt_mail,
-            var_txt_phone
+            var_txt_phone,
+            var_txt_address
         from
             members_organizations_profiles mop,
             profiles prf,
@@ -58,6 +61,7 @@ begin
         into
             var_txt_phone;
 
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_address', var_txt_address);
         var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_mail', var_txt_mail);
         var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_phone', var_txt_phone);
 
@@ -179,7 +183,7 @@ begin
         var_boo_action = true;
 
     end if;
-/*
+
     if (var_txt_action = 'qr') then
 
         select
@@ -187,15 +191,16 @@ begin
         into
             var_num_count
         from
-            dat_users usr,
-            dat_profiles_users pfu,
-            dat_profiles prf
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and lower (usr.txt_first_name) = var_txt_name
-            and pfu.idf_user = usr.idf_user
-            and prf.idf_profile = pfu.idf_profile
-            and prf.boo_collaborator = true;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true
+            and lower (mem.txt_first_name) = var_txt_name;
 
         if (var_num_count = 0) then
 
@@ -204,47 +209,61 @@ begin
         end if;
 
         select
-            coalesce (usr.txt_first_name, ''),
-            coalesce (usr.txt_last_name, ''),
+            coalesce (mem.txt_first_name, ''),
+            coalesce (mem.txt_last_name, ''),
             prf.txt_icon,
-            usr.txt_mail,
-            prf.txt_profile
+            mem.txt_mail,
+            mem.txt_phone,
+            prf.txt_description_es
         into
             var_txt_first_name,
             var_txt_last_name,
             var_txt_icon,
             var_txt_mail,
+            var_txt_phone_temp,
             var_txt_profile
         from
-            dat_users usr,
-            dat_profiles_users pfu,
-            dat_profiles prf
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and lower (usr.txt_first_name) = var_txt_name
-            and pfu.idf_user = usr.idf_user
-            and prf.idf_profile = pfu.idf_profile
-            and prf.boo_collaborator = true;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true
+            and lower (mem.txt_first_name) = var_txt_name;
 
         if (var_txt_last_name = '') then
 
             var_txt_full_name = trim (var_txt_first_name);
 
+            select
+                '+' || substring (var_txt_phone_temp, 1, 2) || ' ' || substring (var_txt_phone_temp, 3, 3) || ' ' || substring (var_txt_phone_temp, 6, 3) || ' ' || substring (var_txt_phone_temp, 9, 3)
+            into
+                var_txt_phone;
+
         else
 
             var_txt_full_name = initcap (trim (var_txt_first_name || ' ' || var_txt_last_name));
 
+            select
+                '+' || substring (var_txt_phone_temp, 1, 3) || ' ' || substring (var_txt_phone_temp, 4, 4) || ' ' || substring (var_txt_phone_temp, 8, 4)
+            into
+                var_txt_phone;
+
         end if;
 
-        var_jsn_outgoing = set_text (var_jsn_outgoing, 'txt_collaborator', 'colaborador/' || var_txt_name);
-        var_jsn_outgoing = set_text (var_jsn_outgoing, 'txt_full_name', var_txt_full_name);
-        var_jsn_outgoing = set_text (var_jsn_outgoing, 'txt_icon', var_txt_icon);
-        var_jsn_outgoing = set_text (var_jsn_outgoing, 'txt_mail', var_txt_mail);
-        var_jsn_outgoing = set_text (var_jsn_outgoing, 'txt_name', var_txt_name);
-        var_jsn_outgoing = set_text (var_jsn_outgoing, 'txt_profile', var_txt_profile);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_collaborator', 'colaborador/' || var_txt_name);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_full_name', var_txt_full_name);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_icon', var_txt_icon);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_mail', var_txt_mail);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_name', var_txt_name);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_profile', var_txt_profile);
+
+        var_boo_action = true;
 
     end if;
-*/
 
     if (var_boo_action = true) then
 

@@ -17,7 +17,7 @@ begin
     var_jsn_status = system_set_text (var_jsn_status, 'tim_starting', var_jsn_starting ->> 'tim_datetime');
     var_jsn_status = system_set_text (var_jsn_status, 'process_id', gen_random_uuid () :: text);
 
-    return var_jsn_status;
+    return var_jsn_status :: jsonb;
 
 end;
 $body$ language plpgsql;

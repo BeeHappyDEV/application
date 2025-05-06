@@ -8,124 +8,108 @@ declare
     var_jsn_incoming json;
     var_jsn_outgoing json;
     var_jsn_status json;
+    var_boo_action boolean;
+    var_num_count numeric;
     var_txt_action text;
     var_txt_name text;
     var_txt_redirect text;
 begin
 
     var_jsn_status = result_initializer ();
-    var_jsn_incoming = system_get_empty_node ((in_jsn_incoming) :: json);
+    var_jsn_incoming = system_get_empty_node ((in_jsn_incoming) :: json) :: jsonb;
     var_jsn_outgoing = system_get_empty_node (null :: json);
 
     var_txt_action = system_get_text (var_jsn_incoming, 'txt_action');
     var_txt_name = system_get_text (var_jsn_incoming, 'txt_name');
     var_txt_name = lower (var_txt_name);
 
+    var_boo_action = false;
+
     if (var_txt_action = 'call_us') then
 
         select
-            'tel:+' || usr.num_whatsapp
+            'tel:+' || mem.txt_phone
         into
             var_txt_redirect
         from
-            dat_users usr
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and usr.idf_user = 0;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and prf.txt_code = 'BEE'
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true;
+
+        var_boo_action = true;
 
     end if;
 
     if (var_txt_action = 'write_us') then
 
         select
-            'mailto:' || usr.txt_mail
+            'mailto:' || mem.txt_mail
         into
             var_txt_redirect
         from
-            dat_users usr
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and usr.idf_user = 0;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and prf.txt_code = 'BEE'
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true;
+
+        var_boo_action = true;
 
     end if;
 
     if (var_txt_action = 'text_us') then
 
         select
-            'https://api.whatsapp.com/send?phone=' || usr.num_whatsapp
+            'https://api.whatsapp.com/send?phone=' || mem.txt_phone
         into
             var_txt_redirect
         from
-            dat_users usr
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and usr.idf_user = 0;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and prf.txt_code = 'BEE'
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true;
+
+        var_boo_action = true;
 
     end if;
 
     if (var_txt_action = 'visit_us') then
 
         select
-            usr.txt_location
+            mem.txt_location
         into
             var_txt_redirect
         from
-            dat_users usr
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and usr.idf_user = 0;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and prf.txt_code = 'BEE'
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true;
 
-    end if;
-
-    if (var_txt_action = 'facebook') then
-
-        select
-            cst.txt_value
-        into
-            var_txt_redirect
-        from
-            dat_constants cst
-        where
-            cst.txt_key = 'link_facebook';
-
-    end if;
-
-    if (var_txt_action = 'instagram') then
-
-        select
-            cst.txt_value
-        into
-            var_txt_redirect
-        from
-            dat_constants cst
-        where
-            cst.txt_key = 'link_instagram';
-
-    end if;
-
-    if (var_txt_action = 'x') then
-
-        select
-            cst.txt_value
-        into
-            var_txt_redirect
-        from
-            dat_constants cst
-        where
-            cst.txt_key = 'link_x';
-
-    end if;
-
-    if (var_txt_action = 'linkedin') then
-
-        select
-            cst.txt_value
-        into
-            var_txt_redirect
-        from
-            dat_constants cst
-        where
-            cst.txt_key = 'link_linkedin';
+        var_boo_action = true;
 
     end if;
 
@@ -136,9 +120,71 @@ begin
         into
             var_txt_redirect
         from
-            dat_constants cst
+            constants cst
         where
             cst.txt_key = 'link_discord';
+
+        var_boo_action = true;
+
+    end if;
+
+    if (var_txt_action = 'facebook') then
+
+        select
+            cst.txt_value
+        into
+            var_txt_redirect
+        from
+            constants cst
+        where
+            cst.txt_key = 'link_facebook';
+
+        var_boo_action = true;
+
+    end if;
+
+    if (var_txt_action = 'instagram') then
+
+        select
+            cst.txt_value
+        into
+            var_txt_redirect
+        from
+            constants cst
+        where
+            cst.txt_key = 'link_instagram';
+
+        var_boo_action = true;
+
+    end if;
+
+    if (var_txt_action = 'linkedin') then
+
+        select
+            cst.txt_value
+        into
+            var_txt_redirect
+        from
+            constants cst
+        where
+            cst.txt_key = 'link_linkedin';
+
+        var_boo_action = true;
+
+    end if;
+
+    if (var_txt_action = 'x') then
+
+        select
+            cst.txt_value
+        into
+            var_txt_redirect
+        from
+            constants cst
+        where
+            cst.txt_key = 'link_x';
+
+        var_boo_action = true;
 
     end if;
 
@@ -149,9 +195,11 @@ begin
         into
             var_txt_redirect
         from
-            dat_constants cst
+            constants cst
         where
             cst.txt_key = 'link_privacy_policy_video';
+
+        var_boo_action = true;
 
     end if;
 
@@ -162,72 +210,158 @@ begin
         into
             var_txt_redirect
         from
-            dat_constants cst
+            constants cst
         where
             cst.txt_key = 'link_terms_and_conditions_video';
+
+        var_boo_action = true;
 
     end if;
 
     if (var_txt_action = 'call_me') then
 
         select
-            'tel:+' || usr.num_whatsapp
+            count (*)
+        into
+            var_num_count
+        from
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
+        where
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true
+            and lower (mem.txt_first_name) = var_txt_name;
+
+        if (var_num_count = 0) then
+
+            return result_failed (var_jsn_status, var_jsn_incoming);
+
+        end if;
+
+        select
+            'tel:+' || mem.txt_phone
         into
             var_txt_redirect
         from
-            dat_users usr,
-            dat_profiles_users pfu,
-            dat_profiles prf
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and lower (usr.txt_first_name) = var_txt_name
-            and pfu.idf_user = usr.idf_user
-            and prf.idf_profile = pfu.idf_profile
-            and prf.boo_collaborator = true;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true
+            and lower (mem.txt_first_name) = var_txt_name;
+
+        var_boo_action = true;
 
     end if;
 
     if (var_txt_action = 'write_me') then
 
         select
-            'mailto:' || usr.txt_mail
+            count (*)
+        into
+            var_num_count
+        from
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
+        where
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true
+            and lower (mem.txt_first_name) = var_txt_name;
+
+        if (var_num_count = 0) then
+
+            return result_failed (var_jsn_status, var_jsn_incoming);
+
+        end if;
+
+        select
+            'mailto:' || mem.txt_mail
         into
             var_txt_redirect
         from
-            dat_users usr,
-            dat_profiles_users pfu,
-            dat_profiles prf
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and lower (usr.txt_first_name) = var_txt_name
-            and pfu.idf_user = usr.idf_user
-            and prf.idf_profile = pfu.idf_profile
-            and prf.boo_collaborator = true;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true
+            and lower (mem.txt_first_name) = var_txt_name;
+
+        var_boo_action = true;
 
     end if;
 
     if (var_txt_action = 'text_me') then
+        select
+            count (*)
+        into
+            var_num_count
+        from
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
+        where
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true
+            and lower (mem.txt_first_name) = var_txt_name;
+
+        if (var_num_count = 0) then
+
+            return result_failed (var_jsn_status, var_jsn_incoming);
+
+        end if;
 
         select
-            'https://api.whatsapp.com/send?phone=' || usr.num_whatsapp
+            'https://api.whatsapp.com/send?phone=' || mem.txt_phone
         into
             var_txt_redirect
         from
-            dat_users usr,
-            dat_profiles_users pfu,
-            dat_profiles prf
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
         where
-            usr.sys_status = true
-            and lower (usr.txt_first_name) = var_txt_name
-            and pfu.idf_user = usr.idf_user
-            and prf.idf_profile = pfu.idf_profile
-            and prf.boo_collaborator = true;
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true
+            and lower (mem.txt_first_name) = var_txt_name;
+
+        var_boo_action = true;
 
     end if;
 
-    var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_redirect', var_txt_redirect);
+    if (var_boo_action = true) then
 
-    return result_successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_redirect', var_txt_redirect);
+
+        return result_successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
+
+    else
+
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_redirect', '/');
+
+        return result_successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
+
+    end if;
 
 exception
     when others then
