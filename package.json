@@ -3,16 +3,15 @@
     "license": "Unlicense",
     "version": "4.0/2025.05.07",
     "scripts": {
-        "cls": "npx -y rimraf node_modules out tmp package-lock.json yarn.lock",
+        "cls": "npx -y rimraf node_modules out tmp yarn.lock",
         "upd": "yarn install && npx -y npm-check-updates -u && yarn install --force",
-        "dev": "npx -y ts-node-dev src/application/Launcher.ts --dev",
+        "dev": "tsx watch src/application/Launcher.ts --dev",
         "cmp": "tsc --build",
-        "prd": "node -r out/application/Launcher.js --prd",
+        "prd": "node out/application/Launcher.js --prd",
         "dpl": "yarn upd && yarn cmp",
-        "tst": "tsx watch src/application/Tester.ts --dev"
+        "tst": "tsx watch src/application/Launcher.ts --dev"
     },
     "dependencies": {
-        "baileys": "6.7.16",
         "ejs": "3.1.10",
         "express": "5.1.0",
         "express-ws": "5.0.2",
@@ -39,6 +38,7 @@
         "@types/pg": "8.15.0",
         "@types/superagent": "8.1.9",
         "@types/ws": "8.18.1",
+        "tsx": "4.19.4",
         "typescript": "5.8.3"
     }
 }
