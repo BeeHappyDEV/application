@@ -16,13 +16,13 @@ import {LogTool} from './toolkit/LogTool';
 import {PropertiesTool} from './toolkit/PropertiesTool';
 import {JsonObject} from './object/JsonObject';
 
-import expressWs from 'express-ws';
+const expressWs = require ('express-ws');
 
 @injectable ()
 export class Launcher {
 
     private readonly expressApplication: express.Application;
-    private readonly expressWsInstance: expressWs.Instance;
+    //private readonly expressWsInstance: expressWs.Instance;
 
     constructor (
         @inject (BackendController) private backendController: BackendController,
@@ -33,8 +33,8 @@ export class Launcher {
     ) {
         this.expressApplication = express ();
         //this.expressWsInstance = expressWs (this.expressApplication);
-        this.expressWsInstance = expressWs (express ());
-        console.log(this.expressWsInstance);
+        let aaa = expressWs (express ());
+        console.log(aaa);
         propertiesTool.initialize ().then ();
     }
 
