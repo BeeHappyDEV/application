@@ -25,7 +25,7 @@ export class FrontendController {
         expressApplication.get ('/', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
             paramsObject.set ('txt_action', 'landing');
-            paramsObject.set ('txt_render', 'landing/index.ejs');
+            paramsObject.set ('txt_render', 'landing');
 
             this.getPageAction (expressRequest, expressResponse, paramsObject);
 
@@ -106,7 +106,7 @@ export class FrontendController {
         expressApplication.get ('/politica-de-privacidad', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
             paramsObject.set ('txt_action', 'privacy_policy');
-            paramsObject.set ('txt_render', 'policy/index.ejs');
+            paramsObject.set ('txt_render', 'policy');
 
             this.getPageAction (expressRequest, expressResponse, paramsObject);
 
@@ -123,7 +123,7 @@ export class FrontendController {
         expressApplication.get ('/terminos-y-condiciones', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
             paramsObject.set ('txt_action', 'terms_and_conditions');
-            paramsObject.set ('txt_render', 'terms/index.ejs');
+            paramsObject.set ('txt_render', 'terms');
 
             this.getPageAction (expressRequest, expressResponse, paramsObject);
 
@@ -141,7 +141,7 @@ export class FrontendController {
 
             paramsObject.set ('txt_action', 'collaborator');
             paramsObject.set ('txt_name', expressRequest.params ['name']);
-            paramsObject.set ('txt_render', 'collaborator/index.ejs');
+            paramsObject.set ('txt_render', 'collaborator');
 
             this.getPageAction (expressRequest, expressResponse, paramsObject);
 
@@ -160,7 +160,7 @@ export class FrontendController {
 
             paramsObject.set ('txt_action', 'qr');
             paramsObject.set ('txt_name', expressRequest.params ['name']);
-            paramsObject.set ('txt_render', 'qr/index.ejs');
+            paramsObject.set ('txt_render', 'qr');
 
             this.getPageAction (expressRequest, expressResponse, paramsObject);
 

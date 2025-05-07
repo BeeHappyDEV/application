@@ -15,9 +15,9 @@ import {ResultObject} from '../object/ResultObject';
 export class BackendService {
 
     constructor (
-        @inject (PostgresModule) public postgresModule: PostgresModule,
-        @inject (MongoDbModule) public mongoDbModule: MongoDbModule,
-        @inject (WebserviceModule) public webserviceModule: WebserviceModule
+        @inject (PostgresModule) private postgresModule: PostgresModule,
+        @inject (MongoDbModule) private mongoDbModule: MongoDbModule,
+        @inject (WebserviceModule) private webserviceModule: WebserviceModule
     ) {
     }
 

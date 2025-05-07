@@ -207,19 +207,6 @@ export class LogTool {
 
     }
 
-    public websocket (expressRequest: typeof express.request) {
-
-        this.logObject.set ('verb', 'TCP');
-        this.logObject.set ('url', expressRequest.url);
-
-        if (Object.keys (expressRequest.params).length !== 0) {
-
-            this.logObject.set ('request', expressRequest.params);
-
-        }
-
-    }
-
     public trace (): JsonObject {
 
         let traceObject = new JsonObject ();

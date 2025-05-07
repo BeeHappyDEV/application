@@ -1,17 +1,8 @@
-/* * * * * * * * * * * * */
-/* I N S T A L A T I O N */
-/* * * * * * * * * * * * */
+/* * * * * * * * */
+/* M O D U L E S */
+/* * * * * * * * */
 
-reset/index.txt
-core/index.txt
-toolbox/index.txt
-constants/index.txt
-locations/index.txt
-phrases/index.txt
-organizations/index.txt
-
-frontend/index.txt
-backend/index.txt
-robot/index.txt
-workflow/index.txt
-flows/index.txt
+system/index.txt
+commons/index.txt
+members/index.txt
+website/index.txt

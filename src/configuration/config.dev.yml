@@ -44,17 +44,16 @@ integration:
 
 channel:
   messenger:
-    enable: true
+    enable: false
     token:
     secret:
     word:
   telegram:
-    enable: true
+    enable: false
     token: 6793157515:AAFm9a0HBko7Rze3hwFZJa6cxZ_PUmdOwms
     webhook: https://abacian.loca.lt
   whatsapp:
     enable: true
-    aaa: aaa
 
 # SCHEDULERS #
 

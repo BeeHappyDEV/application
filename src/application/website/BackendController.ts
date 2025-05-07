@@ -5,9 +5,9 @@ import express from 'express';
 import {BackendService} from './BackendService';
 import {CommonsTool} from '../toolkit/CommonsTool';
 import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
 import {LogTool} from '../toolkit/LogTool';
 import {JsonObject} from '../object/JsonObject';
-import {PropertiesTool} from "../toolkit/PropertiesTool";
 
 @injectable ()
 export class BackendController {
@@ -46,7 +46,7 @@ export class BackendController {
         expressApplication.post ('/backend/rebuild/relational', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
             paramsObject.set ('txt_file', 'index.txt');
-            paramsObject.set ('txt_path', './src/database2/');
+            paramsObject.set ('txt_path', './src/database/');
 
             this.postRebuildRelationalAction (expressRequest, expressResponse, paramsObject);
 

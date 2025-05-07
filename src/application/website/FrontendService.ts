@@ -12,8 +12,8 @@ import {ResultObject} from '../object/ResultObject';
 export class FrontendService {
 
     constructor (
-        @inject (PostgresModule) public postgresTool: PostgresModule,
-        @inject (PropertiesTool) public propertiesTool: PropertiesTool
+        @inject (PostgresModule) private postgresModule: PostgresModule,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
         this.propertiesTool.initialize ().then ();
     }
@@ -31,7 +31,7 @@ export class FrontendService {
 
             paramsObject.set ('txt_function', 'frontend_page_action');
 
-            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -61,7 +61,7 @@ export class FrontendService {
 
             paramsObject.set ('txt_function', 'frontend_link_action');
 
-            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 
@@ -91,7 +91,7 @@ export class FrontendService {
 
             paramsObject.set ('txt_function', 'frontend_file_action');
 
-            resultObject = await this.postgresTool.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
 

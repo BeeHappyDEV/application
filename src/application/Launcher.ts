@@ -4,29 +4,34 @@ import {container, inject, injectable} from 'tsyringe';
 
 import childProcess from 'child_process';
 import express from 'express';
+import expressWs from 'express-ws';
 import localTunnel from 'localtunnel';
 import superagent from 'superagent';
 
 import {BackendController} from './website/BackendController';
 import {FrontendController} from './website/FrontendController';
 import {ScheduleController} from './website/ScheduleController';
+import {WhatsappController} from './channel/WhatsappController';
 import {CommonsTool} from './toolkit/CommonsTool';
 import {LogTool} from './toolkit/LogTool';
 import {PropertiesTool} from './toolkit/PropertiesTool';
-import {JsonObject} from "./object/JsonObject";
+import {JsonObject} from './object/JsonObject';
 
 @injectable ()
 export class Launcher {
 
     private readonly expressApplication: express.Application;
+    private readonly expressWsInstance: expressWs.Instance;
 
     constructor (
         @inject (BackendController) private backendController: BackendController,
         @inject (FrontendController) private frontendController: FrontendController,
         @inject (ScheduleController) private scheduleController: ScheduleController,
+        @inject (WhatsappController) private whatsappController: WhatsappController,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
         this.expressApplication = express ();
+        this.expressWsInstance = expressWs (this.expressApplication);
         propertiesTool.initialize ().then ();
     }
 
@@ -41,6 +46,7 @@ export class Launcher {
 
         await this.engineInformation (logTool.trace ());
         await this.environmentInformation (logTool.trace ());
+        await this.channelComponents ();
         await this.staticComponents ();
         await this.dynamicComponents ();
 
@@ -171,19 +177,6 @@ export class Launcher {
         logTool.comment ('Environment:', 'PRODUCTION');
         logTool.finalize ();
 
-        await new Promise<void> ((callback) => {
-
-            this.expressApplication.listen (portString, async () => {
-
-                logTool.initialize (stackStrings, traceObject, 2);
-                logTool.comment ('Private host:', hostString);
-                logTool.finalize ();
-
-                callback ();
-
-            })
-        });
-
         await new Promise<void> (() => {
 
             this.expressApplication.listen (portString, () => {
@@ -195,6 +188,12 @@ export class Launcher {
             });
 
         });
+
+    }
+
+    private async channelComponents (): Promise<void> {
+
+        await this.whatsappController.initialize (this.expressApplication, this.expressWsInstance);
 
     }
 

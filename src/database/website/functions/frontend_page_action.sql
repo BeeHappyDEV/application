@@ -265,6 +265,76 @@ begin
 
     end if;
 
+    if (var_txt_action = 'associate') then
+
+        select
+            mem.txt_mail,
+            mem.txt_phone,
+            mem.txt_address
+        into
+            var_txt_mail,
+            var_txt_phone,
+            var_txt_address
+        from
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
+        where
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and prf.txt_code = 'BEE'
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true;
+
+        select
+            '+' || substring (var_txt_phone, 1, 2) || ' ' || substring (var_txt_phone, 3, 3) || ' ' || substring (var_txt_phone, 6, 3) || ' ' || substring (var_txt_phone, 9, 3)
+        into
+            var_txt_phone;
+
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_address', var_txt_address);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_mail', var_txt_mail);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_phone', var_txt_phone);
+
+        var_boo_action = true;
+
+    end if;
+
+    if (var_txt_action = 'disassociate') then
+
+        select
+            mem.txt_mail,
+            mem.txt_phone,
+            mem.txt_address
+        into
+            var_txt_mail,
+            var_txt_phone,
+            var_txt_address
+        from
+            members_organizations_profiles mop,
+            profiles prf,
+            members mem
+        where
+            mop.idf_profile = prf.idf_profile
+            and prf.boo_active = true
+            and prf.boo_internal = true
+            and prf.txt_code = 'BEE'
+            and mop.idf_member = mem.idf_member
+            and mem.boo_active = true;
+
+        select
+            '+' || substring (var_txt_phone, 1, 2) || ' ' || substring (var_txt_phone, 3, 3) || ' ' || substring (var_txt_phone, 6, 3) || ' ' || substring (var_txt_phone, 9, 3)
+        into
+            var_txt_phone;
+
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_address', var_txt_address);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_mail', var_txt_mail);
+        var_jsn_outgoing = system_set_text (var_jsn_outgoing, 'txt_phone', var_txt_phone);
+
+        var_boo_action = true;
+
+    end if;
+
     if (var_boo_action = true) then
 
         return result_successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
@@ -274,10 +344,10 @@ begin
         return result_failed (var_jsn_status, var_jsn_incoming);
 
     end if;
-/*
+
 exception
     when others then
         return result_failed (var_jsn_status, var_jsn_incoming);
-*/
+
 end;
 $body$ language plpgsql;

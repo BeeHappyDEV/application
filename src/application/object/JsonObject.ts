@@ -38,10 +38,4 @@ export class JsonObject {
 
     }
 
-    public use () {
-
-        return this.jsonObject ["method"];
-
-    }
-
 }

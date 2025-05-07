@@ -1,76 +1,7 @@
 <% const content = Object.assign ({
-    data: txt_path + '/' + txt_collaborator,
     image: "blank",
-    refresh: false
+    refresh: false,
+    data: txt_path + '/' + txt_collaborator
 }) %>
 
-<section class="w-screen background-section-2 pb-24 pt-24">
-    <div class="flex flex-wrap items-center 2xl:w-[1450px] xl:w-[1300px] w-11/12 mx-auto px-12">
-        <div class="mb-8 mt-8 mx-auto">
-            <%- include ('../components/images', {selection: content.image}) %>
-            <div id="canvas" class="hidden"></div>
-        </div>
-
-    </div>
-</section>
-<script type="text/javascript">
-    console.log("<%= content.data %>");
-    let blank = document.getElementById ("blank");
-    let canvas = document.getElementById ("canvas");
-    let qrCodeStyling = new QRCodeStyling ({
-        height: 500,
-        width: 500,
-        margin: 10,
-        type: "canvas",
-        data: "<%= content.data %>",
-        image: "../../../images/logotype1.png",
-        backgroundOptions: {
-            color: "#ffffff",
-        },
-        cornersDotOptions: {
-            color: "#9b7907",
-            type: "extra-rounded"
-        },
-        cornersSquareOptions :{
-            color: "#9b7907",
-            type: "extra-rounded",
-        },
-        dotsOptions: {
-            color: "#0e0e0f",
-            type: "dots"
-        },
-        imageOptions: {
-            crossOrigin: "anonymous",
-            imageSize: 0.5,
-            margin: 0
-        },
-        qrOptions: {
-            errorCorrectionLevel: 'H'
-        }
-    });
-    qrCodeStyling.append (canvas);
-    <% if (content.refresh) { %>
-    let valueSocket = "";
-    let webSocket = new WebSocket ("<%= content.websocket %>");
-    webSocket.onmessage = (event) => {
-        let data = JSON.parse (event.data);
-        if (data.value === undefined) {
-            blank.style.display = "block";
-            canvas.style.display = "none";
-            return;
-        }
-        if (valueSocket !== data.value) {
-            valueSocket = data.value;
-            blank.style.display = "none";
-            canvas.style.display = "block";
-            qrCodeStyling.update ({
-                data: valueSocket
-            });
-            qrCodeStyling.append (canvas);
-        }
-    }
-    <% } else { %>
-    blank.style.display = "none";
-    canvas.style.display = "block";
-    <% } %>
-</script>
+<%- include ('../components/code', {content: content}) %>
