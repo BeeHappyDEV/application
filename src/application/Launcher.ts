@@ -11,7 +11,7 @@ import superagent from 'superagent';
 import {BackendController} from './website/BackendController';
 import {FrontendController} from './website/FrontendController';
 import {ScheduleController} from './website/ScheduleController';
-import {WhatsappController} from './channel/WhatsappController';
+import {WhatsAppController} from './channel/WhatsAppController';
 import {CommonsTool} from './toolkit/CommonsTool';
 import {LogTool} from './toolkit/LogTool';
 import {PropertiesTool} from './toolkit/PropertiesTool';
@@ -27,7 +27,7 @@ export class Launcher {
         @inject (BackendController) private backendController: BackendController,
         @inject (FrontendController) private frontendController: FrontendController,
         @inject (ScheduleController) private scheduleController: ScheduleController,
-        @inject (WhatsappController) private whatsappController: WhatsappController,
+        @inject (WhatsAppController) private whatsAppController: WhatsAppController,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
         this.expressApplication = express ();
@@ -193,7 +193,7 @@ export class Launcher {
 
     private async channelComponents (): Promise<void> {
 
-        await this.whatsappController.initialize (this.expressApplication, this.expressWsInstance);
+        await this.whatsAppController.initialize (this.expressApplication, this.expressWsInstance);
 
     }
 
