@@ -4,18 +4,19 @@ import {container, inject, injectable} from 'tsyringe';
 
 import childProcess from 'child_process';
 import express from 'express';
-import expressWs from 'express-ws';
 import localTunnel from 'localtunnel';
 import superagent from 'superagent';
 
 import {BackendController} from './website/BackendController';
 import {FrontendController} from './website/FrontendController';
 import {ScheduleController} from './website/ScheduleController';
-import {WhatsAppController} from './channel/WhatsAppController';
+//import {WhatsAppController} from './channel/WhatsAppController';
 import {CommonsTool} from './toolkit/CommonsTool';
 import {LogTool} from './toolkit/LogTool';
 import {PropertiesTool} from './toolkit/PropertiesTool';
 import {JsonObject} from './object/JsonObject';
+
+import expressWs from 'express-ws';
 
 @injectable ()
 export class Launcher {
@@ -27,11 +28,13 @@ export class Launcher {
         @inject (BackendController) private backendController: BackendController,
         @inject (FrontendController) private frontendController: FrontendController,
         @inject (ScheduleController) private scheduleController: ScheduleController,
-        @inject (WhatsAppController) private whatsAppController: WhatsAppController,
+        //@inject (WhatsAppController) private whatsAppController: WhatsAppController,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
         this.expressApplication = express ();
-        this.expressWsInstance = expressWs (this.expressApplication);
+        //this.expressWsInstance = expressWs (this.expressApplication);
+        this.expressWsInstance = expressWs (express ());
+        console.log(this.expressWsInstance);
         propertiesTool.initialize ().then ();
     }
 
@@ -193,7 +196,7 @@ export class Launcher {
 
     private async channelComponents (): Promise<void> {
 
-        await this.whatsAppController.initialize (this.expressApplication, this.expressWsInstance);
+        //await this.whatsAppController.initialize (this.expressApplication, this.expressWsInstance);
 
     }
 
