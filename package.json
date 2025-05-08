@@ -3,13 +3,14 @@
     "license": "Unlicense",
     "version": "4.0/2025.05.07",
     "scripts": {
-        "cls": "npx -y rimraf node_modules out tmp yarn.lock",
+        "cls": "npx -y rimraf node_modules out tmp yarn.lock tsconfig.tsbuildinfo",
         "upd": "yarn install && npx -y npm-check-updates -u && yarn install --force",
         "dev": "tsx watch src/application/Launcher.ts --dev",
         "cmp": "tsc --build",
         "prd": "node out/application/Launcher.js --prd",
         "dpl": "yarn upd && yarn cmp",
-        "tst": "tsx watch src/application/Launcher.ts --dev"
+        "tst": "tsx watch src/application/Launcher.ts --dev",
+        "chk": "npx -y depcheck"
     },
     "dependencies": {
         "@hapi/boom": "10.0.1",
@@ -36,7 +37,7 @@
         "@types/fs-extra": "11.0.4",
         "@types/js-yaml": "4.0.9",
         "@types/localtunnel": "2.0.4",
-        "@types/node": "22.15.15",
+        "@types/node": "22.15.16",
         "@types/node-cron": "3.0.11",
         "@types/pg": "8.15.0",
         "@types/superagent": "8.1.9",
