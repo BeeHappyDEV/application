@@ -7,7 +7,7 @@
         "upd": "yarn install && npx -y npm-check-updates -u && yarn install --force",
         "dev": "tsx watch src/application/Launcher.ts --dev",
         "cmp": "tsc --build",
-        "prd": "tsx src/application/Launcher.ts --prd",
+        "prd": "node out/application/Launcher.js --prd",
         "dpl": "yarn upd && yarn cmp",
         "tst": "tsx watch src/application/Launcher.ts --dev"
     },
