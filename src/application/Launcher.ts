@@ -4,37 +4,34 @@ import {container, inject, injectable} from 'tsyringe';
 
 import childProcess from 'child_process';
 import express from 'express';
+import expressWs from 'express-ws';
 import localTunnel from 'localtunnel';
 import superagent from 'superagent';
 
 import {BackendController} from './website/BackendController';
 import {FrontendController} from './website/FrontendController';
 import {ScheduleController} from './website/ScheduleController';
-//import {WhatsAppController} from './channel/WhatsAppController';
+import {WhatsAppController} from './channel/WhatsAppController';
 import {CommonsTool} from './toolkit/CommonsTool';
 import {LogTool} from './toolkit/LogTool';
 import {PropertiesTool} from './toolkit/PropertiesTool';
 import {JsonObject} from './object/JsonObject';
 
-const expressWs = require ('express-ws');
-
 @injectable ()
 export class Launcher {
 
     private readonly expressApplication: express.Application;
-    //private readonly expressWsInstance: expressWs.Instance;
+    private readonly expressWsInstance: expressWs.Instance;
 
     constructor (
         @inject (BackendController) private backendController: BackendController,
         @inject (FrontendController) private frontendController: FrontendController,
         @inject (ScheduleController) private scheduleController: ScheduleController,
-        //@inject (WhatsAppController) private whatsAppController: WhatsAppController,
+        @inject (WhatsAppController) private whatsAppController: WhatsAppController,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
         this.expressApplication = express ();
-        //this.expressWsInstance = expressWs (this.expressApplication);
-        let aaa = expressWs (express ());
-        console.log(aaa);
+        this.expressWsInstance = expressWs (this.expressApplication);
         propertiesTool.initialize ().then ();
     }
 
@@ -89,15 +86,9 @@ export class Launcher {
         logTool.comment ('Version:', await CommonsTool.getApplicationVersion ());
         logTool.finalize ();
 
-        let hostString = await this.propertiesTool.get ('system.host');
+        let hostString: string = '';
 
-        const portString = process.env.PORT || await this.propertiesTool.get ('system.port');
-
-        if (portString !== '80') {
-
-            hostString += ':' + portString;
-
-        }
+        let portString: string = '';
 
         const environmentString = process.argv[2].slice (2);
 
@@ -105,11 +96,31 @@ export class Launcher {
 
             case 'dev':
 
+                hostString = await this.propertiesTool.get ('system.host');
+
+                portString = process.env.PORT || await this.propertiesTool.get ('system.port');
+
+                if (portString !== '80') {
+
+                    hostString += ':' + portString;
+
+                }
+
                 await this.startDevelopmentEnvironment (stackStrings, traceObject, portString, hostString);
 
                 break;
 
             case 'prd':
+
+                hostString = await superagent.get (await this.propertiesTool.get ('integration.public')).then (responseObject => responseObject.body.ip);
+
+                portString = process.env.PORT || await this.propertiesTool.get ('system.port');
+
+                if (portString !== '80') {
+
+                    hostString += ':' + portString;
+
+                }
 
                 await this.startProductionEnvironment (stackStrings, traceObject, portString, hostString);
 
@@ -180,7 +191,20 @@ export class Launcher {
         logTool.comment ('Environment:', 'PRODUCTION');
         logTool.finalize ();
 
-        await new Promise<void> (() => {
+        await new Promise<void> ((callback) => {
+
+            this.expressApplication.listen (portString, async () => {
+
+                logTool.initialize (stackStrings, traceObject, 2);
+                logTool.comment ('Private host:', hostString);
+                logTool.finalize ();
+
+                callback ();
+
+            })
+        });
+
+        /*await new Promise<void> (() => {
 
             this.expressApplication.listen (portString, () => {
 
@@ -190,13 +214,13 @@ export class Launcher {
 
             });
 
-        });
+        });*/
 
     }
 
     private async channelComponents (): Promise<void> {
 
-        //await this.whatsAppController.initialize (this.expressApplication, this.expressWsInstance);
+        await this.whatsAppController.initialize (this.expressApplication, this.expressWsInstance);
 
     }
 

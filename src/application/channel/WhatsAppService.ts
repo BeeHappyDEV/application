@@ -8,7 +8,7 @@ import {JsonObject} from '../object/JsonObject';
 import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
-export class WhatsappService {
+export class WhatsAppService {
 
     constructor (
         @inject (PostgresModule) private postgresModule: PostgresModule
