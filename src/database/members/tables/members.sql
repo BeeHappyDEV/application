@@ -1,7 +1,7 @@
 drop table if exists members cascade;
 
 create table if not exists members (
-    idf_member     uuid primary key references entities (idf_entity) on delete cascade,
+    idf_member     uuid primary key references registries (idf_registry) on delete cascade,
     boo_active     boolean not null default true,
     txt_first_name text not null,
     txt_last_name  text,
@@ -9,7 +9,7 @@ create table if not exists members (
     txt_phone      text not null,
     txt_address    text,
     txt_location   text
-) inherits (entities);
+) inherits (registries);
 
 alter table members enable row level security;
 
@@ -25,14 +25,14 @@ with tabled_data as (
         (true, 'Isabel', 'Gonzalez', 'isabelangelica@gmail.com', '56995995422', null, null)
     ) as data (boo_active, txt_first_name, txt_last_name, txt_mail, txt_phone, txt_address, txt_location)
 ),
-entities_insert as (
-    insert into entities
+registries_insert as (
+    insert into registries
     select from generate_series (1, (select count (*) from tabled_data))
-    returning idf_entity
+    returning idf_registry
 ),
 matched_data as (
     select
-        e.idf_entity,
+        e.idf_registry,
         t.boo_active,
         t.txt_first_name,
         t.txt_last_name,
@@ -55,8 +55,8 @@ matched_data as (
     join (
         select
             row_number() over () as rn,
-            idf_entity
-        from entities_insert
+            idf_registry
+        from registries_insert
     ) e on t.rn = e.rn
 )
 insert into members (
@@ -70,7 +70,7 @@ insert into members (
     txt_location
 )
 select
-    idf_entity,
+    idf_registry,
     boo_active,
     txt_first_name,
     txt_last_name,

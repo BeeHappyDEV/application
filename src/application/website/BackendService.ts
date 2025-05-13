@@ -28,7 +28,7 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let resultObject = new ResultObject ();
+        let resultObject = container.resolve (ResultObject);
 
         try {
 
@@ -56,14 +56,14 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        const headersObject = new JsonObject ();
+        const headersObject = container.resolve (JsonObject);
         headersObject.set ('authorization', 'Bearer ' + paramsObject.get ('txt_token'));
         headersObject.set ('content-type', 'application/json');
 
-        const bodyObject = new JsonObject ();
+        const bodyObject = container.resolve (JsonObject);
         bodyObject.set ('purge_everything', true);
 
-        const resultObject = new ResultObject ();
+        const resultObject = container.resolve (ResultObject);
 
         try {
 
@@ -93,7 +93,7 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        const resultObject = new ResultObject ();
+        const resultObject = container.resolve (ResultObject);
 
         try {
 
@@ -123,7 +123,7 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        const resultObject = new ResultObject ();
+        const resultObject = container.resolve (ResultObject);
 
         try {
 
@@ -154,7 +154,9 @@ export class BackendService {
         logTool.initialize (stackStrings, traceObject);
 
         const contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_file'));
+
         const contentString = contentBuffer.toString ();
+
         const linesString = contentString.split (/\r?\n/);
 
         for (let offsetNumber = 0; offsetNumber < linesString.length; offsetNumber++) {
@@ -186,9 +188,11 @@ export class BackendService {
 
         paramsObject.set ('txt_folder', paramsObject.get ('txt_folder').split ('/') [0] + '/');
 
-        let contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_folder') + paramsObject.get ('txt_file'));
-        let contentString = contentBuffer.toString ();
-        let linesString = contentString.split (/\r?\n/);
+        const contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_folder') + paramsObject.get ('txt_file'));
+
+        const contentString = contentBuffer.toString ();
+
+        const linesString = contentString.split (/\r?\n/);
 
         for (let offsetNumber = 0; offsetNumber < linesString.length; offsetNumber++) {
 
@@ -245,7 +249,7 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let resultObject = new ResultObject ();
+        const resultObject = container.resolve (ResultObject);
 
         try {
 
@@ -278,18 +282,20 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        const headersObject = null;
+        const headersObject = container.resolve (JsonObject);
 
-        const queryObject = new JsonObject ();
+        const queryObject = container.resolve (JsonObject);
         queryObject.del ('jsn_data');
         queryObject.set ('apikey', paramsObject.get ('txt_token'));
         queryObject.set ('formato', 'json');
 
-        let resultObject = new ResultObject ();
+        const bodyObject = container.resolve (JsonObject);
+
+        let resultObject = container.resolve (ResultObject);
 
         try {
 
-            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_dollar') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_dollar') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject, logTool.trace ());
             resultObject.set ('outgoing', resultObject.get (['outgoing', 'Dolares']));
             resultObject.rename ('Fecha', 'date');
             resultObject.rename ('Valor', 'value');
@@ -323,18 +329,20 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let headersObject = null;
+        const headersObject = container.resolve (JsonObject);
 
-        let queryObject = new JsonObject ();
+        const queryObject = container.resolve (JsonObject);
         queryObject.del ('jsn_data');
         queryObject.set ('apikey', paramsObject.get ('txt_token'));
         queryObject.set ('formato', 'json');
 
-        let resultObject = new ResultObject ();
+        const bodyObject = container.resolve (JsonObject);
+
+        let resultObject = container.resolve (ResultObject);
 
         try {
 
-            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_euro') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_euro') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject, logTool.trace ());
             resultObject.set ('outgoing', resultObject.get (['outgoing', 'Euros']));
             resultObject.rename ('Fecha', 'date');
             resultObject.rename ('Valor', 'value');
@@ -368,18 +376,20 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let headersObject = null;
+        let headersObject = container.resolve (JsonObject);
 
-        let queryObject = new JsonObject ();
+        let queryObject = container.resolve (JsonObject);
         queryObject.del ('jsn_data');
         queryObject.set ('apikey', paramsObject.get ('txt_token'));
         queryObject.set ('formato', 'json');
 
-        let resultObject = new ResultObject ();
+        const bodyObject = container.resolve (JsonObject);
+
+        let resultObject = container.resolve (ResultObject);
 
         try {
 
-            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_foment_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_foment_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject, logTool.trace ());
             resultObject.set ('outgoing', resultObject.get (['outgoing', 'UFs']));
             resultObject.rename ('Fecha', 'date');
             resultObject.rename ('Valor', 'value');
@@ -413,18 +423,20 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let headersObject = null;
+        let headersObject = container.resolve (JsonObject);
 
-        let queryObject = new JsonObject ();
+        let queryObject = container.resolve (JsonObject);
         queryObject.del ('jsn_data');
         queryObject.set ('apikey', paramsObject.get ('txt_token'));
         queryObject.set ('formato', 'json');
 
-        let resultObject = new ResultObject ();
+        const bodyObject = container.resolve (JsonObject);
+
+        let resultObject = container.resolve (ResultObject);
 
         try {
 
-            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_monthly_tax_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_monthly_tax_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject, logTool.trace ());
             resultObject.set ('outgoing', resultObject.get (['outgoing', 'UTMs']));
             resultObject.rename ('Fecha', 'date');
             resultObject.rename ('Valor', 'value');

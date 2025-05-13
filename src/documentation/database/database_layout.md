@@ -1,33 +1,23 @@
-# [Start](../start.md) / Database Layout
+# Database Layout
+
+### General Layout
+
+![](../resources/images/database_function_structure.png)
 
 <br/>
 
-> General Layout
+### Status Initializer
 
-|                   ***Layout***                    |
-|:-------------------------------------------------:|
-| ![](../resources/database_function_structure.png) |
+![](../resources/images/database_status_initializer.png)
 
 <br/>
 
-> Status Initializer
+### Result Successfully
 
-|                   ***Layout***                    |
-|:-------------------------------------------------:|
-| ![](../resources/database_status_initializer.png) |
+![](../resources/images/database_result_successfully.png)
 
 <br/>
 
-> Result Successfully
+### Result Failed
 
-|                    ***Layout***                    |
-|:--------------------------------------------------:|
-| ![](../resources/database_result_successfully.png) |
-
-<br/>
-
-> Result Failed
-
-|                 ***Layout***                 |
-|:--------------------------------------------:|
-| ![](../resources/database_result_failed.png) |
+![](../resources/images/database_result_failed.png)

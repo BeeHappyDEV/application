@@ -8,7 +8,7 @@ schema/schema.sql
 /* T A B L E S */
 /* * * * * * * */
 
-tables/entities.sql
+tables/registries.sql
 
 /* * * * * * * * * * */
 /* F U N C T I O N S */

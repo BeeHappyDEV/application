@@ -22,7 +22,7 @@ export class WhatsAppService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let resultObject = new ResultObject ();
+        let resultObject = container.resolve (ResultObject);
 
         try {
 

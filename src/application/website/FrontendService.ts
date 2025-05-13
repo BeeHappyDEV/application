@@ -1,10 +1,10 @@
 import {container, inject, injectable} from 'tsyringe';
 
 import {PostgresModule} from '../middleware/PostgresModule';
+import {PropertiesModule} from '../middleware/PropertiesModule';
 import {ExceptionTool} from '../toolkit/ExceptionTool';
 import {LogTool} from '../toolkit/LogTool';
 import {CommonsTool} from '../toolkit/CommonsTool';
-import {PropertiesTool} from '../toolkit/PropertiesTool';
 import {JsonObject} from '../object/JsonObject';
 import {ResultObject} from '../object/ResultObject';
 
@@ -13,9 +13,9 @@ export class FrontendService {
 
     constructor (
         @inject (PostgresModule) private postgresModule: PostgresModule,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesModule) private propertiesModule: PropertiesModule
     ) {
-        this.propertiesTool.initialize ().then ();
+        this.propertiesModule.initialize ().then ();
     }
 
     public async getPageAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
@@ -25,7 +25,7 @@ export class FrontendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let resultObject = new ResultObject ();
+        let resultObject = container.resolve (ResultObject);
 
         try {
 
@@ -55,7 +55,7 @@ export class FrontendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let resultObject = new ResultObject ();
+        let resultObject = container.resolve (ResultObject);
 
         try {
 
@@ -85,7 +85,7 @@ export class FrontendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let resultObject = new ResultObject ();
+        let resultObject = container.resolve (ResultObject);
 
         try {
 

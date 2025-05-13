@@ -60,7 +60,7 @@ channel:
 scheduler:
   wakeup:
     cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
-    enable: false
+    enable: true
     host: http://localhost:8080/backend/system/wakeup
     verbose: EVERY TEN MINUTES
   indicators:

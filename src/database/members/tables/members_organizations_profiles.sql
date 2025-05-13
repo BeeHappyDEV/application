@@ -1,7 +1,7 @@
 drop table if exists members_organizations_profiles cascade;
 
 create table if not exists members_organizations_profiles (
-    idf_member_organization_profile uuid primary key references entities (idf_entity) on delete cascade,
+    idf_member_organization_profile uuid primary key references registries (idf_registry) on delete cascade,
     idf_member                      uuid references members (idf_member) on delete cascade,
     idf_organization                uuid references organizations (idf_organization) on delete cascade,
     idf_profile                     uuid references profiles (idf_profile) on delete cascade
@@ -80,14 +80,14 @@ with tabled_data as (
             and lower (prf.txt_code) = lower ('tst')
     ) as data (idf_member, idf_organization, idf_profile)
 ),
-entities_insert as (
-    insert into entities
+registries_insert as (
+    insert into registries
     select from generate_series (1, (select count (*) from tabled_data))
-    returning idf_entity
+    returning idf_registry
 ),
 matched_data as (
     select
-        e.idf_entity,
+        e.idf_registry,
         t.idf_member,
         t.idf_organization,
         t.idf_profile
@@ -102,8 +102,8 @@ matched_data as (
     join (
         select
             row_number() over () as rn,
-            idf_entity
-        from entities_insert
+            idf_registry
+        from registries_insert
     ) e on t.rn = e.rn
 )
 insert into members_organizations_profiles (
@@ -113,7 +113,7 @@ insert into members_organizations_profiles (
     idf_profile
 )
 select
-    idf_entity,
+    idf_registry,
     idf_member,
     idf_organization,
     idf_profile

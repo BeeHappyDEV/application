@@ -1,6 +1,6 @@
 export class JsonObject {
 
-    private readonly jsonObject: any;
+    private readonly jsonObject: any = null;
 
     public constructor () {
 

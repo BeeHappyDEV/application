@@ -1,12 +1,8 @@
-# [Start](../start.md) > Schedule Endpoints
+# Schedule Endpoints
 
-<br/>
+### Schedule Action
 
-> Schedule Action
-
-|             ***Layout***              |
-|:-------------------------------------:|
-| ![](../resources/schedule_action.png) |
+![](../resources/images/schedule_action.png)
 
 | ***Category*** |  ***Verb***   |   ***Endpoint***   |
 |:--------------:|:-------------:|:------------------:|

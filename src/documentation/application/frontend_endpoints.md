@@ -1,12 +1,8 @@
-# [Start](../start.md) > Frontend Endpoints
+# Frontend Endpoints
 
-<br/>
+### Page Actions
 
-> Page Actions
-
-|                ***Layout***                |
-|:------------------------------------------:|
-| ![](../resources/frontend_page_action.png) |
+![](../resources/images/frontend_page_action.png)
 
 | ***Category*** | ***Verb*** |     ***Endpoint***      |
 |:--------------:|:----------:|:-----------------------:|
@@ -18,11 +14,9 @@
 
 <br/>
 
-> Link Actions
+### Link Actions
 
-|                ***Layout***                |
-|:------------------------------------------:|
-| ![](../resources/frontend_link_action.png) |
+![](../resources/images/frontend_link_action.png)
 
 | ***Category*** | ***Verb*** |        ***Endpoint***         |
 |:--------------:|:----------:|:-----------------------------:|
@@ -43,11 +37,9 @@
 
 <br/>
 
-> File Actions
+### File Actions
 
-|                ***Layout***                |
-|:------------------------------------------:|
-| ![](../resources/frontend_file_action.png) |
+![](../resources/images/frontend_file_action.png)
 
 | ***Category*** | ***Verb*** |   ***Endpoint***    |
 |:--------------:|:----------:|:-------------------:|

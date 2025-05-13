@@ -3,9 +3,9 @@ import {container, inject, injectable} from 'tsyringe';
 import express from 'express';
 
 import {BackendService} from './BackendService';
+import {PropertiesModule} from '../middleware/PropertiesModule';
 import {CommonsTool} from '../toolkit/CommonsTool';
 import {ExceptionTool} from '../toolkit/ExceptionTool';
-import {PropertiesTool} from '../toolkit/PropertiesTool';
 import {LogTool} from '../toolkit/LogTool';
 import {JsonObject} from '../object/JsonObject';
 
@@ -14,14 +14,14 @@ export class BackendController {
 
     constructor (
         @inject (BackendService) private backendModule: BackendService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesModule) private propertiesModule: PropertiesModule
     ) {
-        propertiesTool.initialize ().then ();
+        propertiesModule.initialize ().then ();
     }
 
     public async initialize (expressApplication: typeof express.application): Promise<void> {
 
-        const paramsObject = new JsonObject ();
+        const paramsObject = container.resolve (JsonObject);
 
         expressApplication.post ('/backend/system/wakeup', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
@@ -87,8 +87,8 @@ export class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        paramsObject.set ('txt_host', await this.propertiesTool.get ('cloudflare.host'));
-        paramsObject.set ('txt_token', await this.propertiesTool.get ('cloudflare.token'));
+        paramsObject.set ('txt_host', await this.propertiesModule.get ('cloudflare.host'));
+        paramsObject.set ('txt_token', await this.propertiesModule.get ('cloudflare.token'));
 
         const resultObject = await this.backendModule.postDeleteCacheAction (paramsObject, logTool.trace ());
 
@@ -146,11 +146,11 @@ export class BackendController {
         logTool.contextualize (expressRequest);
         logTool.request (expressRequest);
 
-        paramsObject.set ('txt_host_dollar', await this.propertiesTool.get ('scheduler.indicators.host.dollar'));
-        paramsObject.set ('txt_host_euro', await this.propertiesTool.get ('scheduler.indicators.host.euro'));
-        paramsObject.set ('txt_host_foment_unit', await this.propertiesTool.get ('scheduler.indicators.host.foment_unit'));
-        paramsObject.set ('txt_host_monthly_tax_unit', await this.propertiesTool.get ('scheduler.indicators.host.monthly_tax_unit'));
-        paramsObject.set ('txt_token', await this.propertiesTool.get ('scheduler.indicators.token'));
+        paramsObject.set ('txt_host_dollar', await this.propertiesModule.get ('scheduler.indicators.host.dollar'));
+        paramsObject.set ('txt_host_euro', await this.propertiesModule.get ('scheduler.indicators.host.euro'));
+        paramsObject.set ('txt_host_foment_unit', await this.propertiesModule.get ('scheduler.indicators.host.foment_unit'));
+        paramsObject.set ('txt_host_monthly_tax_unit', await this.propertiesModule.get ('scheduler.indicators.host.monthly_tax_unit'));
+        paramsObject.set ('txt_token', await this.propertiesModule.get ('scheduler.indicators.token'));
 
         const resultObject = await this.backendModule.postReloadIndicatorsAction (paramsObject, logTool.trace ());
 

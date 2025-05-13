@@ -3,8 +3,8 @@ import {container, inject, injectable} from 'tsyringe';
 import express from 'express';
 
 import {FrontendService} from './FrontendService';
+import {PropertiesModule} from '../middleware/PropertiesModule';
 import {CommonsTool} from '../toolkit/CommonsTool';
-import {PropertiesTool} from '../toolkit/PropertiesTool';
 import {LogTool} from '../toolkit/LogTool';
 import {JsonObject} from '../object/JsonObject';
 
@@ -13,14 +13,14 @@ export class FrontendController {
 
     constructor (
         @inject (FrontendService) private frontendModule: FrontendService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesModule) private propertiesModule: PropertiesModule
     ) {
-        this.propertiesTool.initialize ().then ();
+        this.propertiesModule.initialize ().then ();
     }
 
     public async initialize (expressApplication: typeof express.application): Promise<void> {
 
-        const paramsObject = new JsonObject ();
+        const paramsObject = container.resolve (JsonObject);
 
         expressApplication.get ('/', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
@@ -221,20 +221,20 @@ export class FrontendController {
 
                 case 'dev':
 
-                    resultObject.setPath (await this.propertiesTool.get ('system.host') + ':' + await this.propertiesTool.get ('system.port'));
+                    resultObject.setPath (await this.propertiesModule.get ('system.host') + ':' + await this.propertiesModule.get ('system.port'));
 
                     break;
 
                 case 'prd':
 
-                    resultObject.setPath (await this.propertiesTool.get ('system.host'));
+                    resultObject.setPath (await this.propertiesModule.get ('system.host'));
 
                     break;
 
             }
 
             resultObject.setVersion (await CommonsTool.getApplicationVersion ());
-            resultObject.setWebsite (await this.propertiesTool.get ('application.name') + await this.propertiesTool.get ('application.domain'));
+            resultObject.setWebsite (await this.propertiesModule.get ('application.name') + await this.propertiesModule.get ('application.domain'));
             resultObject.setRender (paramsObject.get ('txt_render'));
 
             expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());

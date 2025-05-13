@@ -4,9 +4,9 @@ import fsExtra from 'fs-extra';
 import jsYaml from 'js-yaml';
 
 @injectable ()
-export class PropertiesTool {
+export class PropertiesModule {
 
-    private propertiesObject: any = {};
+    private propertiesObject: any = null;
 
     public async initialize (): Promise<void> {
 

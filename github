@@ -1,0 +1,16 @@
+import axios from 'axios';
+
+const GITHUB_TOKEN = 'tu_token_aquí';
+
+axios.get('https://api.github.com/repos/usuario_o_org/repositorio/contents/archivo.md', {
+  headers: {
+    Authorization: `token ${GITHUB_TOKEN}`,
+    Accept: 'application/vnd.github.v3.raw'
+  }
+})
+.then(response => {
+  console.log(response.data);
+})
+.catch(error => {
+  console.error('Error:', error.message);
+});

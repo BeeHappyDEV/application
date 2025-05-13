@@ -1,0 +1,61 @@
+Curso,Día,Mañana1,Mañana2,Mañana3,Mañana4,Tarde1,Tarde2,Tarde3
+1°A,Lunes,Matemáticas (M1),Matemáticas (M1),Lenguaje (L1),Lenguaje (L1),Ciencias (C1),Ciencias (C1),Libre
+1°A,Martes,Historia (H1),Historia (H1),Ciencias (C1),Ciencias (C1),Inglés (I1),Inglés (I1),Ed. Física (E1)
+1°A,Miércoles,Matemáticas (M1),Matemáticas (M1),Lenguaje (L1),Lenguaje (L1),Tecnología (T1),Artes (A1),Libre
+1°A,Jueves,Historia (H1),Historia (H1),Matemáticas (M1),Ciencias (C1),Inglés (I1),Inglés (I1),Libre
+1°A,Viernes,Lenguaje (L1),Lenguaje (L1),Matemáticas (M1),Matemáticas (M1),Ciencias (C1),Ciencias (C1),Libre
+1°B,Lunes,Matemáticas (M2),Matemáticas (M2),Lenguaje (L2),Lenguaje (L2),Ciencias (C2),Ciencias (C2),Tecnología (T1)
+1°B,Martes,Historia (H2),Historia (H2),Ciencias (C2),Ciencias (C2),Inglés (I2),Inglés (I2),Libre
+1°B,Miércoles,Matemáticas (M2),Matemáticas (M2),Lenguaje (L2),Lenguaje (L2),Artes (A1),Ed. Física (E1),Libre
+1°B,Jueves,Historia (H2),Historia (H2),Matemáticas (M2),Ciencias (C2),Inglés (I2),Inglés (I2),Libre
+1°B,Viernes,Lenguaje (L2),Lenguaje (L2),Matemáticas (M2),Matemáticas (M2),Ciencias (C2),Ciencias (C2),Libre
+1°C,Lunes,Matemáticas (M3),Matemáticas (M3),Lenguaje (L3),Lenguaje (L3),Libre,Historia (H1),Historia (H1)
+1°C,Martes,Ciencias (C3),Ciencias (C3),Historia (H1),Historia (H1),Inglés (I1),Inglés (I1),Ed. Física (E1)
+1°C,Miércoles,Matemáticas (M3),Matemáticas (M3),Lenguaje (L3),Lenguaje (L3),Tecnología (T1),Artes (A1),Libre
+1°C,Jueves,Lenguaje (L3),Lenguaje (L3),Matemáticas (M3),Ciencias (C3),Inglés (I1),Inglés (I1),Libre
+1°C,Viernes,Historia (H1),Historia (H1),Matemáticas (M3),Matemáticas (M3),Ciencias (C3),Ciencias (C3),Libre
+2°A,Lunes,Matemáticas (M3),Matemáticas (M3),Lenguaje (L3),Lenguaje (L3),Historia (H1),Historia (H1),Libre
+2°A,Martes,Ciencias (C1),Ciencias (C1),Historia (H1),Historia (H1),Inglés (I2),Inglés (I2),Tecnología (T1)
+2°A,Miércoles,Matemáticas (M3),Matemáticas (M3),Lenguaje (L3),Lenguaje (L3),Artes (A1),Ed. Física (E1),Libre
+2°A,Jueves,Historia (H1),Historia (H1),Matemáticas (M3),Ciencias (C1),Inglés (I2),Inglés (I2),Libre
+2°A,Viernes,Lenguaje (L3),Lenguaje (L3),Matemáticas (M3),Matemáticas (M3),Ciencias (C1),Ciencias (C1),Libre
+2°B,Lunes,Matemáticas (M1),Matemáticas (M1),Lenguaje (L1),Lenguaje (L1),Ciencias (C2),Ciencias (C2),Libre
+2°B,Martes,Historia (H2),Historia (H2),Ciencias (C2),Ciencias (C2),Inglés (I1),Inglés (I1),Ed. Física (E1)
+2°B,Miércoles,Matemáticas (M1),Matemáticas (M1),Lenguaje (L1),Lenguaje (L1),Tecnología (T1),Artes (A1),Libre
+2°B,Jueves,Lenguaje (L1),Lenguaje (L1),Matemáticas (M1),Ciencias (C2),Inglés (I1),Inglés (I1),Libre
+2°B,Viernes,Historia (H2),Historia (H2),Matemáticas (M1),Matemáticas (M1),Ciencias (C2),Ciencias (C2),Libre
+2°C,Lunes,Matemáticas (M2),Matemáticas (M2),Lenguaje (L2),Lenguaje (L2),Libre,Historia (H1),Historia (H1)
+2°C,Martes,Ciencias (C3),Ciencias (C3),Historia (H1),Historia (H1),Inglés (I2),Inglés (I2),Tecnología (T1)
+2°C,Miércoles,Matemáticas (M2),Matemáticas (M2),Lenguaje (L2),Lenguaje (L2),Artes (A1),Ed. Física (E1),Libre
+2°C,Jueves,Historia (H1),Historia (H1),Matemáticas (M2),Ciencias (C3),Inglés (I2),Inglés (I2),Libre
+2°C,Viernes,Lenguaje (L2),Lenguaje (L2),Matemáticas (M2),Matemáticas (M2),Ciencias (C3),Ciencias (C3),Libre
+3°A,Lunes,Matemáticas (M2),Matemáticas (M2),Lenguaje (L2),Lenguaje (L2),Ciencias (C1),Ciencias (C1),Libre
+3°A,Martes,Historia (H1),Historia (H1),Ciencias (C1),Ciencias (C1),Inglés (I1),Inglés (I1),Ed. Física (E1)
+3°A,Miércoles,Matemáticas (M2),Matemáticas (M2),Lenguaje (L2),Lenguaje (L2),Tecnología (T1),Artes (A1),Libre
+3°A,Jueves,Lenguaje (L2),Lenguaje (L2),Matemáticas (M2),Ciencias (C1),Inglés (I1),Inglés (I1),Libre
+3°A,Viernes,Historia (H1),Historia (H1),Matemáticas (M2),Matemáticas (M2),Ciencias (C1),Ciencias (C1),Libre
+3°B,Lunes,Matemáticas (M3),Matemáticas (M3),Lenguaje (L3),Lenguaje (L3),Ciencias (C2),Ciencias (C2),Tecnología (T1)
+3°B,Martes,Historia (H2),Historia (H2),Ciencias (C2),Ciencias (C2),Inglés (I2),Inglés (I2),Libre
+3°B,Miércoles,Matemáticas (M3),Matemáticas (M3),Lenguaje (L3),Lenguaje (L3),Artes (A1),Ed. Física (E1),Libre
+3°B,Jueves,Historia (H2),Historia (H2),Matemáticas (M3),Ciencias (C2),Inglés (I2),Inglés (I2),Libre
+3°B,Viernes,Lenguaje (L3),Lenguaje (L3),Matemáticas (M3),Matemáticas (M3),Ciencias (C2),Ciencias (C2),Libre
+3°C,Lunes,Matemáticas (M1),Matemáticas (M1),Lenguaje (L1),Lenguaje (L1),Libre,Historia (H2),Historia (H2)
+3°C,Martes,Ciencias (C3),Ciencias (C3),Historia (H2),Historia (H2),Inglés (I1),Inglés (I1),Tecnología (T1)
+3°C,Miércoles,Matemáticas (M1),Matemáticas (M1),Lenguaje (L1),Lenguaje (L1),Artes (A1),Ed. Física (E1),Libre
+3°C,Jueves,Historia (H2),Historia (H2),Matemáticas (M1),Ciencias (C3),Inglés (I1),Inglés (I1),Libre
+3°C,Viernes,Lenguaje (L1),Lenguaje (L1),Matemáticas (M1),Matemáticas (M1),Ciencias (C3),Ciencias (C3),Libre
+4°A,Lunes,Matemáticas (M1),Matemáticas (M1),Lenguaje (L1),Lenguaje (L1),Ciencias (C1),Ciencias (C1),Libre
+4°A,Martes,Historia (H1),Historia (H1),Ciencias (C1),Ciencias (C1),Inglés (I2),Inglés (I2),Ed. Física (E1)
+4°A,Miércoles,Matemáticas (M1),Matemáticas (M1),Lenguaje (L1),Lenguaje (L1),Tecnología (T1),Artes (A1),Libre
+4°A,Jueves,Lenguaje (L1),Lenguaje (L1),Matemáticas (M1),Ciencias (C1),Inglés (I2),Inglés (I2),Libre
+4°A,Viernes,Historia (H1),Historia (H1),Matemáticas (M1),Matemáticas (M1),Ciencias (C1),Ciencias (C1),Libre
+4°B,Lunes,Matemáticas (M2),Matemáticas (M2),Lenguaje (L2),Lenguaje (L2),Ciencias (C2),Ciencias (C2),Tecnología (T1)
+4°B,Martes,Historia (H2),Historia (H2),Ciencias (C2),Ciencias (C2),Inglés (I1),Inglés (I1),Libre
+4°B,Miércoles,Matemáticas (M2),Matemáticas (M2),Lenguaje (L2),Lenguaje (L2),Artes (A1),Ed. Física (E1),Libre
+4°B,Jueves,Historia (H2),Historia (H2),Matemáticas (M2),Ciencias (C2),Inglés (I1),Inglés (I1),Libre
+4°B,Viernes,Lenguaje (L2),Lenguaje (L2),Matemáticas (M2),Matemáticas (M2),Ciencias (C2),Ciencias (C2),Libre
+4°C,Lunes,Matemáticas (M3),Matemáticas (M3),Lenguaje (L3),Lenguaje (L3),Libre,Historia (H1),Historia (H1)
+4°C,Martes,Ciencias (C3),Ciencias (C3),Historia (H1),Historia (H1),Inglés (I2),Inglés (I2),Tecnología (T1)
+4°C,Miércoles,Matemáticas (M3),Matemáticas (M3),Lenguaje (L3),Lenguaje (L3),Artes (A1),Ed. Física (E1),Libre
+4°C,Jueves,Historia (H1),Historia (H1),Matemáticas (M3),Ciencias (C3),Inglés (I2),Inglés (I2),Libre
+4°C,Viernes,Lenguaje (L3),Lenguaje (L3),Matemáticas (M3),Matemáticas (M3),Ciencias (C3),Ciencias (C3),Libre

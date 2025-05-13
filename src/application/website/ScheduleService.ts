@@ -22,15 +22,19 @@ export class ScheduleService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        const queryObject = new JsonObject ();
+        let headersObject = null;
+
+        const queryObject = container.resolve (JsonObject);
         queryObject.set ('depth', '3');
         queryObject.set ('thread', logTool.trace ().get ('thread'));
 
-        let resultObject = new ResultObject ();
+        const bodyObject = null;
+
+        let resultObject = container.resolve (ResultObject);
 
         try {
 
-            resultObject = await this.webserviceModule.post (await paramsObject.get ('txt_host'), null, queryObject, null, logTool.trace ());
+            resultObject = await this.webserviceModule.post (await paramsObject.get ('txt_host'), headersObject, queryObject, bodyObject, logTool.trace ());
 
         } catch (exception) {
 

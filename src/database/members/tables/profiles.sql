@@ -1,14 +1,14 @@
 drop table if exists profiles cascade;
 
 create table if not exists profiles (
-    idf_profile        uuid primary key references entities (idf_entity) on delete cascade,
+    idf_profile        uuid primary key references registries (idf_registry) on delete cascade,
     boo_active         boolean default true,
     boo_internal       boolean default true,
     txt_code           text not null,
     txt_description_en text not null,
     txt_description_es text not null,
     txt_icon           text
-) inherits (entities);
+) inherits (registries);
 
 alter table profiles enable row level security;
 
@@ -40,14 +40,14 @@ with tabled_data as (
         (true, false, 'TST', 'Test User', 'Usuario de Prueba', null)
     ) as data (boo_active, boo_internal, txt_code, txt_description_en, txt_description_es, txt_icon)
 ),
-entities_insert as (
-    insert into entities
+registries_insert as (
+    insert into registries
     select from generate_series (1, (select count (*) from tabled_data))
-    returning idf_entity
+    returning idf_registry
 ),
 matched_data as (
     select
-        e.idf_entity,
+        e.idf_registry,
         t.boo_active,
         t.boo_internal,
         t.txt_code,
@@ -68,8 +68,8 @@ matched_data as (
     join (
         select
             row_number() over () as rn,
-            idf_entity
-        from entities_insert
+            idf_registry
+        from registries_insert
     ) e on t.rn = e.rn
 )
 insert into profiles (
@@ -82,7 +82,7 @@ insert into profiles (
     txt_icon
 )
 select
-    idf_entity,
+    idf_registry,
     boo_active,
     boo_internal,
     txt_code,

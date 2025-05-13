@@ -7,37 +7,44 @@ import {Boom} from '@hapi/boom';
 import {DisconnectReason, makeWASocket, useMultiFileAuthState} from 'baileys';
 import {WebSocket} from 'ws';
 
+import {WhatsAppService} from './WhatsAppService';
+import {PropertiesModule} from '../middleware/PropertiesModule';
 import {CommonsTool} from '../toolkit/CommonsTool';
-import {PropertiesTool} from '../toolkit/PropertiesTool';
 import {LogTool} from '../toolkit/LogTool';
 import {JsonObject} from '../object/JsonObject';
-import {WhatsAppService} from './WhatsAppService';
 
 @injectable ()
 export class WhatsAppController {
 
     constructor (
         @inject (WhatsAppService) private whatsAppService: WhatsAppService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesModule) private propertiesModule: PropertiesModule
     ) {
-        propertiesTool.initialize ().then ();
+        propertiesModule.initialize ().then ();
     }
 
     private codeString: String = '';
 
     public async initialize (expressApplication: typeof express.application, expressWsInstance: expressWs.Instance): Promise<void> {
 
-        if (await this.propertiesTool.get ('channel.whatsapp.enable') === true) {
+        if (await this.propertiesModule.get ('channel.whatsapp.enable') === true) {
 
-            const paramsObject = new JsonObject ();
+            const paramsObject = container.resolve (JsonObject);
 
-            expressWsInstance.app.ws ('/whatsapp/websocket', (webSocket: WebSocket) => {
+            expressWsInstance.app.ws ('/whatsapp/websocket/:phone', (webSocket: WebSocket, expressRequest: any) => {
 
-                this.websocketPageAction (webSocket);
+                const paramsObject = container.resolve (JsonObject);
+
+                paramsObject.set ('txt_phone', expressRequest.params.phone);
+
+
+                const phone = '';
+
+                this.websocketPageAction (webSocket, phone);
 
             });
 
-            expressApplication.get ('/whatsapp/associate', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            expressApplication.get ('/whatsapp/associate/:phone', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
                 paramsObject.set ('txt_action', 'associate');
                 paramsObject.set ('txt_render', 'configuration');
@@ -46,7 +53,7 @@ export class WhatsAppController {
 
             });
 
-            expressApplication.get ('/whatsapp/disassociate', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+            expressApplication.get ('/whatsapp/disassociate/:phone', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
                 paramsObject.set ('txt_action', 'disassociate');
                 paramsObject.set ('txt_render', 'configuration');
@@ -79,22 +86,22 @@ export class WhatsAppController {
 
                 case 'dev':
 
-                    resultObject.setPath (await this.propertiesTool.get ('system.host') + ':' + await this.propertiesTool.get ('system.port'));
-                    resultObject.setWebsocket (await this.propertiesTool.get ('system.websocket') + ':' + await this.propertiesTool.get ('system.port'));
+                    resultObject.setPath (await this.propertiesModule.get ('system.host') + ':' + await this.propertiesModule.get ('system.port'));
+                    resultObject.setWebsocket (await this.propertiesModule.get ('system.websocket') + ':' + await this.propertiesModule.get ('system.port'));
 
                     break;
 
                 case 'prd':
 
-                    resultObject.setPath (await this.propertiesTool.get ('system.host'));
-                    resultObject.setWebsocket (await this.propertiesTool.get ('system.websocket'));
+                    resultObject.setPath (await this.propertiesModule.get ('system.host'));
+                    resultObject.setWebsocket (await this.propertiesModule.get ('system.websocket'));
 
                     break;
 
             }
 
             resultObject.setVersion (await CommonsTool.getApplicationVersion ());
-            resultObject.setWebsite (await this.propertiesTool.get ('application.name') + await this.propertiesTool.get ('application.domain'));
+            resultObject.setWebsite (await this.propertiesModule.get ('application.name') + await this.propertiesModule.get ('application.domain'));
             resultObject.setRender (paramsObject.get ('txt_render'));
 
             expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
@@ -163,7 +170,7 @@ export class WhatsAppController {
 
                 if (requestObject.messages [0].key.fromMe === false) {
 
-                    let paramsObject = new JsonObject ();
+                    let paramsObject = container.resolve (JsonObject);
 
                     if (requestObject.messages [0].message.conversation !== '') {
 
@@ -178,6 +185,8 @@ export class WhatsAppController {
                     paramsObject.set ('txt_channel', 'whatsapp');
                     paramsObject.set ('txt_name', requestObject.messages [0].pushName);
                     paramsObject.set ('txt_sender', requestObject.messages [0].key.remoteJid.split ('@') [0]);
+
+                    await robotInstance.sendMessage (requestObject.messages [0].key.remoteJid, {text: 'hola, cosita hermosa'});
 
                     /*let workflowController = WorkflowController.getInstance ();
                     let resultObject = await workflowController.chatbot (paramsObject);
@@ -206,7 +215,9 @@ export class WhatsAppController {
 
     }
 
-    private async websocketPageAction (websocket: WebSocket): Promise<void> {
+    private async websocketPageAction (websocket: WebSocket, phone: string): Promise<void> {
+
+        console.log(phone);
 
         const stackStrings = await CommonsTool.getStackStrings ();
 

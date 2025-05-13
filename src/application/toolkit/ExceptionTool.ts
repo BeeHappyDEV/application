@@ -1,11 +1,11 @@
 import {JsonObject} from '../object/JsonObject';
+import {container} from "tsyringe";
 
 export class ExceptionTool {
 
-    //0
     public static SUCCESSFUL () {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 0,
@@ -19,10 +19,9 @@ export class ExceptionTool {
 
     }
 
-    //100
     public static POSTGRES_EXCEPTION (reflectionStrings: string []) {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 100,
@@ -36,10 +35,9 @@ export class ExceptionTool {
 
     }
 
-    //200
     public static REBUILD_EXCEPTION (fileString: string) {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 200,
@@ -53,10 +51,9 @@ export class ExceptionTool {
 
     }
 
-    //300
     public static INDICATORS_EXCEPTION (reflectionStrings: string []) {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 300,
@@ -70,10 +67,9 @@ export class ExceptionTool {
 
     }
 
-    //400
     public static FUNCTION_EXCEPTION (functionString: string) {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 400,
@@ -87,10 +83,9 @@ export class ExceptionTool {
 
     }
 
-    //500
     public static SERVICE_EXCEPTION (reflectionStrings: string []) {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 500,
@@ -104,10 +99,9 @@ export class ExceptionTool {
 
     }
 
-    //600
     public static DISCORD_EXCEPTION (reflectionStrings: string []) {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 600,
@@ -121,10 +115,9 @@ export class ExceptionTool {
 
     }
 
-    //700
     public static AUTH0_EXCEPTION (reflectionStrings: string []) {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 700,
@@ -138,10 +131,9 @@ export class ExceptionTool {
 
     }
 
-    //900
     public static APPLICATION_EXCEPTION (reflectionStrings: string []) {
 
-        let jsonObject = new JsonObject ();
+        let jsonObject = container.resolve (JsonObject);
 
         let statusObject = {
             sys_result: 900,

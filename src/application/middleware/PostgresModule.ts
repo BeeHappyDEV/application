@@ -6,21 +6,21 @@ import {CommonsTool} from '../toolkit/CommonsTool';
 import {ExceptionTool} from '../toolkit/ExceptionTool';
 import {JsonObject} from '../object/JsonObject';
 import {LogTool} from '../toolkit/LogTool';
-import {PropertiesTool} from '../toolkit/PropertiesTool';
+import {PropertiesModule} from './PropertiesModule';
 import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class PostgresModule {
 
     constructor (
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesModule) private propertiesModule: PropertiesModule
     ) {
-        propertiesTool.initialize ().then ();
+        propertiesModule.initialize ().then ();
     }
 
     public async execute (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        await this.propertiesTool.initialize ();
+        await this.propertiesModule.initialize ();
 
         const stackStrings = await CommonsTool.getStackStrings ();
 
@@ -28,15 +28,15 @@ export class PostgresModule {
         logTool.initialize (stackStrings, traceObject);
 
         const postgresPool = new pg.Pool ({
-            database: await this.propertiesTool.get ('integration.postgres.database'),
-            host: await this.propertiesTool.get ('integration.postgres.host'),
-            max: Number (await this.propertiesTool.get ('integration.postgres.connections')),
-            password: await this.propertiesTool.get ('integration.postgres.pass'),
-            port: Number (await this.propertiesTool.get ('integration.postgres.port')),
-            user: await this.propertiesTool.get ('integration.postgres.user')
+            database: await this.propertiesModule.get ('integration.postgres.database'),
+            host: await this.propertiesModule.get ('integration.postgres.host'),
+            max: Number (await this.propertiesModule.get ('integration.postgres.connections')),
+            password: await this.propertiesModule.get ('integration.postgres.pass'),
+            port: Number (await this.propertiesModule.get ('integration.postgres.port')),
+            user: await this.propertiesModule.get ('integration.postgres.user')
         });
 
-        const resultObject = new ResultObject ();
+        const resultObject = container.resolve (ResultObject);
 
         if (paramsObject.get ('txt_content') != null) {
 

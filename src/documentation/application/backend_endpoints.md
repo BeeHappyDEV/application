@@ -1,60 +1,48 @@
-# [Start](../start.md) > Backend Endpoints
+# Backend Endpoints
 
-<br/>
+### Wake Up Action
 
-> Wake Up Action
-
-|                 ***Layout***                 |
-|:--------------------------------------------:|
-| ![](../resources/backend_wake_up_action.png) |
+![](../resources/images/backend_wake_up_action.png)
 
 | ***Category*** | ***Verb*** |     ***Endpoint***     |
 |:--------------:|:----------:|:----------------------:|
 |    Backend     |    post    | /backend/system/wakeup |
 
-<br/>
+<br>
 
-> Delete Cache Action
+### Delete Cache Action
 
-|                   ***Layout***                    |
-|:-------------------------------------------------:|
-| ![](../resources/backend_delete_cache_action.png) |
+![](../resources/images/backend_delete_cache_action.png)
 
 | ***Category*** | ***Verb*** |    ***Endpoint***     |
 |:--------------:|:----------:|:---------------------:|
 |    Backend     |    post    | /backend/cache/delete |
 
-<br/>
+<br>
 
-> Rebuild Documental Action
+### Rebuild Documental Action
 
-|                      ***Layout***                       |
-|:-------------------------------------------------------:|
-| ![](../resources/backend_rebuild_documental_action.png) |
+![](../resources/images/backend_rebuild_documental_action.png)
 
 | ***Category*** | ***Verb*** |       ***Endpoint***        |
 |:--------------:|:----------:|:---------------------------:|
 |    Backend     |    post    | /backend/rebuild/documental |
 
-<br/>
+<br>
 
-> Rebuild Relational Action
+### Rebuild Relational Action
 
-|                      ***Layout***                       |
-|:-------------------------------------------------------:|
-| ![](../resources/backend_rebuild_relational_action.png) |
+![](../resources/images/backend_rebuild_relational_action.png)
 
 | ***Category*** | ***Verb*** |       ***Endpoint***        |
 |:--------------:|:----------:|:---------------------------:|
 |    Backend     |    post    | /backend/rebuild/relational |
 
-<br/>
+<br>
 
-> Reload Indicators Action
+### Reload Indicators Action
 
-|                  ***Layout***                   |
-|:-----------------------------------------------:|
-| ![](../resources/backend_reload_indicators.png) |
+![](../resources/images/backend_reload_indicators.png)
 
 | ***Category*** | ***Verb*** |       ***Endpoint***       |
 |:--------------:|:----------:|:--------------------------:|

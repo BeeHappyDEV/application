@@ -8,31 +8,36 @@ import expressWs from 'express-ws';
 import localTunnel from 'localtunnel';
 import superagent from 'superagent';
 
+import {MessengerController} from './channel/MessengerController';
+import {TelegramController} from './channel/TelegramController';
+import {WhatsAppController} from './channel/WhatsAppController';
 import {BackendController} from './website/BackendController';
 import {FrontendController} from './website/FrontendController';
 import {ScheduleController} from './website/ScheduleController';
-import {WhatsAppController} from './channel/WhatsAppController';
+import {PropertiesModule} from './middleware/PropertiesModule';
 import {CommonsTool} from './toolkit/CommonsTool';
 import {LogTool} from './toolkit/LogTool';
-import {PropertiesTool} from './toolkit/PropertiesTool';
+import {RegistryTool} from './toolkit/RegistryTool';
 import {JsonObject} from './object/JsonObject';
 
 @injectable ()
-export class Launcher {
+export class LauncherEntry {
 
     private readonly expressApplication: express.Application;
     private readonly expressWsInstance: expressWs.Instance;
 
     constructor (
+        @inject (MessengerController) private messengerController: MessengerController,
+        @inject (TelegramController) private telegramController: TelegramController,
+        @inject (WhatsAppController) private whatsAppController: WhatsAppController,
         @inject (BackendController) private backendController: BackendController,
         @inject (FrontendController) private frontendController: FrontendController,
         @inject (ScheduleController) private scheduleController: ScheduleController,
-        @inject (WhatsAppController) private whatsAppController: WhatsAppController,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesModule) private propertiesModule: PropertiesModule
     ) {
         this.expressApplication = express ();
         this.expressWsInstance = expressWs (this.expressApplication);
-        propertiesTool.initialize ().then ();
+        propertiesModule.initialize ().then ();
     }
 
     public async initialize (): Promise<void> {
@@ -86,9 +91,9 @@ export class Launcher {
         logTool.comment ('Version:', await CommonsTool.getApplicationVersion ());
         logTool.finalize ();
 
-        let hostString: string = '';
+        let hostString = '';
 
-        let portString: string = '';
+        let portString = '';
 
         const environmentString = process.argv[2].slice (2);
 
@@ -96,9 +101,9 @@ export class Launcher {
 
             case 'dev':
 
-                hostString = await this.propertiesTool.get ('system.host');
+                hostString = await this.propertiesModule.get ('system.host');
 
-                portString = process.env.PORT || await this.propertiesTool.get ('system.port');
+                portString = process.env.PORT || await this.propertiesModule.get ('system.port');
 
                 if (portString !== '80') {
 
@@ -112,9 +117,9 @@ export class Launcher {
 
             case 'prd':
 
-                hostString = await superagent.get (await this.propertiesTool.get ('integration.public')).then (responseObject => responseObject.body.ip);
+                hostString = await superagent.get (await this.propertiesModule.get ('integration.public')).then (responseObject => responseObject.body.ip);
 
-                portString = process.env.PORT || await this.propertiesTool.get ('system.port');
+                portString = process.env.PORT || await this.propertiesModule.get ('system.port');
 
                 if (portString !== '80') {
 
@@ -150,11 +155,11 @@ export class Launcher {
             })
         });
 
-        if (await this.propertiesTool.get ('system.tunnel.enable')) {
+        if (await this.propertiesModule.get ('system.tunnel.enable')) {
 
             try {
 
-                const subdomainString = (await this.propertiesTool.get ('application.name') + await this.propertiesTool.get ('application.domain')).toLowerCase ().replace ('.', '');
+                const subdomainString = (await this.propertiesModule.get ('application.name') + await this.propertiesModule.get ('application.domain')).toLowerCase ().replace ('.', '');
 
                 const developmentTunnel = await localTunnel ({
                     port: Number (portString),
@@ -165,7 +170,7 @@ export class Launcher {
                 logTool.comment ('Tunnel host:', developmentTunnel.url);
                 logTool.finalize ();
 
-                const addressString = await superagent.get (await this.propertiesTool.get ('integration.public')).then (responseObject => responseObject.body.ip);
+                const addressString = await superagent.get (await this.propertiesModule.get ('integration.public')).then (responseObject => responseObject.body.ip);
 
                 logTool.initialize (stackStrings, traceObject, 2);
                 logTool.comment ('Public address:', addressString);
@@ -204,22 +209,12 @@ export class Launcher {
             })
         });
 
-        /*await new Promise<void> (() => {
-
-            this.expressApplication.listen (portString, () => {
-
-                logTool.initialize (stackStrings, traceObject);
-                logTool.comment ('Public host:', hostString);
-                logTool.finalize ();
-
-            });
-
-        });*/
-
     }
 
     private async channelComponents (): Promise<void> {
 
+        await this.messengerController.initialize (this.expressApplication);
+        await this.telegramController.initialize (this.expressApplication);
         await this.whatsAppController.initialize (this.expressApplication, this.expressWsInstance);
 
     }
@@ -244,5 +239,7 @@ export class Launcher {
 
 }
 
-const launcher = container.resolve (Launcher);
-launcher.initialize ().then ();
+RegistryTool.initialize ().then ();
+
+const launcherEntry = container.resolve (LauncherEntry);
+launcherEntry.initialize ().then ();

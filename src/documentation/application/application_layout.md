@@ -1,9 +1,5 @@
-# [Start](../start.md) / Application Layout
+# Application Layout
 
-<br/>
+### General Layout
 
-> General Layout
-
-|              ***Launcher***              |
-|:----------------------------------------:|
-| ![](../resources/application_layout.png) |
+![](../resources/images/application_layout.png)

@@ -4,7 +4,7 @@ import {JsonObject} from 'src/application/object/JsonObject';
 
 export class ResultObject {
 
-    private resultObject: any;
+    private resultObject: any = null;
 
     public constructor () {
 

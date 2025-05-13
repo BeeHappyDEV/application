@@ -1,10 +1,10 @@
-import {inject, injectable} from 'tsyringe';
+import {container, inject, injectable} from 'tsyringe';
 import {MongoClient} from 'mongodb';
 
 //import {CommonsTool} from '../toolkit/CommonsTool';
 import {ExceptionTool} from '../toolkit/ExceptionTool';
 //import {LogTool} from '../toolkit/LogTool';
-import {PropertiesTool} from '../toolkit/PropertiesTool';
+import {PropertiesModule} from './PropertiesModule';
 import {ResultObject} from '../object/ResultObject';
 import {JsonObject} from '../object/JsonObject';
 
@@ -12,9 +12,9 @@ import {JsonObject} from '../object/JsonObject';
 export class MongoDbModule {
 
     constructor (
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesModule) private propertiesModule: PropertiesModule
     ) {
-        propertiesTool.initialize ().then ();
+        propertiesModule.initialize ().then ();
     }
 
     // @ts-ignore
@@ -61,14 +61,14 @@ export class MongoDbModule {
         //let logTool = new LogTool (this, this.propertiesTool);
         //logTool.initialize (traceObject, reflectionStrings);
 
-        let resultObject = new ResultObject ();
+        let resultObject = container.resolve (ResultObject);
 
-        let mongoClient = new MongoClient (await this.propertiesTool.get ('integration.mongo.host'));
+        let mongoClient = new MongoClient (await this.propertiesModule.get ('integration.mongo.host'));
         await mongoClient.connect ();
 
-        let mongoDatabase = mongoClient.db (await this.propertiesTool.get ('integration.mongo.database'));
-        await mongoDatabase.dropCollection (await this.propertiesTool.get ('integration.mongo.collection'));
-        await mongoDatabase.createCollection (await this.propertiesTool.get ('integration.mongo.collection'));
+        let mongoDatabase = mongoClient.db (await this.propertiesModule.get ('integration.mongo.database'));
+        await mongoDatabase.dropCollection (await this.propertiesModule.get ('integration.mongo.collection'));
+        await mongoDatabase.createCollection (await this.propertiesModule.get ('integration.mongo.collection'));
 
         await mongoClient.close ();
 

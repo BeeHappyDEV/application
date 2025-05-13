@@ -1,7 +1,7 @@
 drop table if exists organizations cascade;
 
 create table if not exists organizations (
-    idf_organization uuid primary key references entities (idf_entity) on delete cascade,
+    idf_organization uuid primary key references registries (idf_registry) on delete cascade,
     boo_active       boolean not null default true,
     idf_country      smallint not null,
     idf_region       smallint not null,
@@ -12,7 +12,7 @@ create table if not exists organizations (
     constraint organizations_fk2 foreign key (idf_region) references regions (idf_region),
     constraint organizations_fk3 foreign key (idf_province) references provinces (idf_province),
     constraint organizations_fk4 foreign key (idf_commune) references communes (idf_commune)
-) inherits (entities);
+) inherits (registries);
 
 alter table organizations enable row level security;
 
@@ -25,14 +25,14 @@ with tabled_data as (
         (true, 56, 13, 131, 13120, 'Organización de Prueba')
     ) as data (boo_active, idf_country, idf_region, idf_province, idf_commune, txt_organization)
 ),
-entities_insert as (
-    insert into entities
+registries_insert as (
+    insert into registries
     select from generate_series (1, (select count (*) from tabled_data))
-    returning idf_entity
+    returning idf_registry
 ),
 matched_data as (
     select
-        e.idf_entity,
+        e.idf_registry,
         t.boo_active,
         t.idf_country,
         t.idf_region,
@@ -53,8 +53,8 @@ matched_data as (
     join (
         select
             row_number() over () as rn,
-            idf_entity
-        from entities_insert
+            idf_registry
+        from registries_insert
     ) e on t.rn = e.rn
 )
 insert into organizations (
@@ -67,7 +67,7 @@ insert into organizations (
     txt_organization
 )
 select
-    idf_entity,
+    idf_registry,
     boo_active,
     idf_country,
     idf_region,

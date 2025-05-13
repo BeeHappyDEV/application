@@ -1,4 +1,4 @@
-import {inject, singleton} from 'tsyringe';
+import {container, inject, singleton} from 'tsyringe';
 
 import {JsonObject} from '../object/JsonObject';
 import {ResultObject} from '../object/ResultObject';
@@ -20,16 +20,16 @@ export class Auth0Module {
 
         const stackStrings = await CommonsTool.getStackStrings ();
 
-        const headersObject = new JsonObject ();
+        const headersObject = container.resolve (JsonObject);
         headersObject.set ('content-type', 'application/json');
 
-        const bodyObject = new JsonObject();
+        const bodyObject = container.resolve (JsonObject);
         bodyObject.set ('client_id', '7QMq4WvuXvz9Yzomz4yfUaHATM4ElAUR');
         bodyObject.set ('client_secret', 'noybo0dKQtflkVr_IzA6WGDUZ15jGqLrih-EqS69wrq2mVD5kQj_UNgRiOQpHRxX');
         bodyObject.set ('audience', 'https://beehappydev.us.auth0.com/api/v2/');
         bodyObject.set ('grant_type', 'client_credentials');
 
-        const resultObject = new ResultObject ();
+        const resultObject = container.resolve (ResultObject);
 
         try {
 

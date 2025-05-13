@@ -1,4 +1,4 @@
-import {inject, injectable} from 'tsyringe';
+import {container, inject, injectable} from 'tsyringe';
 
 import crypto from 'crypto';
 import express from 'express';
@@ -6,18 +6,18 @@ import kleur from 'kleur';
 import url from 'url';
 
 import {MongoDbModule} from '../middleware/MongoDbModule';
-import {PropertiesTool} from './PropertiesTool';
+import {PropertiesModule} from '../middleware/PropertiesModule';
 import {JsonObject} from '../object/JsonObject';
 import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class LogTool {
 
-    private logObject: any = new JsonObject ();
+    private logObject: any = null;
 
     constructor (
         @inject (MongoDbModule) private mongoDbModule: MongoDbModule,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesModule) private propertiesModule: PropertiesModule
     ) {
     }
 
@@ -25,7 +25,7 @@ export class LogTool {
 
         if (traceObject === null) {
 
-            this.logObject = new JsonObject ();
+            this.logObject = container.resolve (JsonObject);
 
         } else {
 
@@ -209,7 +209,7 @@ export class LogTool {
 
     public trace (): JsonObject {
 
-        let traceObject = new JsonObject ();
+        let traceObject = container.resolve (JsonObject);
 
         traceObject.set ('thread', this.logObject.get ('thread'));
         traceObject.set ('depth', this.logObject.get ('depth'));
@@ -224,62 +224,21 @@ export class LogTool {
         this.logObject.set ('ending', Date.now ());
         this.logObject.set ('interval', ((new Date (this.logObject.get ('ending')).getTime () - new Date (this.logObject.get ('starting')).getTime ()) / 1000).toFixed (3));
 
-        const daS1 = this.logObject.get ('starting');
+        let startingString = this.logObject.get ('starting');
 
-        let daD1: Date;
+        let startingDate: Date;
 
-        if (daS1 instanceof Date) {
+        if (startingString instanceof Date) {
 
-            daD1 = daS1;
+            startingDate = startingString;
 
-        } else if (typeof daS1 === 'number') {
+        } else if (typeof startingString === 'number') {
 
-            daD1 = new Date (daS1);
+            startingDate = new Date (startingString);
 
-        } else if (typeof daS1 === 'string') {
+        } else if (typeof startingString === 'string') {
 
-            daD1 = new Date (daS1.includes ('T') ? daS1 : daS1.replace (' ', 'T'));
-
-        } else {
-
-            throw new Error ();
-
-        }
-
-        const yyD1 = daD1.getFullYear ();
-        const mmD1 = String (daD1.getMonth () + 1).padStart (2, '0');
-        const ddD1 = String (daD1.getDate ()).padStart (2, '0');
-        const hhD1 = String (daD1.getHours ()).padStart (2, '0');
-        const miD1 = String (daD1.getMinutes ()).padStart (2, '0');
-        const ssD1 = String (daD1.getSeconds ()).padStart (2, '0');
-        const msD1 = String (daD1.getMilliseconds ()).padStart (3, '0');
-
-        let tiD1 = '';
-        tiD1 = tiD1 + yyD1 + '-';
-        tiD1 = tiD1 + mmD1 + '-';
-        tiD1 = tiD1 + ddD1 + ' ';
-        tiD1 = tiD1 + hhD1 + ':';
-        tiD1 = tiD1 + miD1 + ':';
-        tiD1 = tiD1 + ssD1 + '.';
-        tiD1 = tiD1 + msD1;
-
-        this.logObject.set ('starting', tiD1);
-
-        const daS2 = this.logObject.get ('ending');
-
-        let daD2: Date;
-
-        if (daS2 instanceof Date) {
-
-            daD2 = daS2;
-
-        } else if (typeof daS2 === 'number') {
-
-            daD2 = new Date (daS2);
-
-        } else if (typeof daS2 === 'string') {
-
-            daD2 = new Date (daS2.includes ('T') ? daS2 : daS2.replace (' ', 'T'));
+            startingDate = new Date (startingString.includes ('T') ? startingString : startingString.replace (' ', 'T'));
 
         } else {
 
@@ -287,24 +246,65 @@ export class LogTool {
 
         }
 
-        let yyD2 = daD2.getFullYear ();
-        let mmD2 = String (daD2.getMonth () + 1).padStart (2, '0');
-        let ddD2 = String (daD2.getDate ()).padStart (2, '0');
-        let hhD2 = String (daD2.getHours ()).padStart (2, '0');
-        let miD2 = String (daD2.getMinutes ()).padStart (2, '0');
-        let ssD2 = String (daD2.getSeconds ()).padStart (2, '0');
-        let msD2 = String (daD2.getMilliseconds ()).padStart (3, '0');
+        const yyStartingString = String (startingDate.getFullYear ());
+        const mmStartingString = String (startingDate.getMonth () + 1).padStart (2, '0');
+        const ddStartingString = String (startingDate.getDate ()).padStart (2, '0');
+        const hhStartingString = String (startingDate.getHours ()).padStart (2, '0');
+        const miStartingString = String (startingDate.getMinutes ()).padStart (2, '0');
+        const ssStartingString = String (startingDate.getSeconds ()).padStart (2, '0');
+        const msStartingString = String (startingDate.getMilliseconds ()).padStart (3, '0');
 
-        let tiD2 = '';
-        tiD2 = tiD2 + yyD2 + '-';
-        tiD2 = tiD2 + mmD2 + '-';
-        tiD2 = tiD2 + ddD2 + ' ';
-        tiD2 = tiD2 + hhD2 + ':';
-        tiD2 = tiD2 + miD2 + ':';
-        tiD2 = tiD2 + ssD2 + '.';
-        tiD2 = tiD2 + msD2;
+        startingString = '';
+        startingString = startingString + yyStartingString + '-';
+        startingString = startingString + mmStartingString + '-';
+        startingString = startingString + ddStartingString + ' ';
+        startingString = startingString + hhStartingString + ':';
+        startingString = startingString + miStartingString + ':';
+        startingString = startingString + ssStartingString + '.';
+        startingString = startingString + msStartingString;
 
-        this.logObject.set ('ending', tiD2);
+        this.logObject.set ('starting', startingString);
+
+        let endingString = this.logObject.get ('ending');
+
+        let endingDate: Date;
+
+        if (endingString instanceof Date) {
+
+            endingDate = endingString;
+
+        } else if (typeof endingString === 'number') {
+
+            endingDate = new Date (endingString);
+
+        } else if (typeof endingString === 'string') {
+
+            endingDate = new Date (endingString.includes ('T') ? endingString : endingString.replace (' ', 'T'));
+
+        } else {
+
+            throw new Error ();
+
+        }
+
+        const yyEndingString = String (endingDate.getFullYear ());
+        const mmEndingString = String (endingDate.getMonth () + 1).padStart (2, '0');
+        const ddEndingString = String (endingDate.getDate ()).padStart (2, '0');
+        const hhEndingString = String (endingDate.getHours ()).padStart (2, '0');
+        const miEndingString = String (endingDate.getMinutes ()).padStart (2, '0');
+        const ssEndingString = String (endingDate.getSeconds ()).padStart (2, '0');
+        const msEndingString = String (endingDate.getMilliseconds ()).padStart (3, '0');
+
+        endingString = '';
+        endingString = endingString + yyEndingString + '-';
+        endingString = endingString + mmEndingString + '-';
+        endingString = endingString + ddEndingString + ' ';
+        endingString = endingString + hhEndingString + ':';
+        endingString = endingString + miEndingString + ':';
+        endingString = endingString + ssEndingString + '.';
+        endingString = endingString + msEndingString;
+
+        this.logObject.set ('ending', endingString);
 
         let captionString = '';
         captionString = captionString + kleur.magenta (this.logObject.get ('thread')) + ' [';
@@ -423,7 +423,7 @@ export class LogTool {
 
         console.log (captionString);
 
-        if (Boolean (this.propertiesTool.get ('system.log.persist'))) {
+        if (Boolean (this.propertiesModule.get ('system.log.persist'))) {
 
             this.mongoDbModule.insertTrace (this.logObject).then ();
 
