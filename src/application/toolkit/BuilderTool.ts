@@ -56,13 +56,13 @@ export class BuilderTool {
 
         let rowString = '';
 
-        for (const row of dataStrings) {
+        for (const dataString of dataStrings) {
 
             rowString += '|';
 
-            for (let offsetNumber = 0; offsetNumber < row.length; offsetNumber++) {
+            for (let offsetNumber = 0; offsetNumber < dataString.length; offsetNumber++) {
 
-                rowString += ' ' + row[offsetNumber].padEnd (widthNumbers[offsetNumber]) + ' |';
+                rowString += ' ' + dataString[offsetNumber].padEnd (widthNumbers[offsetNumber]) + ' |';
 
             }
 

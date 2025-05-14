@@ -11,6 +11,6 @@
 
 - Database
   - [Database Layout](./database/database_layout.md)
-  - [Schema Summary](database/schema_summary.md)
+  - [Schema List](database/schema_list.md)
   - [Function List](database/function_list.md)
   - [Table List](database/table_list.md)
