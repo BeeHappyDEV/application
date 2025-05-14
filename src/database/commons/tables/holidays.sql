@@ -1,17 +1,17 @@
-drop table if exists holidays cascade;
+drop table if exists commons.holidays cascade;
 
-create table if not exists holidays (
+create table if not exists commons.holidays (
     idf_year  smallint,
     idf_month smallint,
     idf_day   smallint,
     constraint holidays_pk primary key (idf_year, idf_month, idf_day)
 );
 
-alter table holidays enable row level security;
+alter table commons.holidays enable row level security;
 
-comment on table holidays is 'hld';
+comment on table commons.holidays is 'hld';
 
-insert into holidays  (idf_year, idf_month, idf_day) values
+insert into commons.holidays  (idf_year, idf_month, idf_day) values
 (2025, 1, 1),
 (2025, 4, 18),
 (2025, 4, 19),

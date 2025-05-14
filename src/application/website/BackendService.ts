@@ -32,6 +32,9 @@ export class BackendService {
 
         try {
 
+            paramsObject.set ('txt_schema', 'backend');
+            paramsObject.set ('txt_function', 'wakeup_action');
+
             resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
 
         } catch (exception) {
@@ -303,7 +306,8 @@ export class BackendService {
             queryObject.del ('apikey');
             queryObject.del ('formato');
             queryObject.set ('jsn_data', resultObject.get ('outgoing'));
-            queryObject.set ('txt_function', 'backend_update_dollar_values');
+            queryObject.set ('txt_schema', 'indicators');
+            queryObject.set ('txt_function', 'set_dollar_values');
 
             await this.postgresModule.execute (queryObject, logTool.trace ());
 
@@ -350,7 +354,8 @@ export class BackendService {
             queryObject.del ('apikey');
             queryObject.del ('formato');
             queryObject.set ('jsn_data', resultObject.get ('outgoing'));
-            queryObject.set ('txt_function', 'backend_update_euro_values');
+            queryObject.set ('txt_schema', 'indicators');
+            queryObject.set ('txt_function', 'set_euro_values');
 
             await this.postgresModule.execute (queryObject, logTool.trace ());
 
@@ -397,7 +402,8 @@ export class BackendService {
             queryObject.del ('apikey');
             queryObject.del ('formato');
             queryObject.set ('jsn_data', resultObject.get ('outgoing'));
-            queryObject.set ('txt_function', 'backend_update_foment_unit_values');
+            queryObject.set ('txt_schema', 'indicators');
+            queryObject.set ('txt_function', 'set_foment_unit_values');
 
             await this.postgresModule.execute (queryObject, logTool.trace ());
 
@@ -444,7 +450,8 @@ export class BackendService {
             queryObject.del ('apikey');
             queryObject.del ('formato');
             queryObject.set ('jsn_data', resultObject.get ('outgoing'));
-            queryObject.set ('txt_function', 'backend_update_monthly_tax_unit_values');
+            queryObject.set ('txt_schema', 'indicators');
+            queryObject.set ('txt_function', 'set_monthly_tax_unit_values');
 
             await this.postgresModule.execute (queryObject, logTool.trace ());
 

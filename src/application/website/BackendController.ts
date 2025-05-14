@@ -25,8 +25,6 @@ export class BackendController {
 
         expressApplication.post ('/backend/system/wakeup', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
 
-            paramsObject.set ('txt_function', 'backend_wakeup_application');
-
             this.postWakeupAction (expressRequest, expressResponse, paramsObject);
 
         });

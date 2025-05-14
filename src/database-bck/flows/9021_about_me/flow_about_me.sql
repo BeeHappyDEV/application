@@ -15,8 +15,8 @@
  *        Actor Chatbot
  *        participant F as flow_about_me
  *        Chatbot ->> F: in_jsn_transfer
- *        F ->> F: select constants: system_version
- *        F ->> F: select constants: system_status
+ *        F ->> F: select constants: framework.version
+ *        F ->> F: select constants: framework.status
  *        F ->> F: idf_expression: 9021
  *        F -->> Chatbot: out_jsn_transfer
  *        ```
@@ -48,7 +48,7 @@ begin
     from
         dat_constants cst
     where
-        cst.txt_key = 'system_version';
+        cst.txt_key = 'framework.version';
 
     select
         cst.txt_value
@@ -57,7 +57,7 @@ begin
     from
         dat_constants cst
     where
-        cst.txt_key = 'system_status';
+        cst.txt_key = 'framework.status';
 
     var_jsn_outgoing = core_set_json_numeric (var_jsn_outgoing, 'idf_expression', 9021);
     var_jsn_parameters = core_set_json_text (var_jsn_parameters, '%1', var_txt_version);

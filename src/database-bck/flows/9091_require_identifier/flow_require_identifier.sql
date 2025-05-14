@@ -15,8 +15,8 @@
  *        Actor Chatbot
  *        participant F as flow_require_identifier
  *        Chatbot ->> F: in_jsn_transfer
- *        F ->> F: select constants: system_version
- *        F ->> F: select constants: system_status
+ *        F ->> F: select constants: framework.version
+ *        F ->> F: select constants: framework.status
  *        F ->> F: idf_expression: 9091
  *        F -->> Chatbot: out_jsn_transfer
  *        ```

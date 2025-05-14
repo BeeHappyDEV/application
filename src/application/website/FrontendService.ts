@@ -29,7 +29,8 @@ export class FrontendService {
 
         try {
 
-            paramsObject.set ('txt_function', 'frontend_page_action');
+            paramsObject.set ('txt_schema', 'frontend');
+            paramsObject.set ('txt_function', 'page_action');
 
             resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
 
@@ -59,7 +60,8 @@ export class FrontendService {
 
         try {
 
-            paramsObject.set ('txt_function', 'frontend_link_action');
+            paramsObject.set ('txt_schema', 'frontend');
+            paramsObject.set ('txt_function', 'link_action');
 
             resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
 
@@ -89,7 +91,8 @@ export class FrontendService {
 
         try {
 
-            paramsObject.set ('txt_function', 'frontend_file_action');
+            paramsObject.set ('txt_schema', 'frontend');
+            paramsObject.set ('txt_function', 'file_action');
 
             resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
 

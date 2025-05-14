@@ -58,17 +58,18 @@ export class PostgresModule {
 
         }
 
-        if (paramsObject.get ('txt_function') != null) {
+        if (paramsObject.get ('txt_schema') != null && paramsObject.get ('txt_function') != null) {
 
             try {
 
-                const functionString = paramsObject.get ('txt_function');
+                const objectString = paramsObject.get ('txt_schema') + '.' + paramsObject.get ('txt_function');
 
-                logTool.resource (functionString);
+                logTool.resource (objectString);
 
+                paramsObject.del ('txt_schema');
                 paramsObject.del ('txt_function');
 
-                let postgresObject = await postgresPool.query ('select * from ' + functionString + ' ($1)', [paramsObject.all ()]);
+                let postgresObject = await postgresPool.query ('select * from ' + objectString + ' ($1)', [paramsObject.all ()]);
                 postgresObject = postgresObject.rows [0];
 
                 const databaseObject = Object.values (postgresObject) [0];
@@ -79,7 +80,7 @@ export class PostgresModule {
 
                 } else {
 
-                    resultObject.setResult (ExceptionTool.FUNCTION_EXCEPTION (functionString));
+                    resultObject.setResult (ExceptionTool.FUNCTION_EXCEPTION (objectString));
 
                 }
 

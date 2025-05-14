@@ -1,20 +1,20 @@
-drop table if exists provinces cascade;
+drop table if exists commons.provinces cascade;
 
-create table if not exists provinces (
+create table if not exists commons.provinces (
     idf_province smallint,
     idf_country  smallint,
     idf_region   smallint,
     txt_province text,
     constraint provinces_pk primary key (idf_province),
-    constraint provinces_fk1 foreign key (idf_country) references countries (idf_country),
-    constraint provinces_fk2 foreign key (idf_region) references regions (idf_region)
+    constraint provinces_fk1 foreign key (idf_country) references commons.countries (idf_country),
+    constraint provinces_fk2 foreign key (idf_region) references commons.regions (idf_region)
 );
 
-alter table provinces enable row level security;
+alter table commons.provinces enable row level security;
 
-comment on table provinces is 'pvc';
+comment on table commons.provinces is 'pvc';
 
-insert into provinces (idf_province, idf_country, idf_region, txt_province) values
+insert into commons.provinces (idf_province, idf_country, idf_region, txt_province) values
 (11, 56, 1, 'Iquique'),
 (14, 56, 1, 'Tamarugal'),
 (21, 56, 2, 'Antofagasta'),

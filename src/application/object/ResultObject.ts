@@ -95,7 +95,15 @@ export class ResultObject {
 
     public getCarry () {
 
-        return this.resultObject.status ['sys_carry'];
+        if (!this.resultObject.status || Object.keys (this.resultObject.status).length === 0) {
+
+            return false;
+
+        } else {
+
+            return this.resultObject.status ['sys_carry'];
+
+        }
 
     }
 

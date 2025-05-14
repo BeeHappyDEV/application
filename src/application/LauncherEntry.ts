@@ -12,6 +12,7 @@ import {MessengerController} from './channel/MessengerController';
 import {TelegramController} from './channel/TelegramController';
 import {WhatsAppController} from './channel/WhatsAppController';
 import {BackendController} from './website/BackendController';
+import {DocumentController} from './website/DocumentController';
 import {FrontendController} from './website/FrontendController';
 import {ScheduleController} from './website/ScheduleController';
 import {PropertiesModule} from './middleware/PropertiesModule';
@@ -31,6 +32,7 @@ export class LauncherEntry {
         @inject (TelegramController) private telegramController: TelegramController,
         @inject (WhatsAppController) private whatsAppController: WhatsAppController,
         @inject (BackendController) private backendController: BackendController,
+        @inject (DocumentController) private documentController: DocumentController,
         @inject (FrontendController) private frontendController: FrontendController,
         @inject (ScheduleController) private scheduleController: ScheduleController,
         @inject (PropertiesModule) private propertiesModule: PropertiesModule
@@ -232,6 +234,7 @@ export class LauncherEntry {
     private async dynamicComponents (): Promise<void> {
 
         await this.backendController.initialize (this.expressApplication);
+        await this.documentController.initialize (this.expressApplication);
         await this.frontendController.initialize (this.expressApplication);
         await this.scheduleController.initialize ();
 

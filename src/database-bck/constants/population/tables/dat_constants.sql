@@ -21,6 +21,6 @@ insert into dat_constants (idf_constant, txt_module, txt_submodule, txt_key, txt
 (2041, null,  null, 'modification_terms_and_conditions', '1 Enero 2025'),
 (2042, null,  null, 'link_terms_and_conditions_video', 'https://youtube.com'),
 
-(9001, null,  null, 'system_version', '3.0.241214'),
+(9001, null,  null, 'framework.version', '3.0.241214'),
 
-(9002, null,  null, 'system_status', 'Active');
+(9002, null,  null, 'framework.status', 'Active');

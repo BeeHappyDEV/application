@@ -1,0 +1,35 @@
+/* * * * * * * */
+/* S C H E M A */
+/* * * * * * * */
+
+schema/delete_schema.sql
+schema/create_schema.sql
+
+/* * * * * * * */
+/* T A B L E S */
+/* * * * * * * */
+
+tables/registries.sql
+
+/* * * * * * * * * * */
+/* F U N C T I O N S */
+/* * * * * * * * * * */
+
+functions/get_empty_node.sql
+functions/del_node.sql
+functions/get_array.sql
+functions/get_boolean.sql
+functions/get_node.sql
+functions/get_numeric.sql
+functions/get_text.sql
+functions/set_array.sql
+functions/set_boolean.sql
+functions/set_node.sql
+functions/set_numeric.sql
+functions/set_text.sql
+functions/get_time_difference.sql
+functions/get_time_object.sql
+functions/get_time_value.sql
+functions/initializer.sql
+functions/successfully.sql
+functions/failed.sql

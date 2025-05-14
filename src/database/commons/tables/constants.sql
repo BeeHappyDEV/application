@@ -1,17 +1,17 @@
-drop table if exists constants cascade;
+drop table if exists commons.constants cascade;
 
-create table if not exists constants (
+create table if not exists commons.constants (
     idf_constant  smallint,
     txt_key       text,
     txt_value     text,
     constraint constants_pk primary key (idf_constant)
 );
 
-alter table constants enable row level security;
+alter table commons.constants enable row level security;
 
-comment on table constants is 'cst';
+comment on table commons.constants is 'cst';
 
-insert into constants (idf_constant, txt_key, txt_value) values
+insert into commons.constants (idf_constant, txt_key, txt_value) values
 (1001, 'timezone_difference', '-3'),
 (2001, 'link_facebook', 'https://www.facebook.com/'),
 (2002, 'link_instagram', 'https://www.instagram.com/'),

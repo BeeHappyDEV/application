@@ -1,9 +1,12 @@
 /* * * * * * * * */
-/* M O D U L E S */
+/* D O M A I N S */
 /* * * * * * * * */
 
-system/index.txt
+framework/index.txt
+backend/index.txt
+frontend/index.txt
+
 commons/index.txt
 members/index.txt
-website/index.txt
+indicators/index.txt
 workflow/index.txt

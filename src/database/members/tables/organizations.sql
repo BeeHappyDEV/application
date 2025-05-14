@@ -8,10 +8,10 @@ create table if not exists organizations (
     idf_province     smallint not null,
     idf_commune      smallint not null,
     txt_organization text not null,
-    constraint organizations_fk1 foreign key (idf_country) references countries (idf_country),
-    constraint organizations_fk2 foreign key (idf_region) references regions (idf_region),
-    constraint organizations_fk3 foreign key (idf_province) references provinces (idf_province),
-    constraint organizations_fk4 foreign key (idf_commune) references communes (idf_commune)
+    constraint organizations_fk1 foreign key (idf_country) references commons.countries (idf_country),
+    constraint organizations_fk2 foreign key (idf_region) references commons.regions (idf_region),
+    constraint organizations_fk3 foreign key (idf_province) references commons.provinces (idf_province),
+    constraint organizations_fk4 foreign key (idf_commune) references commons.communes (idf_commune)
 ) inherits (registries);
 
 alter table organizations enable row level security;

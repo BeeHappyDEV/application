@@ -1,200 +1,364 @@
 import 'reflect-metadata';
-
 import {container, injectable} from 'tsyringe';
-
 import fsExtra from 'fs-extra';
 import path from 'path';
+import {CommonsTool} from "./toolkit/CommonsTool";
 
-interface TableInfo {
+interface DatabaseObject {
     name: string;
-    comment: string;
+    fullName: string;
     definition: string;
+    sourceFile: string;
 }
 
-interface FunctionInfo {
+interface Table extends DatabaseObject {
+    comment: string;
+}
+
+interface Function extends DatabaseObject {
+    // Puedes añadir propiedades específicas de funciones aquí
+}
+
+interface Schema {
+    tables: Table[];
+    functions: Function[];
+}
+
+interface SchemaSummary {
     name: string;
-    definition: string;
+    tableCount: number;
+    functionCount: number;
+}
+
+interface DatabaseObjects {
+    schemas: Record<string, Schema>;
+    summary: {
+        totalTables: number;
+        totalFunctions: number;
+        schemas: SchemaSummary[];
+    };
 }
 
 @injectable ()
 export class PrepareEntry {
 
-    private readonly sqlFolderPath: string = 'src/database';
-    private readonly outputPath: string = './docs/database-reference.md';
+    private readonly sqlRootPath: string = 'src/database';
+    private readonly docsPath: string = './src/documentation/database';
+    private readonly tablesListPath: string = './src/documentation/database/tables-list.md';
+    private readonly functionsListPath: string = './src/documentation/database/functions-list.md';
+    private readonly summaryPath: string = './src/documentation/database/schema-summary.md';
 
+    public async generateDocumentation (): Promise<void> {
 
-    public async generateDocumentation(): Promise<void> {
         try {
-            // Crear directorio de docs si no existe
-            if (!fsExtra.existsSync(path.dirname(this.outputPath))) {
-                fsExtra.mkdirSync(path.dirname(this.outputPath), { recursive: true });
+            if (!fsExtra.existsSync (this.docsPath)) {
+                fsExtra.mkdirSync (this.docsPath, {recursive: true});
             }
 
-            // Leer archivos SQL
-            const files = fsExtra.readdirSync(this.sqlFolderPath);
-            const tables: TableInfo[] = [];
-            const functions: FunctionInfo[] = [];
+            const databaseObjects = this.processDirectory (this.sqlRootPath);
+            await this.generateTablesList (databaseObjects);
+            await this.generateFunctionsList (databaseObjects);
+            await this.generateSummaryReport (databaseObjects);
 
-            for (const file of files) {
-                if (file.endsWith('.sql')) {
-                    const content = fsExtra.readFileSync(path.join(this.sqlFolderPath, file), 'utf-8');
-                    this.parseSqlFile(content, tables, functions);
-                }
-            }
-
-            // Generar contenido Markdown
-            const markdownContent = this.generateMarkdown(tables, functions);
-            fsExtra.writeFileSync(this.outputPath, markdownContent);
-
-            console.log(`Documentación generada en: ${this.outputPath}`);
+            console.log (`Documentación generada en: ${this.docsPath}`);
         } catch (error) {
-            console.error('Error generando documentación:', error);
+            console.error ('Error generando documentación:', error);
         }
     }
 
-    private parseSqlFile(content: string, tables: TableInfo[], functions: FunctionInfo[]): void {
-        const lines = content.split('\n');
+    private processDirectory (pathString: string): DatabaseObjects {
+        const result: DatabaseObjects = {
+            schemas: {},
+            summary: {
+                totalTables: 0,
+                totalFunctions: 0,
+                schemas: []
+            }
+        };
+
+        const itemStrings = fsExtra.readdirSync (pathString);
+
+        for (const itemString of itemStrings) {
+            const fullPath = path.join (pathString, itemString);
+            const stats = fsExtra.statSync (fullPath);
+
+            if (stats.isDirectory ()) {
+
+                const subResult = this.processDirectory (fullPath);
+
+                this.mergeDatabaseObjects (result, subResult);
+
+            } else if (itemString.endsWith ('.sql')) {
+
+                const content = fsExtra.readFileSync (fullPath, 'utf-8');
+
+                this.processFile (content, result, path.relative (this.sqlRootPath, fullPath));
+
+            }
+
+        }
+
+        this.updateSummary (result);
+
+        return result;
+
+    }
+
+    private mergeDatabaseObjects (target: DatabaseObjects, source: DatabaseObjects): void {
+        for (const schemaName in source.schemas) {
+            if (!target.schemas[schemaName]) {
+                target.schemas[schemaName] = {
+                    tables: [],
+                    functions: []
+                };
+            }
+
+            target.schemas[schemaName].tables.push (...source.schemas[schemaName].tables);
+            target.schemas[schemaName].functions.push (...source.schemas[schemaName].functions);
+        }
+    }
+
+    private updateSummary (dbObjects: DatabaseObjects): void {
+        dbObjects.summary.totalTables = 0;
+        dbObjects.summary.totalFunctions = 0;
+        dbObjects.summary.schemas = [];
+
+        for (const schemaName in dbObjects.schemas) {
+            const schema = dbObjects.schemas[schemaName];
+            const tableCount = schema.tables.length;
+            const functionCount = schema.functions.length;
+
+            dbObjects.summary.totalTables += tableCount;
+            dbObjects.summary.totalFunctions += functionCount;
+            dbObjects.summary.schemas.push ({
+                name: schemaName,
+                tableCount,
+                functionCount
+            });
+        }
+
+        dbObjects.summary.schemas.sort ((a, b) => a.name.localeCompare (b.name));
+    }
+
+    private processFile (content: string, dbObjects: DatabaseObjects, filePath: string): void {
+        const lines = content.split ('\n');
 
         for (const line of lines) {
-            // Extraer tablas
-            const tableMatch = line.match(/drop table if exists (\w+)/i);
-            if (tableMatch) {
-                const tableName = tableMatch[1];
-                const commentMatch = content.match(new RegExp(`comment on table ${tableName} is '([^']+)'`, 'i'));
-                tables.push({
-                    name: tableName,
-                    comment: commentMatch ? commentMatch[1] : 'Sin comentario',
-                    definition: line
-                });
+            this.processTable (line, content, dbObjects, filePath);
+            this.processFunction (line, dbObjects, filePath);
+        }
+    }
+
+    private processTable (line: string, content: string, dbObjects: DatabaseObjects, filePath: string): void {
+        const tableMatch = line.match (/drop table (?:if exists )?([\w.]+)/i);
+        if (!tableMatch) return;
+
+        const fullTableName = tableMatch[1];
+        const [schema, tableName] = fullTableName.includes ('.') ?
+            fullTableName.split ('.') :
+            ['public', fullTableName];
+
+        const commentMatch = content.match (
+            new RegExp (`comment on table ${fullTableName} is '([^']+)'`, 'i')
+        );
+
+        const tableInfo: Table = {
+            name: tableName,
+            fullName: fullTableName,
+            comment: commentMatch ? commentMatch[1] : '',
+            definition: line.trim (),
+            sourceFile: filePath
+        };
+
+        if (!dbObjects.schemas[schema]) {
+            dbObjects.schemas[schema] = {tables: [], functions: []};
+        }
+
+        dbObjects.schemas[schema].tables.push (tableInfo);
+    }
+
+    private processFunction (line: string, dbObjects: DatabaseObjects, filePath: string): void {
+        const functionMatch = line.match (/drop function (?:if exists )?([\w.]+)/i);
+        if (!functionMatch) return;
+
+        const fullFunctionName = functionMatch[1];
+        const [schema, functionName] = fullFunctionName.includes ('.') ?
+            fullFunctionName.split ('.') :
+            ['public', fullFunctionName];
+
+        const functionInfo: Function = {
+            name: functionName,
+            fullName: fullFunctionName,
+            definition: line.trim (),
+            sourceFile: filePath
+        };
+
+        if (!dbObjects.schemas[schema]) {
+            dbObjects.schemas[schema] = {tables: [], functions: []};
+        }
+
+        dbObjects.schemas[schema].functions.push (functionInfo);
+
+    }
+
+    private async generateSummaryReport (dbObjects: DatabaseObjects): Promise<void> {
+
+        let markdownString = '# Schema List\n\n';
+
+        const dataStrings = await Promise.all (
+            dbObjects.summary.schemas.map (async schema => [
+                schema.name,
+                await CommonsTool.toBlank (schema.tableCount),
+                await CommonsTool.toBlank (schema.functionCount),
+                await CommonsTool.toBlank (schema.tableCount + schema.functionCount)
+            ])
+        );
+
+        const tablesNumber = dbObjects.summary.schemas.reduce ((sum, schema) => sum + schema.tableCount, 0);
+        const functionsNumber = dbObjects.summary.schemas.reduce ((sum, schema) => sum + schema.functionCount, 0);
+        const totalNumber = tablesNumber + functionsNumber;
+
+        dataStrings.push ([
+            '**Total**',
+            '**' + await CommonsTool.toBlank (tablesNumber) + '**',
+            '**' + await CommonsTool.toBlank (functionsNumber) + '**',
+            '**' + await CommonsTool.toBlank (totalNumber) + '**'
+        ]);
+
+        markdownString += await this.buildTable (
+            ['***Scheme***', '***Tables***', '***Functions***', '***Total***'],
+            dataStrings
+        );
+
+        fsExtra.writeFileSync (this.summaryPath, markdownString);
+
+    }
+
+    private async generateTablesList (dbObjects: DatabaseObjects): Promise<void> {
+
+        let markdownString = '# Table List\n\n';
+
+        for (const schemaName of Object.keys (dbObjects.schemas).sort ()) {
+
+            const schema = dbObjects.schemas[schemaName];
+
+            if (schema.tables.length === 0) {
+
+                continue;
+
             }
 
-            // Extraer funciones
-            const functionMatch = line.match(/drop function if exists (\w+)/i);
-            if (functionMatch) {
-                functions.push({
-                    name: functionMatch[1],
-                    definition: line
-                });
+            markdownString += '### ' + await CommonsTool.toPascalCase (schemaName) + '\n\n';
+
+            const tableArray = [...schema.tables].sort ((a, b) => a.name.localeCompare (b.name));
+
+            markdownString += await this.buildTable (['***Name***', '***Abreviation***', '***File***'], tableArray.map (t => [t.name, t.comment, t.sourceFile]));
+            markdownString += '\n';
+
+        }
+
+        fsExtra.writeFileSync (this.tablesListPath, markdownString);
+
+    }
+
+    private async generateFunctionsList (dbObjects: DatabaseObjects): Promise<void> {
+
+        let markdownString = '# Function List\n\n';
+
+        for (const schemaName of Object.keys (dbObjects.schemas).sort ()) {
+
+            const schema = dbObjects.schemas[schemaName];
+
+            if (schema.functions.length === 0) {
+
+                continue;
+
             }
-        }
-    }
 
-    private generateMarkdown(tables: TableInfo[], functions: FunctionInfo[]): string {
-        let content = '# Referencia de Base de Datos\n\n';
+            markdownString += '### ' + await CommonsTool.toPascalCase (schemaName) + '\n\n';
 
-        // Tabla de tablas
-        content += '## Tablas\n\n';
-        content += this.createTable(
-            ['Nombre', 'Descripción'],
-            tables.map(t => [t.name, t.comment])
-        );
+            const sortedFunctions = [...schema.functions].sort ((a, b) => a.name.localeCompare (b.name));
 
-        // Tabla de funciones (en otra página)
-        const functionsPath = './docs/database-functions.md';
-        const functionsContent = '## Funciones\n\n' + this.createTable(
-            ['Nombre', 'Definición'],
-            functions.map(f => [f.name, f.definition.split('\n')[0]]) // Primera línea de definición
-        );
-        fsExtra.writeFileSync(functionsPath, functionsContent);
+            markdownString += await this.buildTable (['***Name***', '***File***'], sortedFunctions.map (f => [f.name, f.sourceFile]));
+            markdownString += '\n';
 
-        content += `\n\n[Ver listado de funciones](${path.basename(functionsPath)})`;
-
-        return content;
-    }
-
-    private createTable(headers: string[], rows: string[][]): string {
-        if (rows.length === 0) {
-            return 'No hay elementos en esta categoría.\n';
         }
 
-        // Calcular anchos de columnas
-        const colWidths = headers.map((h, i) =>
-            Math.max(h.length, ...rows.map(row => row[i]?.length || 0))
-        );
-
-        // Crear tabla
-        let table = `| ${headers.map((h, i) => h.padEnd(colWidths[i])).join(' | ')} |\n`;
-        table += `|${headers.map((_, i) => '-'.repeat(colWidths[i] + 2)).join('|')}|\n`;
-
-        for (const row of rows) {
-            table += `| ${row.map((cell, i) => cell.padEnd(colWidths[i])).join(' | ')} |\n`;
-        }
-
-        return table;
-    }
-
-
-
-
-
-    private readonly versionString: string = '4.1';
-
-    public async initialize (): Promise<void> {
-
-        const packagePath = './package.json';
-
-        const packageJson = await fsExtra.readJson (packagePath);
-
-        await this.updateApplicationVersion (packagePath, packageJson);
-
-        await this.updateDevelopmentLifecycle (packageJson, 'src/documentation/environment/development_lifecycle.md');
+        fsExtra.writeFileSync (this.functionsListPath, markdownString);
 
     }
 
-    private async updateApplicationVersion (packagePath: any, packageJson: any) {
+    private async buildTable (headerStrings: string[], dataStrings: string[][]): Promise<string> {
 
-        const date = new Date ();
+        const widthNumbers = await this.calculateColumnWidths (headerStrings, dataStrings);
 
-        const dateString = [date.getFullYear (), String (date.getMonth () + 1).padStart (2, '0'), String (date.getDate ()).padStart (2, '0')].join ('.');
+        let tableString = await this.buildHeaderRow (headerStrings, widthNumbers);
+        tableString += await this.buildSeparatorRow (headerStrings, widthNumbers);
+        tableString += await this.buildDataRows (dataStrings, widthNumbers);
 
-        const versionString = this.versionString + '/' + dateString;
-
-        packageJson.version = versionString;
-
-        await fsExtra.writeJson (packagePath, packageJson, {spaces: 2});
-
-        console.log ('Application Version: ' + versionString);
+        return tableString;
 
     }
 
-    private async updateDevelopmentLifecycle (packageJson: any, outputPath: string): Promise<void> {
+    private async calculateColumnWidths (headerStrings: string[], dataStrings: string[][]): Promise<number[]> {
 
-        let markdownContent = '# Development Lifecycle\n\n';
+        return headerStrings.map ((headerString, offsetNumber) => {
 
-        markdownContent += '### Scripts Configuration\n\n'
-        markdownContent += this.createFormattedTable (Object.entries (packageJson.scripts), ['***Script***', '***Description***']);
-        markdownContent += '\n<br/>\n\n';
+            const lengthNumber = Math.max (...dataStrings.map (rowString => rowString[offsetNumber]?.length || 0));
 
-        markdownContent += '### Runtime Dependencies List\n\n'
-        markdownContent += this.createFormattedTable (Object.entries (packageJson.dependencies), ['***Dependency***', '***Version***']);
-        markdownContent += '\n<br/>\n\n';
+            return Math.max (headerString.length, lengthNumber);
 
-        markdownContent += '### Development Dependencies List\n\n'
-        markdownContent += this.createFormattedTable (Object.entries (packageJson.devDependencies), ['***Dependency***', '***Version***']);
-        markdownContent += '\n';
-
-        await fsExtra.writeFile (outputPath, markdownContent);
-    }
-
-    private createFormattedTable (entries: [string, string][], headers: [string, string]): string {
-
-        let width1Number = Math.max (headers[0].length, 0);
-        let width2Number = Math.max (headers[1].length, 0);
-
-        entries.forEach (([key, value]) => {
-            width1Number = Math.max (width1Number, key.length);
-            width2Number = Math.max (width2Number, value.length);
         });
 
-        // Crear tabla
-        let table = `| ${headers[0].padEnd (width1Number)} | ${headers[1].padEnd (width2Number)} |\n`;
-        table += `|${'-'.repeat (width1Number + 2)}|${'-'.repeat (width2Number + 2)}|\n`;
+    }
 
-        entries.forEach (([key, value]) => {
-            table += `| ${key.padEnd (width1Number)} | ${value.padEnd (width2Number)} |\n`;
-        });
+    private async buildHeaderRow (headerStrings: string[], widthNumbers: number[]): Promise<string> {
 
-        return table;
+        let rowString = '|';
+
+        for (let offsetNumber = 0; offsetNumber < headerStrings.length; offsetNumber++) {
+
+            rowString += ' ' + headerStrings[offsetNumber].padEnd (widthNumbers[offsetNumber]) + ' |';
+
+        }
+
+        return rowString + '\n';
+
+    }
+
+    private async buildSeparatorRow (headerStrings: string[], widthNumbers: number[]): Promise<string> {
+
+        let rowString = '|';
+
+        for (let offsetNumber = 0; offsetNumber < headerStrings.length; offsetNumber++) {
+
+            rowString += '-' + '-'.repeat (widthNumbers[offsetNumber]) + '-|';
+
+        }
+
+        return rowString + '\n';
+
+    }
+
+    private async buildDataRows (dataStrings: string[][], widthNumbers: number[]): Promise<string> {
+
+        let rowString = '';
+
+        for (const row of dataStrings) {
+
+            rowString += '|';
+
+            for (let offsetNumber = 0; offsetNumber < row.length; offsetNumber++) {
+
+                rowString += ' ' + row[offsetNumber].padEnd (widthNumbers[offsetNumber]) + ' |';
+
+            }
+
+            rowString += '\n';
+
+        }
+
+        return rowString;
 
     }
 

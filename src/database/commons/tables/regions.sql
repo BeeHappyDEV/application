@@ -1,18 +1,18 @@
-drop table if exists regions cascade;
+drop table if exists commons.regions cascade;
 
-create table if not exists regions (
+create table if not exists commons.regions (
     idf_region  smallint,
     idf_country smallint,
     txt_region  text,
     constraint regions_pk primary key (idf_region),
-    constraint regions_fk1 foreign key (idf_country) references countries (idf_country)
+    constraint regions_fk1 foreign key (idf_country) references commons.countries (idf_country)
 );
 
-alter table regions enable row level security;
+alter table commons.regions enable row level security;
 
-comment on table regions is 'rgn';
+comment on table commons.regions is 'rgn';
 
-insert into regions (idf_region, idf_country, txt_region) values
+insert into commons.regions (idf_region, idf_country, txt_region) values
 (1, 56, 'Región de Tarapacá'),
 (2, 56, 'Región de Antofagasta'),
 (3, 56, 'Región de Atacama'),

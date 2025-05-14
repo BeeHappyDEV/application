@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS intents CASCADE;
+DROP TABLE IF EXISTS workflow.intents CASCADE;
 
-CREATE TABLE intents (
+CREATE TABLE workflow.intents (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     language VARCHAR(10) NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE intents (
 
 
 -- Insertar intenciones
-INSERT INTO intents (name, language) VALUES ('consultar.productos', 'es');
-INSERT INTO intents (name, language) VALUES ('consultar.garantia', 'es');
-INSERT INTO intents (name, language) VALUES ('realizar.pedido', 'es');
+INSERT INTO workflow.intents (name, language) VALUES ('consultar.productos', 'es');
+INSERT INTO workflow.intents (name, language) VALUES ('consultar.garantia', 'es');
+INSERT INTO workflow.intents (name, language) VALUES ('realizar.pedido', 'es');
 

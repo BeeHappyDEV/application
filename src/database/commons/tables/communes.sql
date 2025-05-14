@@ -1,22 +1,22 @@
-drop table if exists communes cascade;
+drop table if exists commons.communes cascade;
 
-create table if not exists communes (
+create table if not exists commons.communes (
     idf_commune  smallint,
     idf_country  smallint,
     idf_region   smallint,
     idf_province smallint,
     txt_commune  text,
     constraint communes_pk primary key (idf_commune),
-    constraint communes_fk1 foreign key (idf_country) references countries (idf_country),
-    constraint communes_fk2 foreign key (idf_region) references regions (idf_region),
-    constraint communes_fk3 foreign key (idf_province) references provinces (idf_province)
+    constraint communes_fk1 foreign key (idf_country) references commons.countries (idf_country),
+    constraint communes_fk2 foreign key (idf_region) references commons.regions (idf_region),
+    constraint communes_fk3 foreign key (idf_province) references commons.provinces (idf_province)
 );
 
-alter table communes enable row level security;
+alter table commons.communes enable row level security;
 
-comment on table communes is 'cmn';
+comment on table commons.communes is 'cmn';
 
-INSERT INTO communes (idf_commune, idf_country, idf_region, idf_province, txt_commune) VALUES
+insert into commons.communes (idf_commune, idf_country, idf_region, idf_province, txt_commune) values
 (1101, 56, 1, 11, 'Iquique'),
 (1107, 56, 1, 11, 'Alto Hospicio'),
 (1401, 56, 1, 14, 'Pozo Almonte'),
