@@ -76,7 +76,7 @@ begin
         into
             var_txt_modification
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'modification_privacy_policy';
 
@@ -93,7 +93,7 @@ begin
         into
             var_txt_modification
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'modification_terms_and_conditions';
 

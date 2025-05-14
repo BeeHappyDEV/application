@@ -3,6 +3,7 @@ import {container, injectable} from 'tsyringe';
 import fsExtra from 'fs-extra';
 import path from 'path';
 import {CommonsTool} from "./toolkit/CommonsTool";
+import {BuilderTool} from "./toolkit/BuilderTool";
 
 interface DatabaseObject {
     name: string;
@@ -43,31 +44,22 @@ interface DatabaseObjects {
 export class PrepareEntry {
 
     private readonly sqlRootPath: string = 'src/database';
-    private readonly docsPath: string = './src/documentation/database';
-    private readonly tablesListPath: string = './src/documentation/database/tables-list.md';
-    private readonly functionsListPath: string = './src/documentation/database/functions-list.md';
-    private readonly summaryPath: string = './src/documentation/database/schema-summary.md';
+    private readonly tablesListPath: string = 'src/documentation/database/table_list.md';
+    private readonly functionsListPath: string = 'src/documentation/database/function_list.md';
+    private readonly summaryPath: string = 'src/documentation/database/schema_summary.md';
 
-    public async generateDocumentation (): Promise<void> {
+    public async generateDatabaseDocumentation (): Promise<void> {
 
-        try {
-            if (!fsExtra.existsSync (this.docsPath)) {
-                fsExtra.mkdirSync (this.docsPath, {recursive: true});
-            }
+        const databaseObjects = this.processDatabaseDirectory (this.sqlRootPath);
+        await this.generateTablesList (databaseObjects);
+        await this.generateFunctionsList (databaseObjects);
+        await this.generateSummaryReport (databaseObjects);
 
-            const databaseObjects = this.processDirectory (this.sqlRootPath);
-            await this.generateTablesList (databaseObjects);
-            await this.generateFunctionsList (databaseObjects);
-            await this.generateSummaryReport (databaseObjects);
-
-            console.log (`Documentación generada en: ${this.docsPath}`);
-        } catch (error) {
-            console.error ('Error generando documentación:', error);
-        }
     }
 
-    private processDirectory (pathString: string): DatabaseObjects {
-        const result: DatabaseObjects = {
+    private processDatabaseDirectory (pathString: string): DatabaseObjects {
+
+        const consolidatedDatabaseObjects = {
             schemas: {},
             summary: {
                 totalTables: 0,
@@ -79,43 +71,51 @@ export class PrepareEntry {
         const itemStrings = fsExtra.readdirSync (pathString);
 
         for (const itemString of itemStrings) {
+
             const fullPath = path.join (pathString, itemString);
+
             const stats = fsExtra.statSync (fullPath);
 
             if (stats.isDirectory ()) {
 
-                const subResult = this.processDirectory (fullPath);
+                const partialDatabaseObjects = this.processDatabaseDirectory (fullPath);
 
-                this.mergeDatabaseObjects (result, subResult);
+                this.mergeDatabaseObjects (consolidatedDatabaseObjects, partialDatabaseObjects);
 
             } else if (itemString.endsWith ('.sql')) {
 
                 const content = fsExtra.readFileSync (fullPath, 'utf-8');
 
-                this.processFile (content, result, path.relative (this.sqlRootPath, fullPath));
+                this.processFile (content, consolidatedDatabaseObjects, path.relative (this.sqlRootPath, fullPath));
 
             }
 
         }
 
-        this.updateSummary (result);
+        this.updateSummary (consolidatedDatabaseObjects);
 
-        return result;
+        return consolidatedDatabaseObjects;
 
     }
 
-    private mergeDatabaseObjects (target: DatabaseObjects, source: DatabaseObjects): void {
-        for (const schemaName in source.schemas) {
-            if (!target.schemas[schemaName]) {
-                target.schemas[schemaName] = {
+    private mergeDatabaseObjects (consolidatedDatabaseObjects: any, partialDatabaseObjects: any): void {
+
+        for (const schemaRecord in partialDatabaseObjects.schemas) {
+
+            if (!consolidatedDatabaseObjects.schemas[schemaRecord]) {
+
+                consolidatedDatabaseObjects.schemas[schemaRecord] = {
                     tables: [],
                     functions: []
                 };
+
             }
 
-            target.schemas[schemaName].tables.push (...source.schemas[schemaName].tables);
-            target.schemas[schemaName].functions.push (...source.schemas[schemaName].functions);
+            consolidatedDatabaseObjects.schemas[schemaRecord].tables.push (...partialDatabaseObjects.schemas[schemaRecord].tables);
+            consolidatedDatabaseObjects.schemas[schemaRecord].functions.push (...partialDatabaseObjects.schemas[schemaRecord].functions);
+
         }
+
     }
 
     private updateSummary (dbObjects: DatabaseObjects): void {
@@ -225,7 +225,7 @@ export class PrepareEntry {
             '**' + await CommonsTool.toBlank (totalNumber) + '**'
         ]);
 
-        markdownString += await this.buildTable (
+        markdownString += await BuilderTool.buildTable (
             ['***Scheme***', '***Tables***', '***Functions***', '***Total***'],
             dataStrings
         );
@@ -252,7 +252,7 @@ export class PrepareEntry {
 
             const tableArray = [...schema.tables].sort ((a, b) => a.name.localeCompare (b.name));
 
-            markdownString += await this.buildTable (['***Name***', '***Abreviation***', '***File***'], tableArray.map (t => [t.name, t.comment, t.sourceFile]));
+            markdownString += await BuilderTool.buildTable (['***Name***', '***Abreviation***', '***File***'], tableArray.map (t => [t.name, t.comment, t.sourceFile]));
             markdownString += '\n';
 
         }
@@ -279,7 +279,7 @@ export class PrepareEntry {
 
             const sortedFunctions = [...schema.functions].sort ((a, b) => a.name.localeCompare (b.name));
 
-            markdownString += await this.buildTable (['***Name***', '***File***'], sortedFunctions.map (f => [f.name, f.sourceFile]));
+            markdownString += await BuilderTool.buildTable (['***Name***', '***File***'], sortedFunctions.map (f => [f.name, f.sourceFile]));
             markdownString += '\n';
 
         }
@@ -288,81 +288,7 @@ export class PrepareEntry {
 
     }
 
-    private async buildTable (headerStrings: string[], dataStrings: string[][]): Promise<string> {
-
-        const widthNumbers = await this.calculateColumnWidths (headerStrings, dataStrings);
-
-        let tableString = await this.buildHeaderRow (headerStrings, widthNumbers);
-        tableString += await this.buildSeparatorRow (headerStrings, widthNumbers);
-        tableString += await this.buildDataRows (dataStrings, widthNumbers);
-
-        return tableString;
-
-    }
-
-    private async calculateColumnWidths (headerStrings: string[], dataStrings: string[][]): Promise<number[]> {
-
-        return headerStrings.map ((headerString, offsetNumber) => {
-
-            const lengthNumber = Math.max (...dataStrings.map (rowString => rowString[offsetNumber]?.length || 0));
-
-            return Math.max (headerString.length, lengthNumber);
-
-        });
-
-    }
-
-    private async buildHeaderRow (headerStrings: string[], widthNumbers: number[]): Promise<string> {
-
-        let rowString = '|';
-
-        for (let offsetNumber = 0; offsetNumber < headerStrings.length; offsetNumber++) {
-
-            rowString += ' ' + headerStrings[offsetNumber].padEnd (widthNumbers[offsetNumber]) + ' |';
-
-        }
-
-        return rowString + '\n';
-
-    }
-
-    private async buildSeparatorRow (headerStrings: string[], widthNumbers: number[]): Promise<string> {
-
-        let rowString = '|';
-
-        for (let offsetNumber = 0; offsetNumber < headerStrings.length; offsetNumber++) {
-
-            rowString += '-' + '-'.repeat (widthNumbers[offsetNumber]) + '-|';
-
-        }
-
-        return rowString + '\n';
-
-    }
-
-    private async buildDataRows (dataStrings: string[][], widthNumbers: number[]): Promise<string> {
-
-        let rowString = '';
-
-        for (const row of dataStrings) {
-
-            rowString += '|';
-
-            for (let offsetNumber = 0; offsetNumber < row.length; offsetNumber++) {
-
-                rowString += ' ' + row[offsetNumber].padEnd (widthNumbers[offsetNumber]) + ' |';
-
-            }
-
-            rowString += '\n';
-
-        }
-
-        return rowString;
-
-    }
-
 }
 
 const prepareEntry = container.resolve (PrepareEntry);
-prepareEntry.generateDocumentation ().then ();
+prepareEntry.generateDatabaseDocumentation ().then ();

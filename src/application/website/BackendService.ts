@@ -156,6 +156,8 @@ export class BackendService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
+        const resultObject = container.resolve (ResultObject);
+
         const contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_file'));
 
         const contentString = contentBuffer.toString ();
@@ -178,6 +180,7 @@ export class BackendService {
 
         }
 
+        logTool.response (resultObject);
         logTool.finalize ();
 
     }

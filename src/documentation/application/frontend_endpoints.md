@@ -4,13 +4,13 @@
 
 ![](../resources/images/frontend_page_action.png)
 
-| ***Category*** | ***Verb*** |     ***Endpoint***      |
-|:--------------:|:----------:|:-----------------------:|
-|    Frontend    |    get     |            /            |
-|    Frontend    |    get     | /politica-de-privacidad |
-|    Frontend    |    get     | /terminos-y-condiciones |
-|    Frontend    |    get     |   /colaborador/{name}   |
-|    Frontend    |    get     | /colaborador/{name}/qr  |
+| ***Verb*** |     ***Endpoint***      |
+|:----------:|:-----------------------:|
+|    get     |            /            |
+|    get     | /politica-de-privacidad |
+|    get     | /terminos-y-condiciones |
+|    get     |   /colaborador/{name}   |
+|    get     | /colaborador/{name}/qr  |
 
 <br/>
 
@@ -18,22 +18,22 @@
 
 ![](../resources/images/frontend_link_action.png)
 
-| ***Category*** | ***Verb*** |        ***Endpoint***         |
-|:--------------:|:----------:|:-----------------------------:|
-|    Frontend    |    get     |      /contacto/llamanos       |
-|    Frontend    |    get     |     /contacto/escribenos      |
-|    Frontend    |    get     |      /contacto/texteanos      |
-|    Frontend    |    get     |      /contacto/visitanos      |
-|    Frontend    |    get     |       /social/facebook        |
-|    Frontend    |    get     |       /social/instagram       |
-|    Frontend    |    get     |           /social/x           |
-|    Frontend    |    get     |       /social/linkedin        |
-|    Frontend    |    get     |        /social/discord        |
-|    Frontend    |    get     | /politica-de-privacidad/video |
-|    Frontend    |    get     | /terminos-y-condiciones/video |
-|    Frontend    |    get     |  /colaborador/{name}/llamame  |
-|    Frontend    |    get     | /colaborador/{name}/escribeme |
-|    Frontend    |    get     | /colaborador/{name}/texteame  |
+| ***Verb*** |        ***Endpoint***         |
+|:----------:|:-----------------------------:|
+|    get     |      /contacto/llamanos       |
+|    get     |     /contacto/escribenos      |
+|    get     |      /contacto/texteanos      |
+|    get     |      /contacto/visitanos      |
+|    get     |       /social/facebook        |
+|    get     |       /social/instagram       |
+|    get     |           /social/x           |
+|    get     |       /social/linkedin        |
+|    get     |        /social/discord        |
+|    get     | /politica-de-privacidad/video |
+|    get     | /terminos-y-condiciones/video |
+|    get     |  /colaborador/{name}/llamame  |
+|    get     | /colaborador/{name}/escribeme |
+|    get     | /colaborador/{name}/texteame  |
 
 <br/>
 
@@ -41,6 +41,6 @@
 
 ![](../resources/images/frontend_file_action.png)
 
-| ***Category*** | ***Verb*** |   ***Endpoint***    |
-|:--------------:|:----------:|:-------------------:|
-|    Frontend    |    get     | /colaborador/{name} |
+| ***Verb*** |   ***Endpoint***    |
+|:----------:|:-------------------:|
+|    get     | /colaborador/{name} |

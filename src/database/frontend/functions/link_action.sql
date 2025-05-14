@@ -120,7 +120,7 @@ begin
         into
             var_txt_redirect
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'link_discord';
 
@@ -135,7 +135,7 @@ begin
         into
             var_txt_redirect
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'link_facebook';
 
@@ -150,7 +150,7 @@ begin
         into
             var_txt_redirect
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'link_instagram';
 
@@ -165,7 +165,7 @@ begin
         into
             var_txt_redirect
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'link_linkedin';
 
@@ -180,7 +180,7 @@ begin
         into
             var_txt_redirect
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'link_x';
 
@@ -195,7 +195,7 @@ begin
         into
             var_txt_redirect
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'link_privacy_policy_video';
 
@@ -210,7 +210,7 @@ begin
         into
             var_txt_redirect
         from
-            constants cst
+            commons.constants cst
         where
             cst.txt_key = 'link_terms_and_conditions_video';
 

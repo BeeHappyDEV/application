@@ -22,13 +22,13 @@ export class ScheduleService {
         const logTool = container.resolve (LogTool);
         logTool.initialize (stackStrings, traceObject);
 
-        let headersObject = null;
+        let headersObject = container.resolve (JsonObject);
 
         const queryObject = container.resolve (JsonObject);
         queryObject.set ('depth', '3');
         queryObject.set ('thread', logTool.trace ().get ('thread'));
 
-        const bodyObject = null;
+        const bodyObject = container.resolve (JsonObject);
 
         let resultObject = container.resolve (ResultObject);
 

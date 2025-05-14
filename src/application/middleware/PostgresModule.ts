@@ -90,10 +90,6 @@ export class PostgresModule {
 
                 logTool.exception ();
 
-            } finally {
-
-                await postgresPool.end ();
-
             }
 
         }

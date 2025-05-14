@@ -4,9 +4,9 @@
 
 ![](../resources/images/backend_wake_up_action.png)
 
-| ***Category*** | ***Verb*** |     ***Endpoint***     |
-|:--------------:|:----------:|:----------------------:|
-|    Backend     |    post    | /backend/system/wakeup |
+| ***Verb*** |     ***Endpoint***     |
+|:----------:|:----------------------:|
+|    post    | /backend/system/wakeup |
 
 <br>
 
@@ -14,9 +14,9 @@
 
 ![](../resources/images/backend_delete_cache_action.png)
 
-| ***Category*** | ***Verb*** |    ***Endpoint***     |
-|:--------------:|:----------:|:---------------------:|
-|    Backend     |    post    | /backend/cache/delete |
+| ***Verb*** |    ***Endpoint***     |
+|:----------:|:---------------------:|
+|    post    | /backend/cache/delete |
 
 <br>
 
@@ -24,9 +24,9 @@
 
 ![](../resources/images/backend_rebuild_documental_action.png)
 
-| ***Category*** | ***Verb*** |       ***Endpoint***        |
-|:--------------:|:----------:|:---------------------------:|
-|    Backend     |    post    | /backend/rebuild/documental |
+| ***Verb*** |       ***Endpoint***        |
+|:----------:|:---------------------------:|
+|    post    | /backend/rebuild/documental |
 
 <br>
 
@@ -34,9 +34,9 @@
 
 ![](../resources/images/backend_rebuild_relational_action.png)
 
-| ***Category*** | ***Verb*** |       ***Endpoint***        |
-|:--------------:|:----------:|:---------------------------:|
-|    Backend     |    post    | /backend/rebuild/relational |
+| ***Verb*** |       ***Endpoint***        |
+|:----------:|:---------------------------:|
+|    post    | /backend/rebuild/relational |
 
 <br>
 
@@ -44,6 +44,6 @@
 
 ![](../resources/images/backend_reload_indicators.png)
 
-| ***Category*** | ***Verb*** |       ***Endpoint***       |
-|:--------------:|:----------:|:--------------------------:|
-|    Backend     |    post    | /backend/reload/indicators |
+| ***Verb*** |       ***Endpoint***       |
+|:----------:|:--------------------------:|
+|    post    | /backend/reload/indicators |

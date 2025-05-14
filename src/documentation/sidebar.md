@@ -1,7 +1,7 @@
 
 - Environment
   - [Platform Layout](./environment/platform_layout.md)
-  - [Development Lifecycle](./environment/development_lifecycle.md)
+  - [Environment Configuration](./environment/environment_configuration.md)
 - 
 - Application
   - [Application Layout](./application/application_layout.md)
@@ -11,8 +11,6 @@
 
 - Database
   - [Database Layout](./database/database_layout.md)
-  - [Table List](./database/table_list.md)
-
-  - [functions-list.md](database/functions-list.md)
-  - [schema-summary.md](database/schema-summary.md)
-  - [tables-list.md](database/tables-list.md)
+  - [Schema Summary](database/schema_summary.md)
+  - [Function List](database/function_list.md)
+  - [Table List](database/table_list.md)

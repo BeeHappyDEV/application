@@ -11,7 +11,7 @@ begin
     into
         var_num_timezone_difference
     from
-        constants cst
+        commons.constants cst
     where
         cst.txt_key = 'timezone_difference';
 

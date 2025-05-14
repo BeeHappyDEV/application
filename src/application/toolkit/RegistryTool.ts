@@ -2,6 +2,7 @@ import 'reflect-metadata';
 
 import {container} from 'tsyringe';
 
+import {PostgresModule} from '../middleware/PostgresModule';
 import {MessengerController} from '../channel/MessengerController';
 import {MessengerService} from '../channel/MessengerService';
 import {TelegramController} from '../channel/TelegramController';
@@ -16,7 +17,6 @@ import {ScheduleController} from '../website/ScheduleController';
 import {ScheduleService} from '../website/ScheduleService';
 import {JsonObject} from '../object/JsonObject';
 import {ResultObject} from '../object/ResultObject';
-import {PostgresModule} from "../middleware/PostgresModule";
 
 export class RegistryTool {
 
