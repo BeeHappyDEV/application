@@ -1,294 +1,172 @@
 import 'reflect-metadata';
-import {container, injectable} from 'tsyringe';
+
+import { Project, ClassDeclaration } from 'ts-morph';
 import fsExtra from 'fs-extra';
 import path from 'path';
-import {CommonsTool} from "./toolkit/CommonsTool";
-import {BuilderTool} from "./toolkit/BuilderTool";
+import { container, injectable } from 'tsyringe';
+import { JsonObject } from "./object/JsonObject";
 
-interface DatabaseObject {
-    name: string;
-    fullName: string;
-    definition: string;
-    sourceFile: string;
-}
+@injectable()
+export class TypeScriptClassParser {
+    private project: Project;
 
-interface Table extends DatabaseObject {
-    comment: string;
-}
-
-interface Function extends DatabaseObject {
-    // Puedes añadir propiedades específicas de funciones aquí
-}
-
-interface Schema {
-    tables: Table[];
-    functions: Function[];
-}
-
-interface SchemaSummary {
-    name: string;
-    tableCount: number;
-    functionCount: number;
-}
-
-interface DatabaseObjects {
-    schemas: Record<string, Schema>;
-    summary: {
-        totalTables: number;
-        totalFunctions: number;
-        schemas: SchemaSummary[];
-    };
-}
-
-@injectable ()
-export class PrepareEntry {
-
-    private readonly sqlRootPath: string = 'src/database';
-    private readonly tablesListPath: string = 'src/documentation/database/table_list.md';
-    private readonly functionsListPath: string = 'src/documentation/database/function_list.md';
-    private readonly summaryPath: string = 'src/documentation/database/schema_summary.md';
-
-    public async generateDatabaseDocumentation (): Promise<void> {
-
-        const databaseObjects = this.processDatabaseDirectory (this.sqlRootPath);
-        await this.generateTablesList (databaseObjects);
-        await this.generateFunctionsList (databaseObjects);
-        await this.generateSummaryReport (databaseObjects);
-
+    constructor() {
+        this.project = new Project({
+            tsConfigFilePath: "tsconfig.json", // Asegúrate de que apunte a tu tsconfig.json
+        });
     }
 
-    private processDatabaseDirectory (pathString: string): DatabaseObjects {
-
-        const consolidatedDatabaseObjects = {
-            schemas: {},
-            summary: {
-                totalTables: 0,
-                totalFunctions: 0,
-                schemas: []
-            }
-        };
-
-        const itemStrings = fsExtra.readdirSync (pathString);
-
-        for (const itemString of itemStrings) {
-
-            const fullPath = path.join (pathString, itemString);
-
-            const stats = fsExtra.statSync (fullPath);
-
-            if (stats.isDirectory ()) {
-
-                const partialDatabaseObjects = this.processDatabaseDirectory (fullPath);
-
-                this.mergeDatabaseObjects (consolidatedDatabaseObjects, partialDatabaseObjects);
-
-            } else if (itemString.endsWith ('.sql')) {
-
-                const content = fsExtra.readFileSync (fullPath, 'utf-8');
-
-                this.processFile (content, consolidatedDatabaseObjects, path.relative (this.sqlRootPath, fullPath));
-
-            }
-
-        }
-
-        this.updateSummary (consolidatedDatabaseObjects);
-
-        return consolidatedDatabaseObjects;
-
+    public async analyzeProject(paramsObject: JsonObject): Promise<void> {
+        const outputPath = paramsObject.get('txt_output') || 'ts-classes.md';
+        const classesData = await this.extractClassesData(paramsObject.get('txt_directory'));
+        await this.generateMarkdownOutput(outputPath, classesData);
     }
 
-    private mergeDatabaseObjects (consolidatedDatabaseObjects: any, partialDatabaseObjects: any): void {
+    private async extractClassesData(directory: string): Promise<any[]> {
+        const classesData: any[] = [];
+        const files = this.getTypeScriptFiles(directory);
 
-        for (const schemaRecord in partialDatabaseObjects.schemas) {
+        for (const file of files) {
+            const sourceFile = this.project.addSourceFileAtPath(file);
+            const classes = sourceFile.getClasses();
 
-            if (!consolidatedDatabaseObjects.schemas[schemaRecord]) {
-
-                consolidatedDatabaseObjects.schemas[schemaRecord] = {
-                    tables: [],
-                    functions: []
+            for (const cls of classes) {
+                const classInfo = {
+                    name: cls.getName(),
+                    directory: path.dirname(file),
+                    methods: this.extractMethods(cls),
+                    injections: this.extractInjections(cls),
                 };
-
+                classesData.push(classInfo);
             }
-
-            consolidatedDatabaseObjects.schemas[schemaRecord].tables.push (...partialDatabaseObjects.schemas[schemaRecord].tables);
-            consolidatedDatabaseObjects.schemas[schemaRecord].functions.push (...partialDatabaseObjects.schemas[schemaRecord].functions);
-
         }
 
+        return classesData;
     }
 
-    private updateSummary (dbObjects: DatabaseObjects): void {
-        dbObjects.summary.totalTables = 0;
-        dbObjects.summary.totalFunctions = 0;
-        dbObjects.summary.schemas = [];
-
-        for (const schemaName in dbObjects.schemas) {
-            const schema = dbObjects.schemas[schemaName];
-            const tableCount = schema.tables.length;
-            const functionCount = schema.functions.length;
-
-            dbObjects.summary.totalTables += tableCount;
-            dbObjects.summary.totalFunctions += functionCount;
-            dbObjects.summary.schemas.push ({
-                name: schemaName,
-                tableCount,
-                functionCount
+    private getTypeScriptFiles(directory: string): string[] {
+        return fsExtra.readdirSync(directory)
+            .flatMap(file => {
+                const fullPath = path.join(directory, file);
+                if (fsExtra.statSync(fullPath).isDirectory()) {
+                    return this.getTypeScriptFiles(fullPath);
+                } else if (file.endsWith('.ts') && !file.endsWith('.d.ts')) {
+                    return [fullPath];
+                }
+                return [];
             });
-        }
-
-        dbObjects.summary.schemas.sort ((a, b) => a.name.localeCompare (b.name));
     }
 
-    private processFile (content: string, dbObjects: DatabaseObjects, filePath: string): void {
-        const lines = content.split ('\n');
-
-        for (const line of lines) {
-            this.processTable (line, content, dbObjects, filePath);
-            this.processFunction (line, dbObjects, filePath);
-        }
+    private extractMethods(cls: ClassDeclaration): Array<{
+        name: string;
+        isPublic: boolean;
+        params: string;
+    }> {
+        return cls.getMethods().map(method => {
+            const params = method.getParameters().map(p => p.getName()).join(', ');
+            const modifiers = method.getModifiers().map(m => m.getText());
+            const isPublic = !modifiers.includes('private');
+            return {
+                name: method.getName(),
+                isPublic,
+                params,
+            };
+        });
     }
 
-    private processTable (line: string, content: string, dbObjects: DatabaseObjects, filePath: string): void {
-        const tableMatch = line.match (/drop table (?:if exists )?([\w.]+)/i);
-        if (!tableMatch) return;
+    private extractInjections(cls: ClassDeclaration): string[] {
+        const injections: string[] = [];
 
-        const fullTableName = tableMatch[1];
-        const [schema, tableName] = fullTableName.includes ('.') ?
-            fullTableName.split ('.') :
-            ['public', fullTableName];
+        // 1. Analizar el constructor
+        const constructor = cls.getConstructors()[0];
+        if (constructor) {
+            for (const param of constructor.getParameters()) {
+                const paramType = param.getType();
+                const typeText = paramType.getText();
 
-        const commentMatch = content.match (
-            new RegExp (`comment on table ${fullTableName} is '([^']+)'`, 'i')
-        );
+                // Obtener el nombre de la clase (última parte del tipo, ej: "LoggerService" de "import.LoggerService")
+                const className = typeText.split('.').pop() || typeText;
 
-        const tableInfo: Table = {
-            name: tableName,
-            fullName: fullTableName,
-            comment: commentMatch ? commentMatch[1] : '',
-            definition: line.trim (),
-            sourceFile: filePath
-        };
-
-        if (!dbObjects.schemas[schema]) {
-            dbObjects.schemas[schema] = {tables: [], functions: []};
-        }
-
-        dbObjects.schemas[schema].tables.push (tableInfo);
-    }
-
-    private processFunction (line: string, dbObjects: DatabaseObjects, filePath: string): void {
-        const functionMatch = line.match (/drop function (?:if exists )?([\w.]+)/i);
-        if (!functionMatch) return;
-
-        const fullFunctionName = functionMatch[1];
-        const [schema, functionName] = fullFunctionName.includes ('.') ?
-            fullFunctionName.split ('.') :
-            ['public', fullFunctionName];
-
-        const functionInfo: Function = {
-            name: functionName,
-            fullName: fullFunctionName,
-            definition: line.trim (),
-            sourceFile: filePath
-        };
-
-        if (!dbObjects.schemas[schema]) {
-            dbObjects.schemas[schema] = {tables: [], functions: []};
-        }
-
-        dbObjects.schemas[schema].functions.push (functionInfo);
-
-    }
-
-    private async generateSummaryReport (dbObjects: DatabaseObjects): Promise<void> {
-
-        let markdownString = '# Schema List\n\n';
-
-        const dataStrings = await Promise.all (
-            dbObjects.summary.schemas.map (async schema => [
-                schema.name,
-                await CommonsTool.toBlank (schema.tableCount),
-                await CommonsTool.toBlank (schema.functionCount),
-                await CommonsTool.toBlank (schema.tableCount + schema.functionCount)
-            ])
-        );
-
-        const tablesNumber = dbObjects.summary.schemas.reduce ((sum, schema) => sum + schema.tableCount, 0);
-        const functionsNumber = dbObjects.summary.schemas.reduce ((sum, schema) => sum + schema.functionCount, 0);
-        const totalNumber = tablesNumber + functionsNumber;
-
-        dataStrings.push ([
-            '**Total**',
-            '**' + await CommonsTool.toBlank (tablesNumber) + '**',
-            '**' + await CommonsTool.toBlank (functionsNumber) + '**',
-            '**' + await CommonsTool.toBlank (totalNumber) + '**'
-        ]);
-
-        markdownString += await BuilderTool.buildTable (
-            ['***Scheme***', '***Tables***', '***Functions***', '***Total***'],
-            dataStrings
-        );
-
-        fsExtra.writeFileSync (this.summaryPath, markdownString);
-
-    }
-
-    private async generateTablesList (dbObjects: DatabaseObjects): Promise<void> {
-
-        let markdownString = '# Table List\n\n';
-
-        for (const schemaName of Object.keys (dbObjects.schemas).sort ()) {
-
-            const schema = dbObjects.schemas[schemaName];
-
-            if (schema.tables.length === 0) {
-
-                continue;
-
+                // Filtrar solo tipos no primitivos (opcional)
+                const isPrimitive = ['string', 'number', 'boolean', 'any'].includes(typeText.toLowerCase());
+                if (!isPrimitive) {
+                    injections.push(className);
+                }
             }
-
-            markdownString += '### ' + await CommonsTool.toPascalCase (schemaName) + '\n\n';
-
-            const tableArray = [...schema.tables].sort ((a, b) => a.name.localeCompare (b.name));
-
-            markdownString += await BuilderTool.buildTable (['***Name***', '***Abreviation***', '***File***'], tableArray.map (t => [t.name, t.comment, t.sourceFile]));
-            markdownString += '\n';
-
         }
 
-        fsExtra.writeFileSync (this.tablesListPath, markdownString);
-
+        return injections;
     }
 
-    private async generateFunctionsList (dbObjects: DatabaseObjects): Promise<void> {
+    private async generateMarkdownOutput(outputPath: string, classesData: any[]): Promise<void> {
+        // 1. Define el orden prioritario de las carpetas (personaliza según tus necesidades)
+        const folderPriority = [
+            "website",
+            "middleware",
+            "toolkit",
+            "services",
+            "controllers",
+            "utils"
+        ];
 
-        let markdownString = '# Function List\n\n';
+        // 2. Agrupa las clases por carpeta
+        const groupedClasses: Record<string, any[]> = {};
 
-        for (const schemaName of Object.keys (dbObjects.schemas).sort ()) {
-
-            const schema = dbObjects.schemas[schemaName];
-
-            if (schema.functions.length === 0) {
-
-                continue;
-
+        classesData.forEach(classData => {
+            const folderName = classData.directory.split('/').pop(); // Extrae el nombre de la carpeta padre
+            if (!groupedClasses[folderName]) {
+                groupedClasses[folderName] = [];
             }
+            groupedClasses[folderName].push(classData);
+        });
 
-            markdownString += '### ' + await CommonsTool.toPascalCase (schemaName) + '\n\n';
+        // 3. Ordena los grupos según `folderPriority` y luego alfabéticamente
+        let markdown = '# TypeScript Classes Documentation\n\n';
 
-            const sortedFunctions = [...schema.functions].sort ((a, b) => a.name.localeCompare (b.name));
+        // 3.1. Procesa primero las carpetas prioritarias (en el orden definido)
+        folderPriority.forEach(folder => {
+            if (groupedClasses[folder]) {
+                markdown += `## 📂 ${folder.toUpperCase()}\n\n`;
+                groupedClasses[folder]
+                    .sort((a, b) => a.name.localeCompare(b.name)) // Orden alfabético
+                    .forEach(classData => {
+                        markdown += this.formatClassData(classData);
+                    });
+                delete groupedClasses[folder]; // Elimina para no reprocesar
+            }
+        });
 
-            markdownString += await BuilderTool.buildTable (['***Name***', '***File***'], sortedFunctions.map (f => [f.name, f.sourceFile]));
-            markdownString += '\n';
+        // 3.2. Procesa el resto de carpetas (no prioritarias) en orden alfabético
+        Object.keys(groupedClasses)
+            .sort()
+            .forEach(folder => {
+                markdown += `## 📂 ${folder.toUpperCase()}\n\n`;
+                groupedClasses[folder]
+                    .sort((a, b) => a.name.localeCompare(b.name))
+                    .forEach(classData => {
+                        markdown += this.formatClassData(classData);
+                    });
+            });
 
-        }
+        // 4. Guarda el archivo
+        await fsExtra.ensureDir(path.dirname(outputPath));
+        fsExtra.writeFileSync(outputPath, markdown);
+    }
 
-        fsExtra.writeFileSync (this.functionsListPath, markdownString);
-
+    private formatClassData(classData: any): string {
+        return `### ${classData.name}\n` +
+            `- **Directory**: \`${classData.directory}\`\n` +
+            `- **Methods**:\n${classData.methods.map((m: { isPublic: any; name: any; params: any; }) =>
+                `  - ${m.isPublic ? '🔓' : '🔒'} \`${m.name}(${m.params})\` ${m.isPublic ? '' : '(private)'}`
+            ).join('\n')}\n` +
+            `- **Dependencies**: ${classData.injections.join(', ') || 'None'}\n\n`;
     }
 
 }
 
-const prepareEntry = container.resolve (PrepareEntry);
-prepareEntry.generateDatabaseDocumentation ().then ();
+const aaa =new JsonObject();
+aaa.set('txt_directory', 'src')
+aaa.set('txt_output', 'docs/classes.md');
+
+const parser = container.resolve(TypeScriptClassParser);
+parser.analyzeProject(aaa).then();
