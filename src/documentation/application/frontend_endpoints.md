@@ -1,8 +1,12 @@
 # Frontend Endpoints
 
-### Page Actions
+<!-- tabs:start -->
+
+#### **Page Actions**
 
 ![](../resources/images/frontend_page_action.png)
+
+<!-- tabs:end -->
 
 | ***Verb*** |     ***Endpoint***      |
 |:----------:|:-----------------------:|
@@ -14,9 +18,13 @@
 
 <br/>
 
-### Link Actions
+<!-- tabs:start -->
+
+#### **Link Actions**
 
 ![](../resources/images/frontend_link_action.png)
+
+<!-- tabs:end -->
 
 | ***Verb*** |        ***Endpoint***         |
 |:----------:|:-----------------------------:|
@@ -37,9 +45,13 @@
 
 <br/>
 
-### File Actions
+<!-- tabs:start -->
+
+#### **File Actions**
 
 ![](../resources/images/frontend_file_action.png)
+
+<!-- tabs:end -->
 
 | ***Verb*** |   ***Endpoint***    |
 |:----------:|:-------------------:|

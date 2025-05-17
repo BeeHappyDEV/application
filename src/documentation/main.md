@@ -1,3 +1,1 @@
-# Bienvenido a mi Documentación
-
-BeeHappy
+# BeeHappy.dev Documentation

@@ -68,8 +68,7 @@ export class LauncherEntry {
 
         const versionsMap = {
             'Node': childProcess.execSync ('node -v').toString ().trim ().slice (1),
-            'Yarn': childProcess.execSync ('yarn -v').toString ().trim (),
-            'Npm': childProcess.execSync ('npm -v').toString ().trim (),
+            'Pnpm': childProcess.execSync ('pnpm -v').toString ().trim (),
             'Typescript': childProcess.execSync ('tsc --version').toString ().replace ('Version ', '').trim ()
         };
 

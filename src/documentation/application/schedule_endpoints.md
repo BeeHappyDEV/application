@@ -1,10 +1,14 @@
 # Schedule Endpoints
 
-### Schedule Action
+<!-- tabs:start -->
+
+#### **Schedule Actions**
 
 ![](../resources/images/schedule_action.png)
 
-| ***Action***  |   ***Endpoint***   |
+<!-- tabs:end -->
+
+| ***Action***  |  ***Frequency***   |
 |:-------------:|:------------------:|
 |    wakeup     | EVERY TEN MINUTES  |
 |  indicators   | MANY TIMES PER DAY |

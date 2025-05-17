@@ -1,8 +1,12 @@
 # Backend Endpoints
 
-### Wake Up Action
+<!-- tabs:start -->
+
+#### **Wake Up Action**
 
 ![](../resources/images/backend_wake_up_action.png)
+
+<!-- tabs:end -->
 
 | ***Verb*** |     ***Endpoint***     |
 |:----------:|:----------------------:|
@@ -10,9 +14,13 @@
 
 <br>
 
-### Delete Cache Action
+<!-- tabs:start -->
+
+#### **Delete Cache Action**
 
 ![](../resources/images/backend_delete_cache_action.png)
+
+<!-- tabs:end -->
 
 | ***Verb*** |    ***Endpoint***     |
 |:----------:|:---------------------:|
@@ -20,9 +28,13 @@
 
 <br>
 
-### Rebuild Documental Action
+<!-- tabs:start -->
+
+#### **Rebuild Documental Action**
 
 ![](../resources/images/backend_rebuild_documental_action.png)
+
+<!-- tabs:end -->
 
 | ***Verb*** |       ***Endpoint***        |
 |:----------:|:---------------------------:|
@@ -30,9 +42,13 @@
 
 <br>
 
-### Rebuild Relational Action
+<!-- tabs:start -->
+
+#### **Rebuild Relational Action**
 
 ![](../resources/images/backend_rebuild_relational_action.png)
+
+<!-- tabs:end -->
 
 | ***Verb*** |       ***Endpoint***        |
 |:----------:|:---------------------------:|
@@ -40,9 +56,13 @@
 
 <br>
 
-### Reload Indicators Action
+<!-- tabs:start -->
+
+#### **Reload Indicators Action**
 
 ![](../resources/images/backend_reload_indicators.png)
+
+<!-- tabs:end -->
 
 | ***Verb*** |       ***Endpoint***       |
 |:----------:|:--------------------------:|
