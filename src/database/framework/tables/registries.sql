@@ -8,31 +8,3 @@ create table registries (
 );
 
 alter table registries enable row level security;
-
-create or replace function fnc_update_registry ()
-returns trigger as $$
-begin
-    new.sys_timestamp = now ();
-    new.sys_version = old.sys_version + 1;
-    return new;
-end;
-$$ language plpgsql;
-
-create or replace function fnc_delete_registry ()
-returns trigger as $$
-begin
-    new.sys_timestamp = now ();
-    new.sys_version = old.sys_version + 1;
-return new;
-end;
-$$ language plpgsql;
-
-create trigger trg_update_registry
-before update on registries
-for each row
-execute function fnc_update_registry ();
-
-create trigger trg_delete_registry
-before delete on registries
-for each row
-execute function fnc_delete_registry ();

@@ -65,7 +65,19 @@ export class CommonsTool {
 
     }
 
-    public static async toCamelCase (candidateString: string): Promise<string> {
+    public static toCamelCase (candidateString: string): string {
+
+        if (!candidateString) {
+
+            return '';
+
+        }
+
+        if (candidateString === candidateString.toUpperCase ()) {
+
+            return candidateString.toLowerCase ();
+
+        }
 
         return candidateString
             .replace (/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase () : '')
@@ -73,7 +85,19 @@ export class CommonsTool {
 
     }
 
-    public static async toPascalCase (candidateString: string): Promise<string> {
+    public static toPascalCase (candidateString: string): string {
+
+        if (!candidateString) {
+
+            return '';
+
+        }
+
+        if (candidateString === candidateString.toUpperCase ()) {
+
+            return candidateString.charAt (0) + candidateString.slice (1).toLowerCase ();
+
+        }
 
         return candidateString
             .replace (/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase () : '')

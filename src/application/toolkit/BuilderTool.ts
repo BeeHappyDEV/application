@@ -1,6 +1,6 @@
 export class BuilderTool {
 
-    public static async buildTable (headerStrings: string[], dataStrings: string[][]): Promise<string> {
+    public static async buildTable2 (headerStrings: string[], dataStrings: string[][]): Promise<string> {
 
         const widthNumbers = await this.calculateColumnWidths (headerStrings, dataStrings);
 
@@ -12,7 +12,7 @@ export class BuilderTool {
 
     }
 
-    public static async calculateColumnWidths (headerStrings: string[], dataStrings: string[][]): Promise<number[]> {
+    private static async calculateColumnWidths (headerStrings: string[], dataStrings: string[][]): Promise<number[]> {
 
         return headerStrings.map ((headerString, offsetNumber) => {
 
@@ -24,7 +24,7 @@ export class BuilderTool {
 
     }
 
-    public static async buildHeaderRow (headerStrings: string[], widthNumbers: number[]): Promise<string> {
+    private static async buildHeaderRow (headerStrings: string[], widthNumbers: number[]): Promise<string> {
 
         let rowString = '|';
 
@@ -38,7 +38,7 @@ export class BuilderTool {
 
     }
 
-    public static async buildSeparatorRow (headerStrings: string[], widthNumbers: number[]): Promise<string> {
+    private static async buildSeparatorRow (headerStrings: string[], widthNumbers: number[]): Promise<string> {
 
         let rowString = '|';
 
@@ -52,7 +52,7 @@ export class BuilderTool {
 
     }
 
-    public static async buildDataRows (dataStrings: string[][], widthNumbers: number[]): Promise<string> {
+    private static async buildDataRows (dataStrings: string[][], widthNumbers: number[]): Promise<string> {
 
         let rowString = '';
 

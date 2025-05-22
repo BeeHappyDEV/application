@@ -1,0 +1,31 @@
+{
+    "application": {
+        "path": "src/application",
+        "exclusions": [
+            "./src/tests/**",
+            "./src/config/**"
+        ],
+        "domainsToTrack": [
+            "middleware",
+            "website",
+            "services"
+        ]
+    },
+    "database": {
+        "path": "src/database",
+        "exclusions": [
+            "./sql-scripts/old/legacy.sql",
+            "./sql-scripts/temp/migrations.sql"
+        ]
+    },
+    "output": {
+        "path": "./docs",
+        "application": {
+            "classes": "application/classes"
+        },
+        "database": {
+            "tables": "database/tables",
+            "functions": "database/functions"
+        }
+    }
+}

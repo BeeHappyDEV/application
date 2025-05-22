@@ -14,3 +14,15 @@
   - [Schema List](database/schema_list.md)
   - [Function List](database/function_list.md)
   - [Table List](database/table_list.md)
+
+- Marketing
+
+- Operations
+
+- Strategy
+  - Legal Definitions
+    - Privacy Policy
+    - Terms and Conditions
+    - [File Action](file_action.md)
+    - [Link Action](link_action.md)
+    - [Page Action](page_action.md)

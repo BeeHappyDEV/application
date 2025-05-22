@@ -9,7 +9,7 @@
     "deploy": "pnpm install:prd && tsc --build",
     "start:dev": "tsx watch src/application/LauncherEntry.ts --dev",
     "start:prd": "node out/application/LauncherEntry.js --prd",
-    "start:tst": "tsx src/application/TesterEntry.ts --dev",
+    "start:tst": "tsx src/zzz/index.ts",
     "start:pre": "tsx src/application/PreparerEntry.ts",
     "start:doc": "docsify serve src/documentation"
   },

@@ -15,7 +15,7 @@ declare
     var_last_date date;
 begin
 
-    var_jsn_status = result_initializer ();
+    var_jsn_status = result.initializer ();
     var_jsn_incoming = framework.get_empty_node ((in_jsn_object) :: json);
     var_jsn_outgoing = framework.get_empty_node (null :: json);
 
@@ -36,7 +36,7 @@ begin
 
     loop
 
-        insert into dat_dollars (
+        insert into dollars (
             idf_dollar,
             boo_calculated,
             num_day,
@@ -88,13 +88,13 @@ begin
             select
                 1
             from
-                dat_dollars
+                dollars
             where
                 idf_dollar = var_rec_day.num_previous
 
         ) then
 
-            insert into dat_dollars (
+            insert into dollars (
                 idf_dollar,
                 boo_calculated,
                 num_day,
@@ -112,7 +112,7 @@ begin
                         select
                             num_value
                         from
-                            dat_dollars
+                            dollars
                         where
                             idf_dollar < var_rec_day.num_previous
                         order by
@@ -134,11 +134,11 @@ begin
             num_value,
             lag (num_value) over (order by idf_dollar) as prev_value
         from
-            dat_dollars
+            dollars
         where
             num_year = var_num_year
     )
-    update dat_dollars usd
+    update dollars usd
     set
         num_absolute = usd.num_value - tmp.prev_value,
         num_variation = sign (usd.num_value - tmp.prev_value),
@@ -155,11 +155,11 @@ begin
         usd.idf_dollar = tmp.idf_dollar
         and tmp.prev_value is not null;
 
-    return result_successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
+    return result.successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
 
 exception
     when others then
-        return result_failed (var_jsn_status, var_jsn_incoming);
+        return result.failed (var_jsn_status, var_jsn_incoming);
 
 end;
 $body$ language plpgsql;

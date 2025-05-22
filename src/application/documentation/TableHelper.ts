@@ -4,7 +4,6 @@ import fsExtra from 'fs-extra';
 import path from 'path';
 
 import {CommonsTool} from '../toolkit/CommonsTool';
-import {BuilderTool} from '../toolkit/BuilderTool';
 import {JsonObject} from '../object/JsonObject';
 
 @injectable ()
@@ -132,10 +131,6 @@ export class TableHelper {
             }
 
             markdownString += '\n### ' + await CommonsTool.toPascalCase (schemaName) + '\n\n';
-
-            const tableArray = [...schema.tables].sort ((a, b) => a.name.localeCompare (b.name));
-
-            markdownString += await BuilderTool.buildTable (['***Name***', '***Abreviation***', '***File***'], tableArray.map (t => [t.name, t.comment, t.sourceFile]));
 
         }
 
