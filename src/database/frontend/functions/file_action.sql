@@ -40,16 +40,16 @@ begin
         into
             var_num_count
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_num_count = 0) then
 
@@ -58,10 +58,10 @@ begin
         end if;
 
         select
-            coalesce (mem.txt_first_name, ''),
-            coalesce (mem.txt_last_name, ''),
-            mem.txt_mail,
-            mem.txt_phone,
+            coalesce (usr.txt_first_name, ''),
+            coalesce (usr.txt_last_name, ''),
+            usr.txt_mail,
+            usr.txt_phone,
             prf.txt_description_es
         into
             var_txt_first_name,
@@ -70,16 +70,16 @@ begin
             var_txt_phone_temp,
             var_txt_profile
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_txt_last_name = '') then
 

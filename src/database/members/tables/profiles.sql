@@ -1,18 +1,18 @@
-drop table if exists profiles cascade;
+drop table if exists members.profiles cascade;
 
-create table if not exists profiles (
-    idf_profile        uuid primary key references registries (idf_registry) on delete cascade,
+create table if not exists members.profiles (
+    idf_profile        uuid primary key references framework.registries (idf_registry) on delete cascade,
     boo_active         boolean default true,
     boo_internal       boolean default true,
     txt_code           text not null,
     txt_description_en text not null,
     txt_description_es text not null,
     txt_icon           text
-) inherits (registries);
+) inherits (framework.registries);
 
-alter table profiles enable row level security;
+alter table members.profiles enable row level security;
 
-comment on table profiles is 'prf';
+comment on table members.profiles is 'prf';
 
 with tabled_data as (
     select *
@@ -41,7 +41,7 @@ with tabled_data as (
     ) as data (boo_active, boo_internal, txt_code, txt_description_en, txt_description_es, txt_icon)
 ),
 registries_insert as (
-    insert into registries
+    insert into framework.registries
     select from generate_series (1, (select count (*) from tabled_data))
     returning idf_registry
 ),
@@ -72,7 +72,7 @@ matched_data as (
         from registries_insert
     ) e on t.rn = e.rn
 )
-insert into profiles (
+insert into members.profiles (
     idf_profile,
     boo_active,
     boo_internal,

@@ -1,7 +1,7 @@
-drop table if exists organizations cascade;
+drop table if exists members.organizations cascade;
 
-create table if not exists organizations (
-    idf_organization uuid primary key references registries (idf_registry) on delete cascade,
+create table if not exists members.organizations (
+    idf_organization uuid primary key references framework.registries (idf_registry) on delete cascade,
     boo_active       boolean not null default true,
     idf_country      smallint not null,
     idf_region       smallint not null,
@@ -12,11 +12,11 @@ create table if not exists organizations (
     constraint organizations_fk2 foreign key (idf_region) references commons.regions (idf_region),
     constraint organizations_fk3 foreign key (idf_province) references commons.provinces (idf_province),
     constraint organizations_fk4 foreign key (idf_commune) references commons.communes (idf_commune)
-) inherits (registries);
+) inherits (framework.registries);
 
-alter table organizations enable row level security;
+alter table members.organizations enable row level security;
 
-comment on table organizations is 'org';
+comment on table members.organizations is 'org';
 
 with tabled_data as (
     select *
@@ -26,7 +26,7 @@ with tabled_data as (
     ) as data (boo_active, idf_country, idf_region, idf_province, idf_commune, txt_organization)
 ),
 registries_insert as (
-    insert into registries
+    insert into framework.registries
     select from generate_series (1, (select count (*) from tabled_data))
     returning idf_registry
 ),
@@ -57,7 +57,7 @@ matched_data as (
         from registries_insert
     ) e on t.rn = e.rn
 )
-insert into organizations (
+insert into members.organizations (
     idf_organization,
     boo_active,
     idf_country,

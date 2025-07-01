@@ -37,24 +37,24 @@ begin
     if (var_txt_action = 'landing') then
 
         select
-            mem.txt_mail,
-            mem.txt_phone,
-            mem.txt_address
+            usr.txt_mail,
+            usr.txt_phone,
+            usr.txt_address
         into
             var_txt_mail,
             var_txt_phone,
             var_txt_address
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
             and prf.txt_code = 'BEE'
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true;
 
         select
             '+' || substring (var_txt_phone, 1, 2) || ' ' || substring (var_txt_phone, 3, 3) || ' ' || substring (var_txt_phone, 6, 3) || ' ' || substring (var_txt_phone, 9, 3)
@@ -110,16 +110,16 @@ begin
         into
             var_num_count
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_num_count = 0) then
 
@@ -128,11 +128,11 @@ begin
         end if;
 
         select
-            coalesce (mem.txt_first_name, ''),
-            coalesce (mem.txt_last_name, ''),
+            coalesce (usr.txt_first_name, ''),
+            coalesce (usr.txt_last_name, ''),
             prf.txt_icon,
-            mem.txt_mail,
-            mem.txt_phone,
+            usr.txt_mail,
+            usr.txt_phone,
             prf.txt_description_es
         into
             var_txt_first_name,
@@ -142,16 +142,16 @@ begin
             var_txt_phone_temp,
             var_txt_profile
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_txt_last_name = '') then
 
@@ -191,16 +191,16 @@ begin
         into
             var_num_count
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_num_count = 0) then
 
@@ -209,11 +209,11 @@ begin
         end if;
 
         select
-            coalesce (mem.txt_first_name, ''),
-            coalesce (mem.txt_last_name, ''),
+            coalesce (usr.txt_first_name, ''),
+            coalesce (usr.txt_last_name, ''),
             prf.txt_icon,
-            mem.txt_mail,
-            mem.txt_phone,
+            usr.txt_mail,
+            usr.txt_phone,
             prf.txt_description_es
         into
             var_txt_first_name,
@@ -223,16 +223,16 @@ begin
             var_txt_phone_temp,
             var_txt_profile
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_txt_last_name = '') then
 
@@ -268,24 +268,24 @@ begin
     if (var_txt_action = 'associate') then
 
         select
-            mem.txt_mail,
-            mem.txt_phone,
-            mem.txt_address
+            usr.txt_mail,
+            usr.txt_phone,
+            usr.txt_address
         into
             var_txt_mail,
             var_txt_phone,
             var_txt_address
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
             and prf.txt_code = 'BEE'
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true;
 
         select
             '+' || substring (var_txt_phone, 1, 2) || ' ' || substring (var_txt_phone, 3, 3) || ' ' || substring (var_txt_phone, 6, 3) || ' ' || substring (var_txt_phone, 9, 3)
@@ -303,24 +303,24 @@ begin
     if (var_txt_action = 'disassociate') then
 
         select
-            mem.txt_mail,
-            mem.txt_phone,
-            mem.txt_address
+            usr.txt_mail,
+            usr.txt_phone,
+            usr.txt_address
         into
             var_txt_mail,
             var_txt_phone,
             var_txt_address
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
             and prf.txt_code = 'BEE'
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true;
 
         select
             '+' || substring (var_txt_phone, 1, 2) || ' ' || substring (var_txt_phone, 3, 3) || ' ' || substring (var_txt_phone, 6, 3) || ' ' || substring (var_txt_phone, 9, 3)

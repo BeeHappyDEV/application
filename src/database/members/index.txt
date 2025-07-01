@@ -4,5 +4,5 @@
 
 tables/profiles.sql
 tables/organizations.sql
-tables/members.sql
-tables/members_organizations_profiles.sql
+tables/users.sql
+tables/users_organizations_profiles.sql

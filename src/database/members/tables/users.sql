@@ -1,7 +1,7 @@
-drop table if exists members cascade;
+drop table if exists members.users cascade;
 
-create table if not exists members (
-    idf_member     uuid primary key references registries (idf_registry) on delete cascade,
+create table if not exists members.users (
+    idf_user       uuid primary key references framework.registries (idf_registry) on delete cascade,
     boo_active     boolean not null default true,
     txt_first_name text not null,
     txt_last_name  text,
@@ -9,11 +9,11 @@ create table if not exists members (
     txt_phone      text not null,
     txt_address    text,
     txt_location   text
-) inherits (registries);
+) inherits (framework.registries);
 
-alter table members enable row level security;
+alter table members.users enable row level security;
 
-comment on table members is 'mem';
+comment on table members.users is 'usr';
 
 with tabled_data as (
     select *
@@ -26,7 +26,7 @@ with tabled_data as (
     ) as data (boo_active, txt_first_name, txt_last_name, txt_mail, txt_phone, txt_address, txt_location)
 ),
 registries_insert as (
-    insert into registries
+    insert into framework.registries
     select from generate_series (1, (select count (*) from tabled_data))
     returning idf_registry
 ),
@@ -59,8 +59,8 @@ matched_data as (
         from registries_insert
     ) e on t.rn = e.rn
 )
-insert into members (
-    idf_member,
+insert into members.users (
+    idf_user,
     boo_active,
     txt_first_name,
     txt_last_name,

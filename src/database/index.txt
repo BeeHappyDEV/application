@@ -7,6 +7,6 @@ backend/index.txt
 frontend/index.txt
 
 commons/index.txt
---members/index.txt
+members/index.txt
 indicators/index.txt
 workflow/index.txt

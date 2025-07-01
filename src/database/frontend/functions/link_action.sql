@@ -28,20 +28,20 @@ begin
     if (var_txt_action = 'call_us') then
 
         select
-            'tel:+' || mem.txt_phone
+            'tel:+' || usr.txt_phone
         into
             var_txt_redirect
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
             and prf.txt_code = 'BEE'
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true;
 
         var_boo_action = true;
 
@@ -50,20 +50,20 @@ begin
     if (var_txt_action = 'write_us') then
 
         select
-            'mailto:' || mem.txt_mail
+            'mailto:' || usr.txt_mail
         into
             var_txt_redirect
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
             and prf.txt_code = 'BEE'
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true;
 
         var_boo_action = true;
 
@@ -72,20 +72,20 @@ begin
     if (var_txt_action = 'text_us') then
 
         select
-            'https://api.whatsapp.com/send?phone=' || mem.txt_phone
+            'https://api.whatsapp.com/send?phone=' || usr.txt_phone
         into
             var_txt_redirect
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
             and prf.txt_code = 'BEE'
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true;
 
         var_boo_action = true;
 
@@ -94,20 +94,20 @@ begin
     if (var_txt_action = 'visit_us') then
 
         select
-            mem.txt_location
+            usr.txt_location
         into
             var_txt_redirect
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
             and prf.txt_code = 'BEE'
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true;
 
         var_boo_action = true;
 
@@ -225,16 +225,16 @@ begin
         into
             var_num_count
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_num_count = 0) then
 
@@ -243,20 +243,20 @@ begin
         end if;
 
         select
-            'tel:+' || mem.txt_phone
+            'tel:+' || usr.txt_phone
         into
             var_txt_redirect
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         var_boo_action = true;
 
@@ -269,16 +269,16 @@ begin
         into
             var_num_count
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_num_count = 0) then
 
@@ -287,20 +287,20 @@ begin
         end if;
 
         select
-            'mailto:' || mem.txt_mail
+            'mailto:' || usr.txt_mail
         into
             var_txt_redirect
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         var_boo_action = true;
 
@@ -312,16 +312,16 @@ begin
         into
             var_num_count
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         if (var_num_count = 0) then
 
@@ -330,20 +330,20 @@ begin
         end if;
 
         select
-            'https://api.whatsapp.com/send?phone=' || mem.txt_phone
+            'https://api.whatsapp.com/send?phone=' || usr.txt_phone
         into
             var_txt_redirect
         from
-            members_organizations_profiles mop,
-            profiles prf,
-            members mem
+            members.users_organizations_profiles uop,
+            members.profiles prf,
+            members.users usr
         where
-            mop.idf_profile = prf.idf_profile
+            uop.idf_profile = prf.idf_profile
             and prf.boo_active = true
             and prf.boo_internal = true
-            and mop.idf_member = mem.idf_member
-            and mem.boo_active = true
-            and lower (mem.txt_first_name) = var_txt_name;
+            and uop.idf_user = usr.idf_user
+            and usr.boo_active = true
+            and lower (usr.txt_first_name) = var_txt_name;
 
         var_boo_action = true;
 
