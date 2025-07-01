@@ -15,7 +15,6 @@ system:
 
 integration:
   auth0:
-    domain: auth.beehappy.dev
     host: https://beehappydev.us.auth0.com/api/v2/
     pass: noybo0dKQtflkVr_IzA6WGDUZ15jGqLrih-EqS69wrq2mVD5kQj_UNgRiOQpHRxX
     user: 7QMq4WvuXvz9Yzomz4yfUaHATM4ElAUR
