@@ -1,30 +1,30 @@
 import {container} from 'tsyringe';
 
-import {DiscordModule} from 'src/application/middleware/DiscordModule';
-import {MongoDbModule} from 'src/application/middleware/MongoDbModule';
-import {PostgresModule} from 'src/application/middleware/PostgresModule';
-import {WebserviceModule} from 'src/application/middleware/WebserviceModule';
+import {DiscordModule} from '../middleware/DiscordModule';
+import {MongoDbModule} from '../middleware/MongoDbModule';
+import {PostgresModule} from '../middleware/PostgresModule';
+import {WebserviceModule} from '../middleware/WebserviceModule';
 
-import {MessengerController} from 'src/application/channel/MessengerController';
-import {MessengerService} from 'src/application/channel/MessengerService';
-import {TelegramController} from 'src/application/channel/TelegramController';
-import {TelegramService} from 'src/application/channel/TelegramService';
-import {WhatsAppController} from 'src/application/channel/WhatsAppController';
-import {WhatsAppService} from 'src/application/channel/WhatsAppService';
+import {MessengerController} from '../channel/MessengerController';
+import {MessengerService} from '../channel/MessengerService';
+import {TelegramController} from '../channel/TelegramController';
+import {TelegramService} from '../channel/TelegramService';
+import {WhatsAppController} from '../channel/WhatsAppController';
+import {WhatsAppService} from '../channel/WhatsAppService';
 
-import {BackendController} from 'src/application/website/BackendController';
-import {BackendService} from 'src/application/website/BackendService';
-import {DefaultController} from 'src/application/website/DefaultController';
-import {FrontendController} from 'src/application/website/FrontendController';
-import {FrontendService} from 'src/application/website/FrontendService';
-import {ScheduleController} from 'src/application/website/ScheduleController';
-import {ScheduleService} from 'src/application/website/ScheduleService';
+import {BackendController} from '../website/BackendController';
+import {BackendService} from '../website/BackendService';
+import {DefaultController} from '../website/DefaultController';
+import {FrontendController} from '../website/FrontendController';
+import {FrontendService} from '../website/FrontendService';
+import {ScheduleController} from '../website/ScheduleController';
+import {ScheduleService} from '../website/ScheduleService';
 
-import {LogTool} from 'src/application/toolkit/LogTool';
-import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
-import {ResultObject} from 'src/application/object/ResultObject';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 export class RegistryTool {
 

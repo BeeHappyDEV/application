@@ -2,13 +2,13 @@ import {inject, injectable} from 'tsyringe';
 
 import nodeCron from 'node-cron';
 
-import {ScheduleService} from 'src/application/website/ScheduleService';
+import {ScheduleService} from '../website/ScheduleService';
 
-import {CommonsTool} from 'src/application/toolkit/CommonsTool';
-import {LogTool} from 'src/application/toolkit/LogTool';
-import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
+import {JsonObject} from '../object/JsonObject';
 
 @injectable ()
 export class ScheduleController {

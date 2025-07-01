@@ -2,12 +2,12 @@ import {inject, injectable} from 'tsyringe';
 
 import superagent from 'superagent';
 
-import {CommonsTool} from 'src/application/toolkit/CommonsTool';
-import {ExceptionTool} from 'src/application/toolkit/ExceptionTool';
-import {LogTool} from 'src/application/toolkit/LogTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogTool} from '../toolkit/LogTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
-import {ResultObject} from 'src/application/object/ResultObject';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class WebserviceModule {

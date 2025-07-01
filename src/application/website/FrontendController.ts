@@ -2,13 +2,13 @@ import {inject, injectable} from 'tsyringe';
 
 import express from 'express';
 
-import {FrontendService} from 'src/application/website/FrontendService';
+import {FrontendService} from '../website/FrontendService';
 
-import {CommonsTool} from 'src/application/toolkit/CommonsTool';
-import {LogTool} from 'src/application/toolkit/LogTool';
-import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
+import {JsonObject} from '../object/JsonObject';
 
 @injectable ()
 export class FrontendController {

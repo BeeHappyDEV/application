@@ -5,12 +5,12 @@ import express from 'express';
 import kleur from 'kleur';
 import url from 'url';
 
-import {MongoDbModule} from 'src/application/middleware/MongoDbModule';
+import {MongoDbModule} from '../middleware/MongoDbModule';
 
-import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
-import {ResultObject} from 'src/application/object/ResultObject';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class LogTool {

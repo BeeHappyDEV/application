@@ -8,21 +8,21 @@ import expressWs from 'express-ws';
 import localTunnel from 'localtunnel';
 import superagent from 'superagent';
 
-import {MessengerController} from 'src/application/channel/MessengerController';
-import {TelegramController} from 'src/application/channel/TelegramController';
-import {WhatsAppController} from 'src/application/channel/WhatsAppController';
+import {MessengerController} from '../channel/MessengerController';
+import {TelegramController} from '../channel/TelegramController';
+import {WhatsAppController} from '../channel/WhatsAppController';
 
-import {BackendController} from 'src/application/website/BackendController';
-import {FrontendController} from 'src/application/website/FrontendController';
-import {ScheduleController} from 'src/application/website/ScheduleController';
-import {DefaultController} from 'src/application/website/DefaultController';
+import {BackendController} from '../website/BackendController';
+import {FrontendController} from '../website/FrontendController';
+import {ScheduleController} from '../website/ScheduleController';
+import {DefaultController} from '../website/DefaultController';
 
-import {CommonsTool} from 'src/application/toolkit/CommonsTool';
-import {LogTool} from 'src/application/toolkit/LogTool';
-import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
-import {RegistryTool} from 'src/application/toolkit/RegistryTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
+import {RegistryTool} from '../toolkit/RegistryTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
+import {JsonObject} from '../object/JsonObject';
 
 @injectable ()
 export class ApplicationEntry {

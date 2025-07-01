@@ -1,6 +1,6 @@
 import superagent from 'superagent';
 
-import {JsonObject} from 'src/application/object/JsonObject';
+import {JsonObject} from '../object/JsonObject';
 
 export class ResultObject {
 

@@ -2,11 +2,11 @@ import {inject, injectable} from 'tsyringe';
 
 import {MongoClient} from 'mongodb';
 
-import {ExceptionTool} from 'src/application/toolkit/ExceptionTool';
-import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
-import {ResultObject} from 'src/application/object/ResultObject';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class MongoDbModule {

@@ -2,14 +2,14 @@ import {inject, injectable} from 'tsyringe';
 
 import express from 'express';
 
-import {BackendService} from 'src/application/website/BackendService';
+import {BackendService} from '../website/BackendService';
 
-import {CommonsTool} from 'src/application/toolkit/CommonsTool';
-import {ExceptionTool} from 'src/application/toolkit/ExceptionTool';
-import {LogTool} from 'src/application/toolkit/LogTool';
-import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
+import {JsonObject} from '../object/JsonObject';
 
 @injectable ()
 export class BackendController {

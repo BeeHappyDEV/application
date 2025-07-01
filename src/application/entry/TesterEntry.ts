@@ -2,9 +2,9 @@ import 'reflect-metadata';
 
 import {container, inject, injectable} from 'tsyringe';
 
-import {CommonsTool} from 'src/application/toolkit/CommonsTool';
-import {LogTool} from 'src/application/toolkit/LogTool';
-import {RegistryTool} from 'src/application/toolkit/RegistryTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {LogTool} from '../toolkit/LogTool';
+import {RegistryTool} from '../toolkit/RegistryTool';
 
 @injectable ()
 export class TesterEntry {

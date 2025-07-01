@@ -2,16 +2,16 @@ import {inject, injectable} from 'tsyringe';
 
 import fsExtra from 'fs-extra';
 
-import {MongoDbModule} from 'src/application/middleware/MongoDbModule';
-import {PostgresModule} from 'src/application/middleware/PostgresModule';
-import {WebserviceModule} from 'src/application/middleware/WebserviceModule';
+import {MongoDbModule} from '../middleware/MongoDbModule';
+import {PostgresModule} from '../middleware/PostgresModule';
+import {WebserviceModule} from '../middleware/WebserviceModule';
 
-import {CommonsTool} from 'src/application/toolkit/CommonsTool';
-import {ExceptionTool} from 'src/application/toolkit/ExceptionTool';
-import {LogTool} from 'src/application/toolkit/LogTool';
+import {CommonsTool} from '../toolkit/CommonsTool';
+import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogTool} from '../toolkit/LogTool';
 
-import {JsonObject} from 'src/application/object/JsonObject';
-import {ResultObject} from 'src/application/object/ResultObject';
+import {JsonObject} from '../object/JsonObject';
+import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class BackendService {
