@@ -1,51 +1,53 @@
-import {container, inject, injectable} from 'tsyringe';
+import {inject, injectable} from 'tsyringe';
 
-import {WebserviceModule} from '../middleware/WebserviceModule';
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
-import {LogTool} from '../toolkit/LogTool';
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {WebserviceModule} from 'src/application/middleware/WebserviceModule';
+
+import {CommonsTool} from 'src/application/toolkit/CommonsTool';
+import {ExceptionTool} from 'src/application/toolkit/ExceptionTool';
+import {LogTool} from 'src/application/toolkit/LogTool';
+
+import {JsonObject} from 'src/application/object/JsonObject';
+import {ResultObject} from 'src/application/object/ResultObject';
 
 @injectable ()
 export class ScheduleService {
 
     constructor (
-        @inject (WebserviceModule) private webserviceModule: WebserviceModule
+        @inject (WebserviceModule) private webserviceModule: WebserviceModule,
+        @inject (LogTool) private logTool: LogTool
     ) {
     }
 
     public async cronScheduleAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings, traceObject);
+        this.logTool.initialize (stackStringArray, traceObject);
 
-        let headersObject = container.resolve (JsonObject);
+        let headersObject = new JsonObject ();
 
-        const queryObject = container.resolve (JsonObject);
+        const queryObject = new JsonObject ();
         queryObject.set ('depth', '3');
-        queryObject.set ('thread', logTool.trace ().get ('thread'));
+        queryObject.set ('thread', this.logTool.trace ().get ('thread'));
 
-        const bodyObject = container.resolve (JsonObject);
+        const bodyObject = new JsonObject ();
 
-        let resultObject = container.resolve (ResultObject);
+        let resultObject = new ResultObject ();
 
         try {
 
-            resultObject = await this.webserviceModule.post (await paramsObject.get ('txt_host'), headersObject, queryObject, bodyObject, logTool.trace ());
+            resultObject = await this.webserviceModule.post (await paramsObject.get ('txt_host'), headersObject, queryObject, bodyObject, this.logTool.trace ());
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
 
-            logTool.exception ();
+            this.logTool.exception ();
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
         return resultObject;
 

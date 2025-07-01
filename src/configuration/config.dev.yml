@@ -14,6 +14,11 @@ system:
 # INTEGRATIONS #
 
 integration:
+  auth0:
+    domain: auth.beehappy.dev
+    host: https://beehappydev.us.auth0.com/api/v2/
+    pass: noybo0dKQtflkVr_IzA6WGDUZ15jGqLrih-EqS69wrq2mVD5kQj_UNgRiOQpHRxX
+    user: 7QMq4WvuXvz9Yzomz4yfUaHATM4ElAUR
   discord:
     beebee:
       notifications: https://discord.com/api/webhooks/1043051348381421598/oqytOEnH2Ms4cnVaOD5Q1_XDP-JysOCy1ArLC3fYGA1JZ8x3RkRXalCB3BdCJKNACefc

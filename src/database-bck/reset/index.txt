@@ -1,8 +1,0 @@
-/* * * * * * * * * * * */
-/* D E F I N I T I O N */
-/* * * * * * * * * * * */
-
-definition/tables/set_schema.sql
-definition/tables/sys_default.sql
---definition/functions/ext_msgpack_decode.sql
---definition/functions/ext_msgpack_encode.sql

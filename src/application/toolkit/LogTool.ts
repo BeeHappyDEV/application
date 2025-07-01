@@ -1,14 +1,16 @@
-import {container, inject, injectable} from 'tsyringe';
+import {inject, injectable} from 'tsyringe';
 
 import crypto from 'crypto';
 import express from 'express';
 import kleur from 'kleur';
 import url from 'url';
 
-import {MongoDbModule} from '../middleware/MongoDbModule';
-import {PropertiesModule} from '../middleware/PropertiesModule';
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {MongoDbModule} from 'src/application/middleware/MongoDbModule';
+
+import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+
+import {JsonObject} from 'src/application/object/JsonObject';
+import {ResultObject} from 'src/application/object/ResultObject';
 
 @injectable ()
 export class LogTool {
@@ -17,15 +19,15 @@ export class LogTool {
 
     constructor (
         @inject (MongoDbModule) private mongoDbModule: MongoDbModule,
-        @inject (PropertiesModule) private propertiesModule: PropertiesModule
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
 
-    public initialize (stackStrings: string[], traceObject: JsonObject | null = null, depthNumber?: number): void {
+    public initialize (stackStringArray: string[], traceObject: JsonObject | null = null, depthNumber?: number): void {
 
         if (traceObject === null) {
 
-            this.logObject = container.resolve (JsonObject);
+            this.logObject = new JsonObject ();
 
         } else {
 
@@ -37,16 +39,16 @@ export class LogTool {
         this.logObject.set ('carry', false);
         this.logObject.set ('starting', Date.now ());
         this.logObject.set ('offset', crypto.randomUUID ().split ('-').join (''));
-        this.logObject.set ('class', stackStrings [0]);
-        this.logObject.set ('method', stackStrings [1]);
+        this.logObject.set ('class', stackStringArray [0]);
+        this.logObject.set ('method', stackStringArray [1]);
 
-        switch (stackStrings [2]) {
+        switch (stackStringArray [2]) {
 
             case 'frontend':
             case 'backend':
             case 'schedule':
 
-                this.logObject.set ('source', stackStrings [2]);
+                this.logObject.set ('source', stackStringArray [2]);
 
                 break;
 
@@ -91,7 +93,7 @@ export class LogTool {
 
     }
 
-    public contextualize (expressRequest: typeof express.request): void {
+    public contextualize (expressRequest: express.Request): void {
 
         if (Object.keys (expressRequest.query).length !== 0) {
 
@@ -104,7 +106,7 @@ export class LogTool {
 
     }
 
-    public request (expressRequest: typeof express.request) {
+    public request (expressRequest: express.Request) {
 
         let urlObject = url.parse (expressRequest.url, true);
 
@@ -209,7 +211,7 @@ export class LogTool {
 
     public trace (): JsonObject {
 
-        let traceObject = container.resolve (JsonObject);
+        let traceObject = new JsonObject ();
 
         traceObject.set ('thread', this.logObject.get ('thread'));
         traceObject.set ('depth', this.logObject.get ('depth'));
@@ -423,7 +425,7 @@ export class LogTool {
 
         console.log (captionString);
 
-        if (Boolean (this.propertiesModule.get ('system.log.persist'))) {
+        if (Boolean (this.propertiesTool.get ('system.log.persist'))) {
 
             this.mongoDbModule.insertTrace (this.logObject).then ();
 

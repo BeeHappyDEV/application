@@ -1,11 +1,10 @@
-import {JsonObject} from '../object/JsonObject';
-import {container} from "tsyringe";
+import {JsonObject} from 'src/application/object/JsonObject';
 
 export class ExceptionTool {
 
     public static SUCCESSFUL () {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 0,
@@ -19,13 +18,13 @@ export class ExceptionTool {
 
     }
 
-    public static POSTGRES_EXCEPTION (reflectionStrings: string []) {
+    public static POSTGRES_EXCEPTION (reflectionStringArray: string []) {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 100,
-            sys_message: 'Postgres Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
+            sys_message: 'Postgres Exception: ' + reflectionStringArray [0] + '.' + reflectionStringArray [1],
             sys_carry: true
         }
 
@@ -37,7 +36,7 @@ export class ExceptionTool {
 
     public static REBUILD_EXCEPTION (fileString: string) {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 200,
@@ -51,13 +50,13 @@ export class ExceptionTool {
 
     }
 
-    public static INDICATORS_EXCEPTION (reflectionStrings: string []) {
+    public static INDICATORS_EXCEPTION (reflectionStringArray: string []) {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 300,
-            sys_message: 'Indicators Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
+            sys_message: 'Indicators Exception: ' + reflectionStringArray [0] + '.' + reflectionStringArray [1],
             sys_carry: true
         }
 
@@ -69,7 +68,7 @@ export class ExceptionTool {
 
     public static FUNCTION_EXCEPTION (functionString: string) {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 400,
@@ -83,13 +82,13 @@ export class ExceptionTool {
 
     }
 
-    public static SERVICE_EXCEPTION (reflectionStrings: string []) {
+    public static SERVICE_EXCEPTION (reflectionStringArray: string []) {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 500,
-            sys_message: 'Service Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
+            sys_message: 'Service Exception: ' + reflectionStringArray [0] + '.' + reflectionStringArray [1],
             sys_carry: true
         }
 
@@ -99,13 +98,13 @@ export class ExceptionTool {
 
     }
 
-    public static DISCORD_EXCEPTION (reflectionStrings: string []) {
+    public static DISCORD_EXCEPTION (reflectionStringArray: string []) {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 600,
-            sys_message: 'Discord Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
+            sys_message: 'Discord Exception: ' + reflectionStringArray [0] + '.' + reflectionStringArray [1],
             sys_carry: true
         }
 
@@ -115,13 +114,13 @@ export class ExceptionTool {
 
     }
 
-    public static AUTH0_EXCEPTION (reflectionStrings: string []) {
+    public static AUTH0_EXCEPTION (reflectionStringArray: string []) {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 700,
-            sys_message: 'Auth0 Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
+            sys_message: 'Auth0 Exception: ' + reflectionStringArray [0] + '.' + reflectionStringArray [1],
             sys_carry: true
         }
 
@@ -131,13 +130,13 @@ export class ExceptionTool {
 
     }
 
-    public static APPLICATION_EXCEPTION (reflectionStrings: string []) {
+    public static APPLICATION_EXCEPTION (reflectionStringArray: string []) {
 
-        let jsonObject = container.resolve (JsonObject);
+        let jsonObject = new JsonObject ();
 
         let statusObject = {
             sys_result: 900,
-            sys_message: 'Application Exception: ' + reflectionStrings [0] + '.' + reflectionStrings [1],
+            sys_message: 'Application Exception: ' + reflectionStringArray [0] + '.' + reflectionStringArray [1],
             sys_carry: true
         }
 

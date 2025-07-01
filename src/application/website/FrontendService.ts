@@ -1,49 +1,48 @@
-import {container, inject, injectable} from 'tsyringe';
+import {inject, injectable} from 'tsyringe';
 
-import {PostgresModule} from '../middleware/PostgresModule';
-import {PropertiesModule} from '../middleware/PropertiesModule';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
-import {LogTool} from '../toolkit/LogTool';
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {PostgresModule} from 'src/application/middleware/PostgresModule';
+
+import {CommonsTool} from 'src/application/toolkit/CommonsTool';
+import {ExceptionTool} from 'src/application/toolkit/ExceptionTool';
+import {LogTool} from 'src/application/toolkit/LogTool';
+
+import {JsonObject} from 'src/application/object/JsonObject';
+import {ResultObject} from 'src/application/object/ResultObject';
 
 @injectable ()
 export class FrontendService {
 
     constructor (
         @inject (PostgresModule) private postgresModule: PostgresModule,
-        @inject (PropertiesModule) private propertiesModule: PropertiesModule
+        @inject (LogTool) private logTool: LogTool
     ) {
-        this.propertiesModule.initialize ().then ();
     }
 
     public async getPageAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings, traceObject);
+        this.logTool.initialize (stackStringArray, traceObject);
 
-        let resultObject = container.resolve (ResultObject);
+        let resultObject = new ResultObject ();
 
         try {
 
             paramsObject.set ('txt_schema', 'frontend');
             paramsObject.set ('txt_function', 'page_action');
 
-            resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresModule.execute (paramsObject, this.logTool.trace ());
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
 
-            logTool.exception ();
+            this.logTool.exception ();
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
         return resultObject;
 
@@ -51,30 +50,29 @@ export class FrontendService {
 
     public async getLinkAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings, traceObject);
+        this.logTool.initialize (stackStringArray, traceObject);
 
-        let resultObject = container.resolve (ResultObject);
+        let resultObject = new ResultObject ();
 
         try {
 
             paramsObject.set ('txt_schema', 'frontend');
             paramsObject.set ('txt_function', 'link_action');
 
-            resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresModule.execute (paramsObject, this.logTool.trace ());
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
 
-            logTool.exception ();
+            this.logTool.exception ();
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
         return resultObject;
 
@@ -82,30 +80,29 @@ export class FrontendService {
 
     public async getFileAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings, traceObject);
+        this.logTool.initialize (stackStringArray, traceObject);
 
-        let resultObject = container.resolve (ResultObject);
+        let resultObject = new ResultObject ();
 
         try {
 
             paramsObject.set ('txt_schema', 'frontend');
             paramsObject.set ('txt_function', 'file_action');
 
-            resultObject = await this.postgresModule.execute (paramsObject, logTool.trace ());
+            resultObject = await this.postgresModule.execute (paramsObject, this.logTool.trace ());
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStrings));
+            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
 
-            logTool.exception ();
+            this.logTool.exception ();
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
         return resultObject;
 

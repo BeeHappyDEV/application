@@ -1,28 +1,30 @@
-import {container, inject, injectable} from 'tsyringe';
+import {inject, injectable} from 'tsyringe';
 
 import express from 'express';
 
-import {FrontendService} from './FrontendService';
-import {PropertiesModule} from '../middleware/PropertiesModule';
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {LogTool} from '../toolkit/LogTool';
-import {JsonObject} from '../object/JsonObject';
+import {FrontendService} from 'src/application/website/FrontendService';
+
+import {CommonsTool} from 'src/application/toolkit/CommonsTool';
+import {LogTool} from 'src/application/toolkit/LogTool';
+import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+
+import {JsonObject} from 'src/application/object/JsonObject';
 
 @injectable ()
 export class FrontendController {
 
     constructor (
-        @inject (FrontendService) private frontendModule: FrontendService,
-        @inject (PropertiesModule) private propertiesModule: PropertiesModule
+        @inject (FrontendService) private frontendService: FrontendService,
+        @inject (LogTool) private logTool: LogTool,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
-        this.propertiesModule.initialize ().then ();
     }
 
-    public async initialize (expressApplication: typeof express.application): Promise<void> {
+    public async initialize (expressApplication: express.Application): Promise<void> {
 
-        const paramsObject = container.resolve (JsonObject);
+        const paramsObject = new JsonObject ();
 
-        expressApplication.get ('/', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'landing');
             paramsObject.set ('txt_render', 'landing');
@@ -31,7 +33,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/contacto/llamanos', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/contacto/llamanos', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'call_us');
 
@@ -39,7 +41,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/contacto/escribenos', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/contacto/escribenos', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'write_us');
 
@@ -47,7 +49,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/contacto/texteanos', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/contacto/texteanos', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'text_us');
 
@@ -55,7 +57,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/contacto/visitanos', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/contacto/visitanos', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'visit_us');
 
@@ -63,7 +65,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/social/facebook', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/social/facebook', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'facebook');
 
@@ -71,7 +73,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/social/instagram', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/social/instagram', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'instagram');
 
@@ -79,7 +81,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/social/x', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/social/x', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'x');
 
@@ -87,7 +89,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/social/linkedin', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/social/linkedin', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'linkedin');
 
@@ -95,7 +97,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/social/discord', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/social/discord', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'discord');
 
@@ -103,7 +105,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/politica-de-privacidad', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/politica-de-privacidad', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'privacy_policy');
             paramsObject.set ('txt_render', 'policy');
@@ -112,7 +114,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/politica-de-privacidad/video', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/politica-de-privacidad/video', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'privacy_policy_video');
 
@@ -120,7 +122,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/terminos-y-condiciones', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/terminos-y-condiciones', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'terms_and_conditions');
             paramsObject.set ('txt_render', 'terms');
@@ -129,7 +131,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/terminos-y-condiciones/video', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/terminos-y-condiciones/video', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'terms_and_conditions_video');
 
@@ -137,7 +139,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/colaborador/:name', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/colaborador/:name', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'collaborator');
             paramsObject.set ('txt_name', expressRequest.params ['name']);
@@ -147,7 +149,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/colaborador/:name/vcard', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/colaborador/:name/vcard', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'vcard');
             paramsObject.set ('txt_name', expressRequest.params ['name']);
@@ -156,7 +158,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/colaborador/:name/qr', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/colaborador/:name/qr', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'qr');
             paramsObject.set ('txt_name', expressRequest.params ['name']);
@@ -166,7 +168,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/colaborador/:name/llamame', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/colaborador/:name/llamame', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'call_me');
             paramsObject.set ('txt_name', expressRequest.params ['name']);
@@ -175,7 +177,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/colaborador/:name/escribeme', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/colaborador/:name/escribeme', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'write_me');
             paramsObject.set ('txt_name', expressRequest.params ['name']);
@@ -184,7 +186,7 @@ export class FrontendController {
 
         });
 
-        expressApplication.get ('/colaborador/:name/texteame', (expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
+        expressApplication.get ('/colaborador/:name/texteame', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             paramsObject.set ('txt_action', 'text_me');
             paramsObject.set ('txt_name', expressRequest.params ['name']);
@@ -193,25 +195,16 @@ export class FrontendController {
 
         });
 
-        expressApplication.use ((expressRequest: typeof express.request, expressResponse: typeof express.response): void => {
-
-            paramsObject.set ('txt_action', '');
-
-            this.getPageAction (expressRequest, expressResponse, paramsObject);
-
-        });
-
     }
 
-    private async getPageAction (expressRequest: typeof express.request, expressResponse: typeof express.response, paramsObject: JsonObject): Promise<void> {
+    private async getPageAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: JsonObject): Promise<void> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings);
-        logTool.request (expressRequest);
+        this.logTool.initialize (stackStringArray);
+        this.logTool.request (expressRequest);
 
-        const resultObject = await this.frontendModule.getPageAction (paramsObject, logTool.trace ());
+        const resultObject = await this.frontendService.getPageAction (paramsObject, this.logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
@@ -221,20 +214,20 @@ export class FrontendController {
 
                 case 'dev':
 
-                    resultObject.setPath (await this.propertiesModule.get ('system.host') + ':' + await this.propertiesModule.get ('system.port'));
+                    resultObject.setPath (await this.propertiesTool.get ('system.host') + ':' + await this.propertiesTool.get ('system.port'));
 
                     break;
 
                 case 'prd':
 
-                    resultObject.setPath (await this.propertiesModule.get ('system.host'));
+                    resultObject.setPath (await this.propertiesTool.get ('system.host'));
 
                     break;
 
             }
 
-            resultObject.setVersion (await CommonsTool.getApplicationVersion ());
-            resultObject.setWebsite (await this.propertiesModule.get ('application.name') + await this.propertiesModule.get ('application.domain'));
+            resultObject.setVersion (CommonsTool.getApplicationVersion ());
+            resultObject.setWebsite (await this.propertiesTool.get ('application.name') + await this.propertiesTool.get ('application.domain'));
             resultObject.setRender (paramsObject.get ('txt_render'));
 
             expressResponse.render (resultObject.getRender (), resultObject.getOutgoing ());
@@ -249,37 +242,35 @@ export class FrontendController {
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
     }
 
-    private async getLinkAction (expressRequest: typeof express.request, expressResponse: typeof express.response, paramsObject: JsonObject): Promise<void> {
+    private async getLinkAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: JsonObject): Promise<void> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings);
-        logTool.request (expressRequest);
+        this.logTool.initialize (stackStringArray);
+        this.logTool.request (expressRequest);
 
-        const resultObject = await this.frontendModule.getLinkAction (paramsObject, logTool.trace ());
+        const resultObject = await this.frontendService.getLinkAction (paramsObject, this.logTool.trace ());
 
         expressResponse.redirect (resultObject.getRedirect ());
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
     }
 
-    private async getFileAction (expressRequest: typeof express.request, expressResponse: typeof express.response, paramsObject: JsonObject): Promise<void> {
+    private async getFileAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: JsonObject): Promise<void> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings);
-        logTool.request (expressRequest);
+        this.logTool.initialize (stackStringArray);
+        this.logTool.request (expressRequest);
 
-        const resultObject = await this.frontendModule.getFileAction (paramsObject, logTool.trace ());
+        const resultObject = await this.frontendService.getFileAction (paramsObject, this.logTool.trace ());
 
         if (resultObject.hasOutgoing ()) {
 
@@ -292,8 +283,8 @@ export class FrontendController {
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
     }
 

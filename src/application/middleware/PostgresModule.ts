@@ -1,42 +1,40 @@
-import {container, inject, injectable} from 'tsyringe';
+import {inject, injectable} from 'tsyringe';
 
 import pg from 'pg';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
-import {JsonObject} from '../object/JsonObject';
-import {LogTool} from '../toolkit/LogTool';
-import {PropertiesModule} from './PropertiesModule';
-import {ResultObject} from '../object/ResultObject';
+import {CommonsTool} from 'src/application/toolkit/CommonsTool';
+import {ExceptionTool} from 'src/application/toolkit/ExceptionTool';
+import {LogTool} from 'src/application/toolkit/LogTool';
+import {PropertiesTool} from 'src/application/toolkit/PropertiesTool';
+
+import {JsonObject} from 'src/application/object/JsonObject';
+import {ResultObject} from 'src/application/object/ResultObject';
 
 @injectable ()
 export class PostgresModule {
 
     constructor (
-        @inject (PropertiesModule) private propertiesModule: PropertiesModule
+        @inject (LogTool) private logTool: LogTool,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
-        propertiesModule.initialize ().then ();
     }
 
     public async execute (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
 
-        await this.propertiesModule.initialize ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const stackStrings = await CommonsTool.getStackStrings ();
-
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings, traceObject);
+        this.logTool.initialize (stackStringArray, traceObject);
 
         const postgresPool = new pg.Pool ({
-            database: await this.propertiesModule.get ('integration.postgres.database'),
-            host: await this.propertiesModule.get ('integration.postgres.host'),
-            max: Number (await this.propertiesModule.get ('integration.postgres.connections')),
-            password: await this.propertiesModule.get ('integration.postgres.pass'),
-            port: Number (await this.propertiesModule.get ('integration.postgres.port')),
-            user: await this.propertiesModule.get ('integration.postgres.user')
+            database: await this.propertiesTool.get ('integration.postgres.database'),
+            host: await this.propertiesTool.get ('integration.postgres.host'),
+            max: Number (await this.propertiesTool.get ('integration.postgres.connections')),
+            password: await this.propertiesTool.get ('integration.postgres.pass'),
+            port: Number (await this.propertiesTool.get ('integration.postgres.port')),
+            user: await this.propertiesTool.get ('integration.postgres.user')
         });
 
-        const resultObject = container.resolve (ResultObject);
+        const resultObject = new ResultObject ();
 
         if (paramsObject.get ('txt_content') != null) {
 
@@ -50,7 +48,7 @@ export class PostgresModule {
 
                 resultObject.setResult (ExceptionTool.REBUILD_EXCEPTION (paramsObject.get ('txt_line')));
 
-                logTool.exception ();
+                this.logTool.exception ();
 
             }
 
@@ -64,7 +62,7 @@ export class PostgresModule {
 
                 const objectString = paramsObject.get ('txt_schema') + '.' + paramsObject.get ('txt_function');
 
-                logTool.resource (objectString);
+                this.logTool.resource (objectString);
 
                 paramsObject.del ('txt_schema');
                 paramsObject.del ('txt_function');
@@ -86,16 +84,16 @@ export class PostgresModule {
 
             } catch (exception) {
 
-                resultObject.setResult (ExceptionTool.POSTGRES_EXCEPTION (stackStrings));
+                resultObject.setResult (ExceptionTool.POSTGRES_EXCEPTION (stackStringArray));
 
-                logTool.exception ();
+                this.logTool.exception ();
 
             }
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
         return resultObject;
 

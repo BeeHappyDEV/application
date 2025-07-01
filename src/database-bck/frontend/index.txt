@@ -1,7 +1,0 @@
-/* * * * * * * * * * * */
-/* D E F I N I T I O N */
-/* * * * * * * * * * * */
-
-definition/functions/frontend_file_action.sql
-definition/functions/frontend_link_action.sql
-definition/functions/frontend_page_action.sql

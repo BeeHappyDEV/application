@@ -1,7 +1,0 @@
-/* * * * * * * * * * * */
-/* D E F I N I T I O N */
-/* * * * * * * * * * * */
-
-definition/functions/toolbox_check_mail.sql
-definition/functions/toolbox_get_first_name.sql
-definition/functions/toolbox_get_full_name.sql

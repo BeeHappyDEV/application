@@ -1,9 +1,8 @@
 version: "1.0"
 profile:
   name: qodana.starter
-exclude:
+include:
   - name: All
     paths:
-      - src\presentation
-      - src\database
+      - src
 linter: jetbrains/qodana-js:latest

@@ -1,24 +1,29 @@
-import {container, injectable} from 'tsyringe';
+import {inject, injectable} from 'tsyringe';
 
 import superagent from 'superagent';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
-import {LogTool} from '../toolkit/LogTool';
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {CommonsTool} from 'src/application/toolkit/CommonsTool';
+import {ExceptionTool} from 'src/application/toolkit/ExceptionTool';
+import {LogTool} from 'src/application/toolkit/LogTool';
+
+import {JsonObject} from 'src/application/object/JsonObject';
+import {ResultObject} from 'src/application/object/ResultObject';
 
 @injectable ()
 export class WebserviceModule {
 
+    constructor (
+        @inject (LogTool) private logTool: LogTool
+    ) {
+    }
+
     public async delete (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings, traceObject);
+        this.logTool.initialize (stackStringArray, traceObject);
 
-        let resultObject = container.resolve (ResultObject);
+        let resultObject = new ResultObject ();
 
         try {
 
@@ -48,14 +53,14 @@ export class WebserviceModule {
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStrings));
+            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStringArray));
 
-            logTool.exception ();
+            this.logTool.exception ();
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
         return resultObject;
 
@@ -63,18 +68,17 @@ export class WebserviceModule {
 
     public async get (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings, traceObject);
+        this.logTool.initialize (stackStringArray, traceObject);
 
-        let resultObject = container.resolve (ResultObject);
+        let resultObject = new ResultObject ();
 
         try {
 
             let requestObject = superagent.get (hostString.toString ());
 
-            logTool.resource (hostString.toString ());
+            this.logTool.resource (hostString.toString ());
 
             if (headersObject !== null) {
 
@@ -99,14 +103,14 @@ export class WebserviceModule {
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStrings));
+            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStringArray));
 
-            logTool.exception ();
+            this.logTool.exception ();
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
         return resultObject;
 
@@ -114,18 +118,17 @@ export class WebserviceModule {
 
     public async post (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
 
-        const stackStrings = await CommonsTool.getStackStrings ();
+        const stackStringArray = CommonsTool.getStackStringArray ();
 
-        const logTool = container.resolve (LogTool);
-        logTool.initialize (stackStrings, traceObject);
+        this.logTool.initialize (stackStringArray, traceObject);
 
-        let resultObject = container.resolve (ResultObject);
+        let resultObject =  new ResultObject ();
 
         try {
 
             let requestObject = superagent.post (hostString.toString ());
 
-            logTool.resource (hostString.toString ());
+            this.logTool.resource (hostString.toString ());
 
             if (headersObject !== null) {
 
@@ -151,12 +154,12 @@ export class WebserviceModule {
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStrings));
+            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStringArray));
 
         }
 
-        logTool.response (resultObject);
-        logTool.finalize ();
+        this.logTool.response (resultObject);
+        this.logTool.finalize ();
 
         return resultObject;
 

@@ -3,6 +3,7 @@
 application:
   name: BeeHappy
   domain: .dev
+  version: 4.1
 
 # INTEGRATIONS #
 

@@ -2,7 +2,7 @@ import fsExtra from 'fs-extra';
 
 export class CommonsTool {
 
-    public static async getApplicationVersion (): Promise<string> {
+    public static getApplicationVersion (): string {
 
         const packageJson = JSON.parse (fsExtra.readFileSync ('package.json', 'utf-8'));
 
@@ -10,36 +10,39 @@ export class CommonsTool {
 
     }
 
-    public static async getStackStrings (): Promise<string[]> {
+    public static getStackStringArray (): string[] {
 
-        const reflectionStrings: string[] = [];
+        const reflectionStringArray: string[] = [];
+
         const stackString = new Error ().stack;
 
         if (!stackString) {
 
-            return reflectionStrings;
+            return reflectionStringArray;
 
         }
 
-        const stackStrings = stackString.split ('\n');
+        const stackStringArray = stackString.split ('\n');
 
         const stackNumber = 2
 
-        if (stackStrings.length > stackNumber) {
+        if (stackStringArray.length > stackNumber) {
 
-            const matchArray = stackStrings[stackNumber].match (/\sat\s(\w+\.\w+)/);
+            const regExp = /\sat\s(\w+\.\w+)/;
 
-            if (matchArray?.[1]) {
+            let regExpMatchArray = stackStringArray[stackNumber].match (regExp);
 
-                const [classString, methodString] = matchArray[1].split ('.');
+            if (regExpMatchArray?.[1]) {
 
-                reflectionStrings.push (classString, methodString);
+                const [classString, methodString] = regExpMatchArray[1].split ('.');
 
-                const classMatch = classString.match (/^[a-z]*[A-Z][a-z]*/);
+                reflectionStringArray.push (classString, methodString);
 
-                if (classMatch?.[0]) {
+                regExpMatchArray = classString.match (/^[a-z]*[A-Z][a-z]*/);
 
-                    reflectionStrings.push (classMatch[0].toLowerCase ());
+                if (regExpMatchArray?.[0]) {
+
+                    reflectionStringArray.push (regExpMatchArray[0].toLowerCase ());
 
                 }
 
@@ -47,25 +50,29 @@ export class CommonsTool {
 
         }
 
-        return reflectionStrings;
+        return reflectionStringArray;
 
     }
 
-    public static async toBlank (candidateNumber: number): Promise<string> {
+    public static getToHumanize (candidateString: string): string {
 
-        if (candidateNumber != 0) {
+        candidateString = candidateString
+            .replace (/[-.]/g, ' ')
+            .replace (/([A-Z])/g, ' $1')
+            .replace (/\s+/g, ' ')
+            .trim ();
 
-            return candidateNumber.toString ();
+        candidateString = candidateString.toLowerCase ()
+            .replace (/\b\w/g, char => char.toUpperCase ());
 
-        } else {
+        candidateString = candidateString.replace (/Whats App/g, 'Whatsapp')
+            .replace (/\s+/g, ' ');
 
-            return '';
-
-        }
+        return candidateString;
 
     }
 
-    public static toCamelCase (candidateString: string): string {
+    public static getToCamelCase (candidateString: string): string {
 
         if (!candidateString) {
 
@@ -80,12 +87,12 @@ export class CommonsTool {
         }
 
         return candidateString
-            .replace (/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase () : '')
-            .replace (/^(.)/, (_, c) => c.toLowerCase ());
+            .replace (/[-_\s]+(.)?/g, (_, coincidenceString) => coincidenceString ? coincidenceString.toUpperCase () : '')
+            .replace (/^(.)/, (_, coincidenceString) => coincidenceString.toLowerCase ());
 
     }
 
-    public static toPascalCase (candidateString: string): string {
+    public static getToPascalCase (candidateString: string): string {
 
         if (!candidateString) {
 
@@ -100,8 +107,22 @@ export class CommonsTool {
         }
 
         return candidateString
-            .replace (/[-_\s]+(.)?/g, (_, c) => c ? c.toUpperCase () : '')
-            .replace (/^(.)/, (_, c) => c.toUpperCase ());
+            .replace (/[-_\s]+(.)?/g, (_, coincidenceString) => coincidenceString ? coincidenceString.toUpperCase () : '')
+            .replace (/^(.)/, (_, coincidenceString) => coincidenceString.toUpperCase ());
+
+    }
+
+    public static getBase26 (lengthNumber: number): string {
+
+        const charString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+        const randomValues = new Uint32Array (lengthNumber);
+
+        crypto.getRandomValues (randomValues); // Más seguro que Math.random()
+
+        return Array.from (randomValues, value =>
+            charString[value % charString.length]
+        ).join ('');
 
     }
 

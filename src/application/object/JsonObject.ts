@@ -8,6 +8,26 @@ export class JsonObject {
 
     }
 
+    public add (keyString: string, valueObject: Object): void {
+
+        if (!this.jsonObject.hasOwnProperty (keyString)) {
+
+            this.jsonObject[keyString] = [valueObject];
+
+            return;
+
+        }
+
+        if (!Array.isArray (this.jsonObject[keyString])) {
+
+            this.jsonObject[keyString] = [this.jsonObject[keyString]];
+
+        }
+
+        this.jsonObject[keyString].push (valueObject);
+
+    }
+
     public all (): any {
 
         return this.jsonObject;
@@ -32,9 +52,15 @@ export class JsonObject {
 
     }
 
-    public empty () {
+    public empty (): boolean {
 
         return Object.keys (this.jsonObject).length === 0;
+
+    }
+
+    public toString (pretty: boolean = false): string {
+
+        return pretty ? JSON.stringify (this.jsonObject, null, 2) : JSON.stringify (this.jsonObject);
 
     }
 
