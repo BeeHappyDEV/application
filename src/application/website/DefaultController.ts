@@ -1,16 +1,11 @@
 import {injectable} from 'tsyringe';
 
 import express from 'express';
-//import {inject} from "tsyringe";
-//import {PropertiesTool} from "../toolkit/PropertiesTool";
 
 @injectable ()
 export class DefaultController {
 
-    constructor (
-        //@inject (PropertiesTool) private propertiesTool: PropertiesTool
-    ) {
-    }
+    private initializedBoolean = false;
 
     public async initialize (expressApplication: express.Application): Promise<void> {
 
@@ -20,23 +15,13 @@ export class DefaultController {
         expressApplication.use (express.urlencoded ({extended: true}));
         expressApplication.use (express.static ('src/resources/'));
 
-/*        const auth0String = await this.propertiesTool.get ('integration.auth0.domain');
+        this.initializedBoolean = true;
 
-        expressApplication.use ((expressRequest: express.Request, expressResponse: express.Response, expressNextFunction: express.NextFunction): void => {
+    }
 
-            const hostString = expressRequest.headers.host?.toLowerCase ();
+    public async isInitialized (): Promise<boolean> {
 
-            if (hostString?.includes (auth0String)) {
-
-                expressResponse.status (404).end ();
-
-                return;
-
-            }
-
-            expressNextFunction ();
-
-        });*/
+        return this.initializedBoolean;
 
     }
 

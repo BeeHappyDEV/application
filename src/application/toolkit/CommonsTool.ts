@@ -24,7 +24,7 @@ export class CommonsTool {
 
         const stackStringArray = stackString.split ('\n');
 
-        const stackNumber = 2
+        const stackNumber = 2;
 
         if (stackStringArray.length > stackNumber) {
 
@@ -51,6 +51,22 @@ export class CommonsTool {
         }
 
         return reflectionStringArray;
+
+    }
+
+    public static getSafeStringify (jsonObject: any): string {
+
+        return JSON.stringify (jsonObject, (_key, value) => {
+
+            if (typeof value === 'bigint') {
+
+                return {__type: 'BigInt', value: value.toString ()};
+
+            }
+
+            return value;
+
+        });
 
     }
 
@@ -118,10 +134,44 @@ export class CommonsTool {
 
         const randomValues = new Uint32Array (lengthNumber);
 
-        crypto.getRandomValues (randomValues); // Más seguro que Math.random()
+        crypto.getRandomValues (randomValues);
 
         return Array.from (randomValues, value =>
+
             charString[value % charString.length]
+
+        ).join ('');
+
+    }
+
+    public static getBase52 (lengthNumber: number): string {
+
+        const charString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
+
+        const randomValues = new Uint32Array (lengthNumber);
+
+        crypto.getRandomValues (randomValues);
+
+        return Array.from (randomValues, value =>
+
+            charString[value % charString.length]
+
+        ).join ('');
+
+    }
+
+    public static getBase62 (lengthNumber: number): string {
+
+        const charString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+
+        const randomValues = new Uint32Array (lengthNumber);
+
+        crypto.getRandomValues (randomValues);
+
+        return Array.from (randomValues, value =>
+
+            charString[value % charString.length]
+
         ).join ('');
 
     }

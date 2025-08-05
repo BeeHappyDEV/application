@@ -1,6 +1,7 @@
 # SYSTEM #
 
 system:
+  environment: DEV
   cookie: 1000 * 60 * 5
   host: http://localhost
   port: 8080
@@ -14,28 +15,20 @@ system:
 # INTEGRATIONS #
 
 integration:
-  auth0:
-    host: https://beehappydev.us.auth0.com/api/v2/
-    pass: noybo0dKQtflkVr_IzA6WGDUZ15jGqLrih-EqS69wrq2mVD5kQj_UNgRiOQpHRxX
-    user: 7QMq4WvuXvz9Yzomz4yfUaHATM4ElAUR
   discord:
     beebee:
       notifications: https://discord.com/api/webhooks/1043051348381421598/oqytOEnH2Ms4cnVaOD5Q1_XDP-JysOCy1ArLC3fYGA1JZ8x3RkRXalCB3BdCJKNACefc
     beejay:
       inspirational: https://discord.com/api/webhooks/1054319461982797864/ruSL9Op3HJwxFII5FWqZP3IGdLEIq0SU2jaxiKimufCH5DcVal4wlV-mMNYUrywg0F3y
       notifications: https://discord.com/api/webhooks/1043075407563472937/bE7TQvqC5qqTumO82UfY2yqZSTxAzRqSc7zWCBZiN6DlkBJsmB6XfNyvqxoc_Xsvx8HS
-  filebase:
-    bucket: sales
-    endpoint: https://s3.filebase.com,
-    pass: rI3iMJdb6HSzLTJhuwnAK9UxIY9NsmvdbRNvqh7x
-    region: us-east-1
-    user: 46457D476ADFE978450C
-  mongo:
+  mongodb:
     datasource: BeeHappyCluster
-    database: Development
-    traces: dat_traces
-    metrics: dat_metrics
+    database: application
+    traces: traces
+    metrics: metrics
     host: mongodb+srv://beehappydev:beehappydev@beehappycluster.2uqzs.mongodb.net/?retryWrites=true&w=majority&appName=BeeHappyCluster
+  natural:
+    root: src/workflow
   postgres:
     connections: 15
     database: postgres
@@ -63,7 +56,8 @@ channel:
 
 scheduler:
   wakeup:
-    cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
+    #cron: 0 0,10,20,30,40,50 * * * * UTC_OFFSET=0
+    cron: 0 * * * * * UTC_OFFSET=0
     enable: true
     host: http://localhost:8080/backend/system/wakeup
     verbose: EVERY TEN MINUTES

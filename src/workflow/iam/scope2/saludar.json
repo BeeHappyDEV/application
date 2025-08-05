@@ -1,0 +1,17 @@
+{
+  "intent": "saludar",
+  "utterances": [
+    "hola",
+    "buenos dias",
+    "buenas tardes",
+    "hey",
+    "que tal",
+    "hola como estas"
+  ],
+  "actions": ["conversation.start"],
+  "responses": [
+    "¡Hola! Soy tu asistente virtual. ¿En qué te puedo ayudar hoy?",
+    "¡Buenos días! ¿Qué necesitas consultar?",
+    "¡Hola! Dime cómo puedo asistirte."
+  ]
+}

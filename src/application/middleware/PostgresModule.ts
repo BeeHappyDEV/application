@@ -2,98 +2,151 @@ import {inject, injectable} from 'tsyringe';
 
 import pg from 'pg';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogConstants} from '../constants/LogConstants';
 import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
-
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class PostgresModule {
 
+    private initializedBoolean = false;
+    private pgPool!: pg.Pool;
+
     constructor (
-        @inject (LogTool) private logTool: LogTool,
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
 
-    public async execute (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async initialize (): Promise<void> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        if (this.initializedBoolean) {
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        const postgresPool = new pg.Pool ({
-            database: await this.propertiesTool.get ('integration.postgres.database'),
-            host: await this.propertiesTool.get ('integration.postgres.host'),
-            max: Number (await this.propertiesTool.get ('integration.postgres.connections')),
-            password: await this.propertiesTool.get ('integration.postgres.pass'),
-            port: Number (await this.propertiesTool.get ('integration.postgres.port')),
-            user: await this.propertiesTool.get ('integration.postgres.user')
-        });
-
-        const resultObject = new ResultObject ();
-
-        if (paramsObject.get ('txt_content') != null) {
-
-            try {
-
-                await postgresPool.query (paramsObject.get ('txt_content'));
-
-                resultObject.setResult (ExceptionTool.SUCCESSFUL ());
-
-            } catch (exception) {
-
-                resultObject.setResult (ExceptionTool.REBUILD_EXCEPTION (paramsObject.get ('txt_line')));
-
-                this.logTool.exception ();
-
-            }
-
-            await postgresPool.end ();
+            return;
 
         }
 
-        if (paramsObject.get ('txt_schema') != null && paramsObject.get ('txt_function') != null) {
+        try {
+
+            if (!this.pgPool) {
+
+                this.pgPool = new pg.Pool ({
+                    database: await this.propertiesTool.get ('integration.postgres.database'),
+                    host: await this.propertiesTool.get ('integration.postgres.host'),
+                    max: Number (await this.propertiesTool.get ('integration.postgres.connections')),
+                    password: await this.propertiesTool.get ('integration.postgres.pass'),
+                    port: Number (await this.propertiesTool.get ('integration.postgres.port')),
+                    user: await this.propertiesTool.get ('integration.postgres.user')
+                });
+
+            }
+
+            this.initializedBoolean = true;
+
+        } catch (error) {
+
+            this.initializedBoolean = false;
+
+        }
+
+    }
+
+    public async isInitialized (): Promise<boolean> {
+
+        return this.initializedBoolean;
+
+    }
+
+    public async execute (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
+
+        let resultObject: Record<string, any> = {};
+
+        await this.initialize ();
+
+        const poolClient = await this.pgPool.connect ();
+
+        if (paramsObject.txt_script != null) {
 
             try {
 
-                const objectString = paramsObject.get ('txt_schema') + '.' + paramsObject.get ('txt_function');
+                const fileString = paramsObject.txt_path + paramsObject.txt_folder + paramsObject.txt_script;
 
-                this.logTool.resource (objectString);
+                logTool.setScpExecute (fileString, paramsObject.txt_content);
 
-                paramsObject.del ('txt_schema');
-                paramsObject.del ('txt_function');
+                await poolClient.query (paramsObject.txt_content);
 
-                let postgresObject = await postgresPool.query ('select * from ' + objectString + ' ($1)', [paramsObject.all ()]);
+                resultObject.status = {};
+                resultObject.status.boo_exception = false;
+                resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+                resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+                logTool.setScpSuccess (fileString);
+
+            } catch (exception) {
+
+                resultObject.status = {};
+                resultObject.status.boo_exception = true;
+                resultObject.status.num_exception = LogConstants.SCRIPT.num_exception;
+                resultObject.status.txt_exception = LogConstants.SCRIPT.txt_exception;
+
+                logTool.setScpPostgres ();
+
+            }
+
+        }
+
+        if (paramsObject.txt_schema != null && paramsObject.txt_function != null) {
+
+            try {
+
+                const functionString = paramsObject.txt_schema + '.' + paramsObject.txt_function;
+
+                delete paramsObject.txt_schema;
+                delete paramsObject.txt_function;
+
+                logTool.setFncExecute (functionString, paramsObject)
+
+                let postgresObject = await poolClient.query ('select * from ' + functionString + ' ($1)', [paramsObject]);
                 postgresObject = postgresObject.rows [0];
 
-                const databaseObject = Object.values (postgresObject) [0];
+                resultObject = Object.values (postgresObject) [0];
 
-                if (databaseObject ['status'] ['boo_exception'] === false) {
+                if (resultObject.status.boo_exception === false) {
 
-                    resultObject.setResult (databaseObject);
+                    resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+                    resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+                    logTool.setFncSuccess (functionString);
 
                 } else {
 
-                    resultObject.setResult (ExceptionTool.FUNCTION_EXCEPTION (objectString));
+                    resultObject.status.num_exception = LogConstants.FUNCTION.num_exception;
+                    resultObject.status.txt_exception = LogConstants.FUNCTION.txt_exception;
+
+                    logTool.setFncFunction (functionString);
 
                 }
 
             } catch (exception) {
 
-                resultObject.setResult (ExceptionTool.POSTGRES_EXCEPTION (stackStringArray));
+                resultObject.status = {};
+                resultObject.status.boo_exception = true;
+                resultObject.status.num_exception = LogConstants.POSTGRES.num_exception;
+                resultObject.status.txt_exception = LogConstants.POSTGRES.txt_exception;
 
-                this.logTool.exception ();
+                logTool.setFncPostgres ();
 
             }
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        poolClient.release ();
+
+        logTool.FINALIZE ();
 
         return resultObject;
 

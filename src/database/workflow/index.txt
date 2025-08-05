@@ -1,9 +1,0 @@
-/* * * * * * * */
-/* T A B L E S */
-/* * * * * * * */
-
-tables/entities.sql
-tables/entity_options.sql
-tables/intents.sql
-tables/training_phrases.sql
-tables/intent_answers.sql

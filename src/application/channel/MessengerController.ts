@@ -3,16 +3,18 @@ import {inject, injectable} from 'tsyringe';
 import express from 'express';
 
 import {MessengerService} from './MessengerService';
+
+//import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
-import {LogTool} from "../toolkit/LogTool";
 
 @injectable ()
 export class MessengerController {
 
-    // @ts-ignore
+    private initializedBoolean = false;
+
     constructor (
+        //@inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (MessengerService) private messengerService: MessengerService,
-        @inject (LogTool) private logTool: LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
@@ -23,9 +25,16 @@ export class MessengerController {
         const originalConsole = {...console};
         console.log = () => {};
         console.log (this.messengerService);
-        console.log (this.logTool);
         console.log (this.propertiesTool);
         console.log = originalConsole.log;
+
+        this.initializedBoolean = true;
+
+    }
+
+    public async isInitialized (): Promise<boolean> {
+
+        return this.initializedBoolean;
 
     }
 

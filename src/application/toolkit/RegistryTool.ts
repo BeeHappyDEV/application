@@ -1,7 +1,8 @@
-import {container} from 'tsyringe';
+import {container, DependencyContainer} from 'tsyringe';
 
 import {DiscordModule} from '../middleware/DiscordModule';
 import {MongoDbModule} from '../middleware/MongoDbModule';
+import {NaturalModule} from '../middleware/NaturalModule';
 import {PostgresModule} from '../middleware/PostgresModule';
 import {WebserviceModule} from '../middleware/WebserviceModule';
 
@@ -20,37 +21,53 @@ import {FrontendService} from '../website/FrontendService';
 import {ScheduleController} from '../website/ScheduleController';
 import {ScheduleService} from '../website/ScheduleService';
 
-import {LogTool} from '../toolkit/LogTool';
-import {PropertiesTool} from '../toolkit/PropertiesTool';
-
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {LogTool} from './LogTool';
+import {PropertiesTool} from './PropertiesTool';
 
 export class RegistryTool {
 
     public static async initialize (): Promise<void> {
 
         await this.registerToolkit ();
-
         this.registerMiddlewares ();
         this.registerWebsite ();
         this.registerChannels ();
-        this.registerObjects ();
 
     }
 
     private static async registerToolkit (): Promise<void> {
 
-        const propertiesTool = new PropertiesTool ();
+        const propertiesTool = container.resolve (PropertiesTool);
         await propertiesTool.initialize ();
-
         container.register (PropertiesTool, {useValue: propertiesTool});
 
-        container.register ('LogFactory', {useClass: LogTool});
+        container.register ('LogToolFactory', {
 
-        container.register (LogTool, {
-            useFactory: (container) => container.resolve<LogTool> ('LogFactory')
+            useFactory: (dependencyContainer: DependencyContainer): () => LogTool => {
+
+                return (): LogTool => {
+
+                    return dependencyContainer.resolve (LogTool);
+
+                };
+
+            }
+
         });
+
+        const postgresModule = container.resolve (PostgresModule);
+        const mongoDbModule = container.resolve (MongoDbModule);
+        const naturalModule = container.resolve (NaturalModule);
+
+        await Promise.all ([
+            await postgresModule.initialize (),
+            await mongoDbModule.initialize (),
+            await naturalModule.initialize ()
+        ]);
+
+        container.register (PostgresModule, {useValue: postgresModule});
+        container.register (MongoDbModule, {useValue: mongoDbModule});
+        container.register (NaturalModule, {useValue: naturalModule});
 
     }
 
@@ -58,7 +75,6 @@ export class RegistryTool {
 
         container.registerSingleton (this.getToken (DiscordModule), DiscordModule);
         container.registerSingleton (this.getToken (MongoDbModule), MongoDbModule);
-        container.registerSingleton (this.getToken (PostgresModule), PostgresModule);
         container.registerSingleton (this.getToken (WebserviceModule), WebserviceModule);
 
     }
@@ -86,16 +102,9 @@ export class RegistryTool {
 
     }
 
-    private static registerObjects (): void {
+    private static getToken<T> (clazz: new (...args: any[]) => T): symbol {
 
-        container.register (this.getToken (JsonObject), JsonObject);
-        container.register (this.getToken (ResultObject), ResultObject);
-
-    }
-
-    private static getToken<T> (clazz: new (...args: any[]) => T): string {
-
-        return 'I' + clazz.name;
+        return Symbol.for (clazz.name);
 
     }
 

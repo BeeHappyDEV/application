@@ -11,8 +11,8 @@ declare
 begin
 
     var_jsn_status = result.initializer ();
-    var_jsn_incoming = framework.get_empty_node ((in_jsn_incoming) :: json);
-    var_jsn_outgoing = framework.get_empty_node (null :: json);
+    var_jsn_incoming = framework.get_empty_node (null);
+    var_jsn_outgoing = framework.get_empty_node (null);
 
     return result.successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
 

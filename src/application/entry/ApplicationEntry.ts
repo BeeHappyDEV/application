@@ -1,3 +1,4 @@
+import 'newrelic';
 import 'reflect-metadata';
 
 import {container, inject, injectable} from 'tsyringe';
@@ -7,6 +8,10 @@ import express from 'express';
 import expressWs from 'express-ws';
 import localTunnel from 'localtunnel';
 import superagent from 'superagent';
+
+import {MongoDbModule} from '../middleware/MongoDbModule';
+import {NaturalModule} from '../middleware/NaturalModule';
+import {PostgresModule} from '../middleware/PostgresModule';
 
 import {MessengerController} from '../channel/MessengerController';
 import {TelegramController} from '../channel/TelegramController';
@@ -22,7 +27,7 @@ import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
 import {RegistryTool} from '../toolkit/RegistryTool';
 
-import {JsonObject} from '../object/JsonObject';
+import {ApplicationConstants} from '../constants/ApplicationConstants';
 
 @injectable ()
 export class ApplicationEntry {
@@ -31,6 +36,10 @@ export class ApplicationEntry {
     private readonly expressWsInstance: expressWs.Instance;
 
     constructor (
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        @inject (MongoDbModule) private mongoDbModule: MongoDbModule,
+        @inject (NaturalModule) private naturalModule: NaturalModule,
+        @inject (PostgresModule) private postgresModule: PostgresModule,
         @inject (MessengerController) private messengerController: MessengerController,
         @inject (TelegramController) private telegramController: TelegramController,
         @inject (WhatsAppController) private whatsAppController: WhatsAppController,
@@ -38,7 +47,6 @@ export class ApplicationEntry {
         @inject (BackendController) private backendController: BackendController,
         @inject (FrontendController) private frontendController: FrontendController,
         @inject (ScheduleController) private scheduleController: ScheduleController,
-        @inject (LogTool) private logTool: LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool,
     ) {
         this.expressApplication = express ();
@@ -47,70 +55,103 @@ export class ApplicationEntry {
 
     public async initialize (): Promise<void> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.OK (ApplicationConstants.LABEL_APPLICATION, ApplicationConstants.STATUS_STARTING);
 
-        this.logTool.initialize (stackStringArray);
-        this.logTool.comment ('Application:', 'Starting');
-        this.logTool.finalize ();
+        await this.middlewareInformation (logTool.getTrace ());
 
-        await this.engineInformation (this.logTool.trace ());
+        await this.engineInformation (logTool.getTrace ());
 
-        await this.environmentInformation (this.logTool.trace ());
+        await this.environmentInformation (logTool.getTrace ());
 
-        await this.channelControllers ();
+        await this.channelInformation (logTool.getTrace ());
 
-        await this.websiteControllers ();
+        await this.websiteInformation (logTool.getTrace ());
 
-        this.logTool.comment ('Application:', 'Started');
-        this.logTool.finalize ();
+        logTool.OK (ApplicationConstants.LABEL_APPLICATION, ApplicationConstants.STATUS_STARTED);
 
     }
 
-    private async engineInformation (traceObject: JsonObject): Promise<void> {
+    private async middlewareInformation (traceObject: Record<string, any>): Promise<void> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
 
-        const versionsStringMap = {
-            'Node': childProcess.execSync ('node -v').toString ().trim ().slice (1),
-            'Pnpm': childProcess.execSync ('pnpm -v').toString ().trim (),
-            'Typescript': childProcess.execSync ('tsc --version').toString ().replace ('Version ', '').trim ()
-        };
+        if (await this.mongoDbModule.isInitialized ()) {
 
-        for (const [keyString, valueString] of Object.entries (versionsStringMap)) {
+            logTool.OK (ApplicationConstants.MODULE_MONGODB, ApplicationConstants.STATUS_INITIALIZED);
 
-            this.logTool.initialize (stackStringArray, traceObject, 2);
-            this.logTool.comment (keyString + ':', valueString);
-            this.logTool.finalize ();
+        } else {
+
+            logTool.ERR (ApplicationConstants.MODULE_MONGODB, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
+
+        if (await this.postgresModule.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.MODULE_POSTGRES, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.MODULE_POSTGRES, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
+
+        if (await this.naturalModule.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.MODULE_NATURAL, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.MODULE_NATURAL, ApplicationConstants.STATUS_NOT_INITIALIZED);
 
         }
 
     }
 
-    private async environmentInformation (traceObject: JsonObject): Promise<void> {
+    private async engineInformation (traceObject: Record<string, any>): Promise<void> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
 
-        this.logTool.initialize (stackStringArray, traceObject, 2);
-        this.logTool.comment ('Version:', CommonsTool.getApplicationVersion ());
-        this.logTool.finalize ();
+        const versionsStringMap = {
+            [ApplicationConstants.LABEL_NODE]: childProcess.execSync ('node -v').toString ().trim ().slice (1),
+            [ApplicationConstants.LABEL_PNPM]: childProcess.execSync ('pnpm -v').toString ().trim (),
+            [ApplicationConstants.LABEL_TYPESCRIPT]: childProcess.execSync ('tsc --version').toString ().replace (ApplicationConstants.LABEL_VERSION + ' ', '').trim ()
+        };
+
+        for (const [keyString, valueString] of Object.entries (versionsStringMap)) {
+
+            logTool.OK (keyString, valueString);
+
+        }
+
+    }
+
+    private async environmentInformation (traceObject: Record<string, any>): Promise<void> {
+
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+
+        logTool.OK (ApplicationConstants.LABEL_VERSION, CommonsTool.getApplicationVersion ());
 
         let portString = await this.propertiesTool.get ('system.port');
 
         let siteString = await this.propertiesTool.get ('system.site');
 
-        const environmentString = process.argv[2].slice (2);
+        const environmentString = process.argv [2].slice (2);
 
         switch (environmentString) {
 
-            case 'dev':
+            case ApplicationConstants.LABEL_DEVELOPMENT:
 
-                await this.startDevelopmentEnvironment (stackStringArray, traceObject, portString, siteString);
+                await this.startDevelopmentEnvironment (logTool.getTrace (), portString, siteString);
 
                 break;
 
-            case 'prd':
+            case ApplicationConstants.LABEL_PRODUCTION:
 
-                await this.startProductionEnvironment (stackStringArray, traceObject, portString, siteString);
+                await this.startProductionEnvironment (logTool.getTrace (), portString, siteString);
 
                 break;
 
@@ -118,19 +159,18 @@ export class ApplicationEntry {
 
     }
 
-    private async startDevelopmentEnvironment (stackStringArray: string[], traceObject: JsonObject, portString: string, siteString: string): Promise<void> {
+    private async startDevelopmentEnvironment (traceObject: Record<string, any>, portString: string, siteString: string): Promise<void> {
 
-        this.logTool.initialize (stackStringArray, traceObject, 2);
-        this.logTool.comment ('Environment:', 'DEVELOPMENT');
-        this.logTool.finalize ();
+        const logTool = this.logToolFactory ();
+        logTool.setHardTrace (traceObject);
 
-        await new Promise<void> ((callbackFunction) => {
+        logTool.OK (ApplicationConstants.LABEL_ENVIRONMENT, ApplicationConstants.ENVIRONMENT_DEVELOPMENT);
+
+        await new Promise<void> ((callbackFunction): void => {
 
             this.expressApplication.listen (portString, async () => {
 
-                this.logTool.initialize (stackStringArray, traceObject, 2);
-                this.logTool.comment ('Private host:', siteString);
-                this.logTool.finalize ();
+                logTool.OK (ApplicationConstants.LABEL_PRIVATE_HOST, siteString);
 
                 callbackFunction ();
 
@@ -150,22 +190,15 @@ export class ApplicationEntry {
                     subdomain: subdomainString
                 });
 
-                this.logTool.initialize (stackStringArray, traceObject, 2);
-                this.logTool.comment ('Tunnel host:', developmentTunnel.url);
-                this.logTool.finalize ();
+                logTool.OK (ApplicationConstants.LABEL_TUNNEL_HOST, developmentTunnel.url);
 
                 addressString = await superagent.get (await this.propertiesTool.get ('integration.public')).then (responseObject => responseObject.body.ip);
 
-                this.logTool.initialize (stackStringArray, traceObject, 2);
-                this.logTool.comment ('Public address:', addressString);
-                this.logTool.finalize ();
+                logTool.OK (ApplicationConstants.LABEL_PUBLIC_ADDRESS, addressString);
 
             } catch (exception) {
 
-                this.logTool.initialize (stackStringArray, traceObject, 2);
-                this.logTool.exception ();
-                this.logTool.comment ('Tunnel host:', 'Failed to start tunnel');
-                this.logTool.finalize ();
+                logTool.ERR (ApplicationConstants.LABEL_TUNNEL_HOST, ApplicationConstants.STATUS_TUNNEL_FAILED);
 
             }
 
@@ -173,19 +206,18 @@ export class ApplicationEntry {
 
     }
 
-    private async startProductionEnvironment (stackStringArray: string[], traceObject: JsonObject, portString: string, siteString: string): Promise<void> {
+    private async startProductionEnvironment (traceObject: Record<string, any>, portString: string, siteString: string): Promise<void> {
 
-        this.logTool.initialize (stackStringArray, traceObject);
-        this.logTool.comment ('Environment:', 'PRODUCTION');
-        this.logTool.finalize ();
+        const logTool = this.logToolFactory ();
+        logTool.setHardTrace (traceObject);
+
+        logTool.OK (ApplicationConstants.LABEL_ENVIRONMENT, ApplicationConstants.ENVIRONMENT_PRODUCTION);
 
         await new Promise<void> ((callbackFunction) => {
 
             this.expressApplication.listen (portString, async () => {
 
-                this.logTool.initialize (stackStringArray, traceObject, 2);
-                this.logTool.comment ('Private host:', siteString);
-                this.logTool.finalize ();
+                logTool.OK (ApplicationConstants.LABEL_PRIVATE_HOST, siteString);
 
                 callbackFunction ();
 
@@ -194,36 +226,112 @@ export class ApplicationEntry {
 
     }
 
-    private async channelControllers (): Promise<void> {
+    private async channelInformation (traceObject: Record<string, any>): Promise<void> {
+
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
 
         await this.messengerController.initialize (this.expressApplication);
 
+        if (await this.messengerController.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.CHANNEL_MESSENGER, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.CHANNEL_MESSENGER, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
+
         await this.telegramController.initialize (this.expressApplication);
+
+        if (await this.telegramController.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.CHANNEL_TELEGRAM, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.CHANNEL_TELEGRAM, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
 
         await this.whatsAppController.initialize (this.expressApplication, this.expressWsInstance);
 
+        if (await this.whatsAppController.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.CHANNEL_WHATSAPP, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.CHANNEL_WHATSAPP, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
+
     }
 
-    private async websiteControllers (): Promise<void> {
+    private async websiteInformation (traceObject: Record<string, any>): Promise<void> {
+
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
 
         await this.defaultController.initialize (this.expressApplication);
 
+        if (await this.defaultController.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.WEBSITE_DEFAULT, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.WEBSITE_DEFAULT, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
+
         await this.backendController.initialize (this.expressApplication);
+
+        if (await this.backendController.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.WEBSITE_BACKEND, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.WEBSITE_BACKEND, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
 
         await this.frontendController.initialize (this.expressApplication);
 
+        if (await this.frontendController.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.WEBSITE_FRONTEND, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.WEBSITE_FRONTEND, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
+
         await this.scheduleController.initialize ();
+
+        if (await this.scheduleController.isInitialized ()) {
+
+            logTool.OK (ApplicationConstants.WEBSITE_SCHEDULE, ApplicationConstants.STATUS_INITIALIZED);
+
+        } else {
+
+            logTool.ERR (ApplicationConstants.WEBSITE_SCHEDULE, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
 
     }
 
 }
 
-async function applicationEntry () {
+async function applicationEntry (): Promise<void> {
 
-    await RegistryTool.initialize ().then ();
+    await RegistryTool.initialize ();
 
     const applicationEntry = container.resolve (ApplicationEntry);
-    applicationEntry.initialize ().then ();
+    await applicationEntry.initialize ();
 
 }
 

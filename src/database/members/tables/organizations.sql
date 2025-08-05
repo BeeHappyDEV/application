@@ -18,60 +18,12 @@ alter table members.organizations enable row level security;
 
 comment on table members.organizations is 'org';
 
-with tabled_data as (
-    select *
-    from (values
-        (true, 56, 13, 131, 13120, 'BeeHappy.dev'),
-        (true, 56, 13, 131, 13120, 'Organización de Prueba')
-    ) as data (boo_active, idf_country, idf_region, idf_province, idf_commune, txt_organization)
-),
-registries_insert as (
-    insert into framework.registries
-    select from generate_series (1, (select count (*) from tabled_data))
-    returning idf_registry
-),
-matched_data as (
-    select
-        e.idf_registry,
-        t.boo_active,
-        t.idf_country,
-        t.idf_region,
-        t.idf_province,
-        t.idf_commune,
-        t.txt_organization
-    from (
-        select
-            row_number() over () as rn,
-            boo_active,
-            idf_country,
-            idf_region,
-            idf_province,
-            idf_commune,
-            txt_organization
-        from tabled_data
-    ) t
-    join (
-        select
-            row_number() over () as rn,
-            idf_registry
-        from registries_insert
-    ) e on t.rn = e.rn
-)
-insert into members.organizations (
-    idf_organization,
-    boo_active,
-    idf_country,
-    idf_region,
-    idf_province,
-    idf_commune,
-    txt_organization
-)
-select
-    idf_registry,
-    boo_active,
-    idf_country,
-    idf_region,
-    idf_province,
-    idf_commune,
-    txt_organization
-from matched_data;
+with new_registry as (insert into framework.registries default values returning idf_registry)
+insert into members.organizations (idf_organization, boo_active, idf_country, idf_region, idf_province, idf_commune, txt_organization)
+select idf_registry, true, 56, 13, 131, 13120, 'BeeHappy.dev'
+from new_registry;
+
+with new_registry as (insert into framework.registries default values returning idf_registry)
+insert into members.organizations (idf_organization, boo_active, idf_country, idf_region, idf_province, idf_commune, txt_organization)
+select idf_registry, true, 56, 13, 131, 13120, 'Organización de Prueba'
+from new_registry;

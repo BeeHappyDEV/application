@@ -32,11 +32,11 @@ begin
         from
             json_array_elements (var_jsn_data) json
         order by
-           1
+            1
 
     loop
 
-        insert into dollars (
+        insert into indicators.dollars (
             idf_dollar,
             boo_calculated,
             num_day,
@@ -88,13 +88,13 @@ begin
             select
                 1
             from
-                dollars
+                indicators.dollars usd
             where
-                idf_dollar = var_rec_day.num_previous
+                usd.idf_dollar = var_rec_day.num_previous
 
         ) then
 
-            insert into dollars (
+            insert into indicators.dollars (
                 idf_dollar,
                 boo_calculated,
                 num_day,
@@ -110,13 +110,13 @@ begin
                 coalesce (
                     (
                         select
-                            num_value
+                            usd.num_value
                         from
-                            dollars
+                            indicators.dollars usd
                         where
-                            idf_dollar < var_rec_day.num_previous
+                            usd.idf_dollar < var_rec_day.num_previous
                         order by
-                            idf_dollar desc
+                            usd.idf_dollar desc
                         limit
                             1
                     ),
@@ -128,32 +128,32 @@ begin
 
     end loop;
 
-    with tmp_dollars as (
+    with temp_dollars as (
         select
-            idf_dollar,
-            num_value,
-            lag (num_value) over (order by idf_dollar) as prev_value
+            usd.idf_dollar,
+            usd.num_value,
+            lag (usd.num_value) over (order by usd.idf_dollar) as prev_value
         from
-            dollars
+            indicators.dollars usd
         where
-            num_year = var_num_year
+            usd.num_year = var_num_year
     )
-    update dollars usd
+    update indicators.dollars usd
     set
-        num_absolute = usd.num_value - tmp.prev_value,
-        num_variation = sign (usd.num_value - tmp.prev_value),
+        num_absolute = usd.num_value - temp.prev_value,
+        num_variation = sign (usd.num_value - temp.prev_value),
         num_percentage =
-        case
-            when tmp.prev_value = 0 then
-                null
-            else
-                round (((usd.num_value - tmp.prev_value) / tmp.prev_value * 100) :: numeric, 2)
-        end
+            case
+                when temp.prev_value = 0 then
+                    null
+                else
+                    round (((usd.num_value - temp.prev_value) / temp.prev_value * 100) :: numeric, 2)
+            end
     from
-        tmp_dollars tmp
+        temp_dollars temp
     where
-        usd.idf_dollar = tmp.idf_dollar
-        and tmp.prev_value is not null;
+        usd.idf_dollar = temp.idf_dollar
+        and temp.prev_value is not null;
 
     return result.successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
 

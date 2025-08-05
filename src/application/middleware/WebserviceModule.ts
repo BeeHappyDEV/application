@@ -2,167 +2,206 @@ import {inject, injectable} from 'tsyringe';
 
 import superagent from 'superagent';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
 import {LogTool} from '../toolkit/LogTool';
 
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {LogConstants} from '../constants/LogConstants';
 
 @injectable ()
 export class WebserviceModule {
 
     constructor (
-        @inject (LogTool) private logTool: LogTool
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool
     ) {
     }
 
-    public async delete (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
+    public async delete (traceObject: Record<string, any>, hostString: string, headersObject?: Record<string, any>, queryObject?: Record<string, any>, bodyObject?: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
+        resultObject.incoming = {};
 
         try {
 
             let requestObject = superagent.delete (hostString.toString ());
 
-            if (headersObject !== null && !headersObject.empty ()) {
+            if (headersObject !== undefined && Object.keys (headersObject).length > 0) {
 
-                requestObject.set (headersObject.all ());
-
-            }
-
-            if (queryObject !== null && !queryObject.empty ()) {
-
-                requestObject.query (queryObject.all ());
+                requestObject.set (headersObject);
 
             }
 
-            if (bodyObject !== null && !bodyObject.empty ()) {
+            if (queryObject !== undefined && Object.keys (queryObject).length > 0) {
 
-                requestObject.send (bodyObject.all ());
+                resultObject.incoming.query = queryObject;
+
+                requestObject.query (queryObject);
 
             }
 
-            let responseObject = await requestObject.then ();
+            if (bodyObject !== undefined && Object.keys (bodyObject).length > 0) {
 
-            resultObject.setServiceObject (queryObject, responseObject);
+                resultObject.incoming.body = bodyObject;
+
+                requestObject.send (bodyObject);
+
+            }
+
+            logTool.setWsvExecute ('DELETE', hostString, headersObject, queryObject, bodyObject);
+
+            resultObject.outgoing = await requestObject.then ();
+
+            resultObject.status = {};
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.setWsvSuccess ('DELETE', hostString);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStringArray));
+            resultObject.status = {};
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.WEBSERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.WEBSERVICE.txt_exception;
 
-            this.logTool.exception ();
+            logTool.setWsvWebservice (hostString);
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    public async get (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
+    public async get (traceObject: Record<string, any>, hostString: string, headersObject?: Record<string, any>, queryObject?: Record<string, any>, bodyObject?: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
+        resultObject.incoming = {};
 
         try {
 
             let requestObject = superagent.get (hostString.toString ());
 
-            this.logTool.resource (hostString.toString ());
+            if (headersObject !== undefined && Object.keys (headersObject).length > 0) {
 
-            if (headersObject !== null) {
-
-                requestObject.set (headersObject.all ());
+                requestObject.set (headersObject);
 
             }
 
-            if (queryObject !== null) {
+            if (queryObject !== undefined && Object.keys (queryObject).length > 0) {
 
-                requestObject.query (queryObject.all ());
+                resultObject.incoming.query = queryObject;
 
-            }
-
-            if (bodyObject !== null && !bodyObject.empty ()) {
-
-                requestObject.send (bodyObject.all ());
+                requestObject.query (queryObject);
 
             }
 
-            let responseObject = await requestObject.then ();
-            resultObject.setServiceObject (queryObject, responseObject);
+            if (bodyObject !== undefined && Object.keys (bodyObject).length > 0) {
+
+                resultObject.incoming.body = bodyObject;
+
+                requestObject.send (bodyObject);
+
+            }
+
+            logTool.setWsvExecute ('GET', hostString, headersObject, queryObject, bodyObject);
+
+            resultObject.outgoing = await requestObject.then ();
+
+            resultObject.status = {};
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.setWsvSuccess ('GET', hostString);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStringArray));
+            resultObject.status = {};
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.WEBSERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.WEBSERVICE.txt_exception;
 
-            this.logTool.exception ();
+            logTool.setWsvWebservice (hostString);
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    public async post (hostString: String, headersObject: JsonObject | null, queryObject: JsonObject | null, bodyObject: JsonObject | null, traceObject: JsonObject): Promise<ResultObject> {
+    public async post (traceObject: Record<string, any>, hostString: string, headersObject?: Record<string, any>, queryObject?: Record<string, any>, bodyObject?: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        let resultObject =  new ResultObject ();
+        let resultObject: Record<string, any> = {};
+        resultObject.incoming = {};
 
         try {
 
             let requestObject = superagent.post (hostString.toString ());
 
-            this.logTool.resource (hostString.toString ());
+            if (headersObject !== undefined && Object.keys (headersObject).length > 0) {
 
-            if (headersObject !== null) {
-
-                requestObject.set (headersObject.all ());
+                requestObject.set (headersObject);
 
             }
 
-            if (queryObject !== null) {
+            if (queryObject !== undefined && Object.keys (queryObject).length > 0) {
 
-                requestObject.query (queryObject.all ());
+                resultObject.incoming.query = queryObject;
 
-            }
-
-            if (bodyObject !== null && !bodyObject.empty ()) {
-
-                requestObject.send (bodyObject.all ());
+                requestObject.query (queryObject);
 
             }
 
-            let responseObject = await requestObject.then ();
+            if (bodyObject !== undefined && Object.keys (bodyObject).length > 0) {
 
-            resultObject.setServiceObject (queryObject, responseObject);
+                resultObject.incoming.body = bodyObject;
+
+                requestObject.send (bodyObject);
+
+            }
+
+            logTool.setWsvExecute ('POST', hostString, headersObject, queryObject, bodyObject);
+
+            resultObject.outgoing = await requestObject.then ();
+
+            resultObject.status = {};
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.setWsvSuccess ('POST', hostString);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.SERVICE_EXCEPTION (stackStringArray));
+            resultObject.status = {};
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.WEBSERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.WEBSERVICE.txt_exception;
+
+            logTool.setWsvWebservice (hostString);
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
+
 
 }

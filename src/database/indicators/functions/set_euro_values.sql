@@ -15,7 +15,7 @@ declare
     var_last_date date;
 begin
 
-    var_jsn_status = result_initializer ();
+    var_jsn_status = result.initializer ();
     var_jsn_incoming = framework.get_empty_node ((in_jsn_object) :: json);
     var_jsn_outgoing = framework.get_empty_node (null :: json);
 
@@ -32,11 +32,11 @@ begin
         from
             json_array_elements (var_jsn_data) json
         order by
-           1
+            1
 
     loop
 
-        insert into dat_euros (
+        insert into indicators.euros (
             idf_euro,
             boo_calculated,
             num_day,
@@ -88,13 +88,13 @@ begin
             select
                 1
             from
-                dat_euros
+                indicators.euros eur
             where
-                idf_euro = var_rec_day.num_previous
+                eur.idf_euro = var_rec_day.num_previous
 
         ) then
 
-            insert into dat_euros (
+            insert into indicators.euros (
                 idf_euro,
                 boo_calculated,
                 num_day,
@@ -110,13 +110,13 @@ begin
                 coalesce (
                     (
                         select
-                            num_value
+                            eur.num_value
                         from
-                            dat_euros
+                            indicators.euros eur
                         where
-                            idf_euro < var_rec_day.num_previous
+                            eur.idf_euro < var_rec_day.num_previous
                         order by
-                            idf_euro desc
+                            eur.idf_euro desc
                         limit
                             1
                     ),
@@ -128,38 +128,38 @@ begin
 
     end loop;
 
-    with tmp_euros as (
+    with temp_euros as (
         select
-            idf_euro,
-            num_value,
-            lag (num_value) over (order by idf_euro) as prev_value
+            eur.idf_euro,
+            eur.num_value,
+            lag (eur.num_value) over (order by eur.idf_euro) as prev_value
         from
-            dat_euros
+            indicators.euros eur
         where
-            num_year = var_num_year
+            eur.num_year = var_num_year
     )
-    update dat_euros eur
+    update indicators.euros eur
     set
-        num_absolute = eur.num_value - tmp.prev_value,
-        num_variation = sign (eur.num_value - tmp.prev_value),
+        num_absolute = eur.num_value - temp.prev_value,
+        num_variation = sign (eur.num_value - temp.prev_value),
         num_percentage =
-        case
-            when tmp.prev_value = 0 then
-                null
-            else
-                round (((eur.num_value - tmp.prev_value) / tmp.prev_value * 100) :: numeric, 2)
-        end
+            case
+                when temp.prev_value = 0 then
+                    null
+                else
+                    round (((eur.num_value - temp.prev_value) / temp.prev_value * 100) :: numeric, 2)
+            end
     from
-        tmp_euros tmp
+        temp_euros temp
     where
-        eur.idf_euro = tmp.idf_euro
-        and tmp.prev_value is not null;
+        eur.idf_euro = temp.idf_euro
+        and temp.prev_value is not null;
 
-    return result_successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
+    return result.successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
 
 exception
     when others then
-        return result_failed (var_jsn_status, var_jsn_incoming);
+        return result.failed (var_jsn_status, var_jsn_incoming);
 
 end;
 $body$ language plpgsql;

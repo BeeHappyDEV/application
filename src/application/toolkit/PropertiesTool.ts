@@ -15,7 +15,7 @@ export class PropertiesTool {
 
         const applicationObject = jsYaml.load (fsExtra.readFileSync (fileString, 'utf8'), {});
 
-        const environmentString = process.argv[2].slice (2);
+        const environmentString = process.argv [2].slice (2);
 
         switch (environmentString) {
 
@@ -45,25 +45,25 @@ export class PropertiesTool {
 
         let hostString = '';
 
-        const portString = process.env.PORT || this.propertiesObject['system']['port'];
+        const portString = process.env.PORT || this.propertiesObject ['system'] ['port'];
 
         switch (environmentString) {
 
             case 'dev':
 
-                hostString = this.propertiesObject['system']['host'];
+                hostString = this.propertiesObject ['system'] ['host'];
 
                 break;
 
             case 'qas':
 
-                hostString = this.propertiesObject['system']['host'];
+                hostString = this.propertiesObject ['system'] ['host'];
 
                 break;
 
             case 'prd':
 
-                hostString = await superagent.get (this.propertiesObject['integration']['public']).then (responseObject => responseObject.body.ip);
+                hostString = await superagent.get (this.propertiesObject ['integration'] ['public']).then (responseObject => responseObject.body.ip);
 
                 break;
 
@@ -71,11 +71,11 @@ export class PropertiesTool {
 
         if (portString == '80') {
 
-            this.propertiesObject['system']['site'] = hostString;
+            this.propertiesObject ['system'] ['site'] = hostString;
 
         } else {
 
-            this.propertiesObject['system']['site'] = hostString + ':' + portString;
+            this.propertiesObject ['system'] ['site'] = hostString + ':' + portString;
 
         }
 

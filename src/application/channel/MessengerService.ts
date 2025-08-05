@@ -1,28 +1,28 @@
-import {injectable} from 'tsyringe';
-import {inject} from "tsyringe";
-import {LogTool} from "../toolkit/LogTool";
-import {PropertiesTool} from "../toolkit/PropertiesTool";
-import {CommonsTool} from "../toolkit/CommonsTool";
+import {inject, injectable} from 'tsyringe';
+
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
 
 @injectable ()
 export class MessengerService {
 
     constructor (
-        @inject (LogTool) private logTool: LogTool,
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
 
+    // @ts-ignore
     public async anyMethod (): Promise<void> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.OK ();
 
-        this.logTool.initialize (stackStringArray);
-        this.logTool.comment ('MessengerController:', 'anyMethod');
-
-        await this.propertiesTool.get ('');
-
-        this.logTool.finalize ();
+        const originalConsole = {...console};
+        console.log = () => {
+        };
+        console.log (this.propertiesTool);
+        console.log = originalConsole.log;
 
     }
 

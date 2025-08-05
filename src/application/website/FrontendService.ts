@@ -2,107 +2,176 @@ import {inject, injectable} from 'tsyringe';
 
 import {PostgresModule} from '../middleware/PostgresModule';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
 import {LogTool} from '../toolkit/LogTool';
 
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {LogConstants} from '../constants/LogConstants';
 
 @injectable ()
 export class FrontendService {
 
     constructor (
-        @inject (PostgresModule) private postgresModule: PostgresModule,
-        @inject (LogTool) private logTool: LogTool
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        @inject (PostgresModule) private postgresModule: PostgresModule
     ) {
     }
 
-    public async getPageAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async getPageAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            paramsObject.set ('txt_schema', 'frontend');
-            paramsObject.set ('txt_function', 'page_action');
+            paramsObject.txt_schema = 'frontend';
+            paramsObject.txt_function = 'page_action';
 
-            resultObject = await this.postgresModule.execute (paramsObject, this.logTool.trace ());
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), paramsObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    public async getLinkAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async getLinkAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            paramsObject.set ('txt_schema', 'frontend');
-            paramsObject.set ('txt_function', 'link_action');
+            paramsObject.txt_schema = 'frontend';
+            paramsObject.txt_function = 'link_action';
 
-            resultObject = await this.postgresModule.execute (paramsObject, this.logTool.trace ());
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), paramsObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    public async getFileAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async getFileAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            paramsObject.set ('txt_schema', 'frontend');
-            paramsObject.set ('txt_function', 'file_action');
+            paramsObject.txt_schema = 'frontend';
+            paramsObject.txt_function = 'file_action';
 
-            resultObject = await this.postgresModule.execute (paramsObject, this.logTool.trace ());
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), paramsObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 

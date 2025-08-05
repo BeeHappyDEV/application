@@ -6,21 +6,7 @@ create or replace function framework.get_empty_node (
 returns json as $body$
 begin
 
-    if (
-
-        in_jsn_object is null or
-        in_jsn_object :: text = '' or
-        in_jsn_object :: text = '{}'
-
-    ) then
-
-        return '{}' :: json;
-
-    else
-
-        return in_jsn_object;
-
-    end if;
+    return coalesce (nullif (in_jsn_object :: text, '') :: json, '{}' :: json);
 
 end;
 $body$ language plpgsql;

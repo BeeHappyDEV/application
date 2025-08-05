@@ -2,36 +2,37 @@ import {inject, injectable} from 'tsyringe';
 
 import nodeCron from 'node-cron';
 
-import {ScheduleService} from '../website/ScheduleService';
+import {ScheduleService} from './ScheduleService';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
 import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
 
-import {JsonObject} from '../object/JsonObject';
+import {LogConstants} from "../constants/LogConstants";
 
 @injectable ()
 export class ScheduleController {
 
+    private initializedBoolean = false;
+
     constructor (
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (ScheduleService) private scheduleService: ScheduleService,
-        @inject (LogTool) private logTool: LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
 
     public async initialize (): Promise<void> {
 
-        const paramsObject = new JsonObject ();
+        const paramsObject: Record<string, any> = {};
 
         if (Boolean (await this.propertiesTool.get ('scheduler.wakeup.enable'))) {
 
             nodeCron.schedule (await this.propertiesTool.get ('scheduler.wakeup.cron'), async (): Promise<void> => {
 
-                paramsObject.set ('txt_action', 'wakeup');
-                paramsObject.set ('txt_comment', await this.propertiesTool.get ('scheduler.wakeup.comment'));
-                paramsObject.set ('txt_host', await this.propertiesTool.get ('scheduler.wakeup.host'));
-                paramsObject.set ('txt_verbose', await this.propertiesTool.get ('scheduler.wakeup.verbose'));
+                paramsObject.txt_action = 'wakeup';
+                paramsObject.txt_comment = await this.propertiesTool.get ('scheduler.wakeup.comment');
+                paramsObject.txt_host = await this.propertiesTool.get ('scheduler.wakeup.host');
+                paramsObject.txt_verbose = await this.propertiesTool.get ('scheduler.wakeup.verbose');
 
                 await this.cronScheduleAction (paramsObject);
 
@@ -69,18 +70,68 @@ export class ScheduleController {
 
         }
 
+        this.initializedBoolean = true;
+
     }
 
-    private async cronScheduleAction (paramsObject: JsonObject): Promise<void> {
+    public async isInitialized (): Promise<boolean> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        return this.initializedBoolean;
 
-        this.logTool.initialize (stackStringArray);
+    }
 
-        await this.scheduleService.cronScheduleAction (paramsObject, this.logTool.trace ());
+    private async cronScheduleAction (paramsObject: Record<string, any>): Promise<void> {
 
-        this.logTool.comment (paramsObject.get ('txt_comment'), paramsObject.get ('txt_verbose'));
-        this.logTool.finalize ();
+        const logTool = this.logToolFactory ();
+        logTool.INITIALIZE ();
+
+        let resultObject: Record<string, any> = {};
+
+        try {
+
+            resultObject = await this.scheduleService.cronScheduleAction (logTool.getTrace (), paramsObject);
+
+            if (resultObject.outgoing) {
+
+                if (resultObject.status.num_exception === 0) {
+
+                    logTool.OK ('Redirect', resultObject.outgoing.txt_redirect);
+
+                } else {
+
+                    logTool.NOK ('Redirect', resultObject.outgoing.txt_redirect);
+
+                }
+
+            } else {
+
+                resultObject.outgoing = {};
+                resultObject.outgoing.txt_redirect = '/';
+
+                logTool.NOK ('Redirect', resultObject.outgoing.txt_redirect);
+
+            }
+
+            logTool.OK ('Execute', paramsObject.txt_comment + ' runs ' + paramsObject.txt_verbose);
+            //logTool.OK (paramsObject.get ('txt_comment'), paramsObject.get ('txt_verbose'));
+
+        } catch (exception) {
+
+            if (!resultObject.status) {
+
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.CONTROLLER.num_exception;
+            resultObject.status.txt_exception = LogConstants.CONTROLLER.txt_exception;
+
+            logTool.ERR (LogConstants.CONTROLLER);
+
+        }
+
+        logTool.FINALIZE ();
 
     }
 

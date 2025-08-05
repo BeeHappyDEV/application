@@ -2,28 +2,28 @@ import {inject, injectable} from 'tsyringe';
 
 import express from 'express';
 
-import {BackendService} from '../website/BackendService';
+import {BackendService} from './BackendService';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
+import {LogConstants} from '../constants/LogConstants';
+
 import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
-
-import {JsonObject} from '../object/JsonObject';
 
 @injectable ()
 export class BackendController {
 
+    private initializedBoolean = false;
+
     constructor (
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (BackendService) private backendService: BackendService,
-        @inject (LogTool) private logTool: LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
 
     public async initialize (expressApplication: express.Application): Promise<void> {
 
-        const paramsObject = new JsonObject ();
+        const paramsObject: Record<string, any> = {};
 
         expressApplication.post ('/backend/system/wakeup', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
@@ -39,14 +39,14 @@ export class BackendController {
 
         expressApplication.post ('/backend/rebuild/documental', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
-            this.postRebuildDocumentalAction (expressRequest, expressResponse);
+            this.postRebuildDocumentalAction (expressRequest, expressResponse, paramsObject);
 
         });
 
         expressApplication.post ('/backend/rebuild/relational', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
-            paramsObject.set ('txt_file', 'index.txt');
-            paramsObject.set ('txt_path', './src/database/');
+            paramsObject.txt_file = 'index.txt';
+            paramsObject.txt_path = './src/database/';
 
             this.postRebuildRelationalAction (expressRequest, expressResponse, paramsObject);
 
@@ -58,100 +58,154 @@ export class BackendController {
 
         });
 
-    }
-
-    private async postWakeupAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: JsonObject): Promise<void> {
-
-        const stackStringArray = CommonsTool.getStackStringArray ();
-
-        this.logTool.initialize (stackStringArray);
-        this.logTool.contextualize (expressRequest);
-        this.logTool.request (expressRequest);
-
-        const resultObject = await this.backendService.postWakeupAction (paramsObject, this.logTool.trace ());
-
-        expressResponse.send (resultObject.all ());
-
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        this.initializedBoolean = true;
 
     }
 
-    private async postDeleteCacheAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: JsonObject): Promise<void> {
+    public async isInitialized (): Promise<boolean> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
-
-        this.logTool.initialize (stackStringArray);
-        this.logTool.contextualize (expressRequest);
-        this.logTool.request (expressRequest);
-
-        paramsObject.set ('txt_host', await this.propertiesTool.get ('cloudflare.host'));
-        paramsObject.set ('txt_token', await this.propertiesTool.get ('cloudflare.token'));
-
-        const resultObject = await this.backendService.postDeleteCacheAction (paramsObject, this.logTool.trace ());
-        resultObject.setResult (ExceptionTool.SUCCESSFUL ());
-
-        expressResponse.send (resultObject.all ());
-
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        return this.initializedBoolean;
 
     }
 
-    private async postRebuildDocumentalAction (expressRequest: express.Request, expressResponse: express.Response): Promise<void> {
+    private async postWakeupAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<void> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setRequest (expressRequest);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray);
-        this.logTool.contextualize (expressRequest);
-        this.logTool.request (expressRequest);
+        let resultObject: Record<string, any> = {};
 
-        const resultObject = await this.backendService.postRebuildDocumentalAction (this.logTool.trace ());
+        try {
 
-        expressResponse.send (resultObject.all ());
+            resultObject = await this.backendService.postWakeupAction (logTool.getTrace (), paramsObject);
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+            logTool.OK ();
 
-    }
+        } catch (exception) {
 
-    private async postRebuildRelationalAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: JsonObject): Promise<void> {
+            logTool.ERR (LogConstants.CONTROLLER);
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        }
 
-        this.logTool.initialize (stackStringArray);
-        this.logTool.contextualize (expressRequest);
-        this.logTool.request (expressRequest);
+        expressResponse.send (resultObject);
 
-        const resultObject = await this.backendService.postRebuildRelationalAction (paramsObject, this.logTool.trace ());
-
-        expressResponse.send (resultObject.all ());
-
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        logTool.FINALIZE ();
 
     }
 
-    private async postReloadIndicatorsAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: JsonObject): Promise<void> {
+    private async postDeleteCacheAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setRequest (expressRequest);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray);
-        this.logTool.contextualize (expressRequest);
-        this.logTool.request (expressRequest);
+        let resultObject: Record<string, any> = {};
 
-        paramsObject.set ('txt_host_dollar', await this.propertiesTool.get ('scheduler.indicators.host.dollar'));
-        paramsObject.set ('txt_host_euro', await this.propertiesTool.get ('scheduler.indicators.host.euro'));
-        paramsObject.set ('txt_host_foment_unit', await this.propertiesTool.get ('scheduler.indicators.host.foment_unit'));
-        paramsObject.set ('txt_host_monthly_tax_unit', await this.propertiesTool.get ('scheduler.indicators.host.monthly_tax_unit'));
-        paramsObject.set ('txt_token', await this.propertiesTool.get ('scheduler.indicators.token'));
+        try {
 
-        const resultObject = await this.backendService.postReloadIndicatorsAction (paramsObject, this.logTool.trace ());
+            paramsObject.txt_host = await this.propertiesTool.get ('integration.cloudflare.host');
+            paramsObject.txt_token = await this.propertiesTool.get ('integration.cloudflare.token');
 
-        expressResponse.send (resultObject.all ());
+            resultObject = await this.backendService.postDeleteCacheAction (logTool.getTrace (), paramsObject);
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+            logTool.OK ();
+
+        } catch (exception) {
+
+            logTool.ERR (LogConstants.CONTROLLER);
+
+        }
+
+        expressResponse.send (resultObject);
+
+        logTool.FINALIZE ();
+
+        return resultObject;
+
+    }
+
+    private async postRebuildDocumentalAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<void> {
+
+        const logTool = this.logToolFactory ();
+        logTool.setRequest (expressRequest);
+        logTool.INITIALIZE ();
+
+        let resultObject: Record<string, any> = {};
+
+        try {
+
+            resultObject = await this.backendService.postRebuildDocumentalAction (logTool.getTrace (), paramsObject);
+
+            logTool.OK ();
+
+        } catch (exception) {
+
+            logTool.ERR (LogConstants.CONTROLLER);
+
+        }
+
+        expressResponse.send (resultObject);
+
+        logTool.FINALIZE ();
+
+    }
+
+    private async postRebuildRelationalAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<void> {
+
+        const logTool = this.logToolFactory ();
+        logTool.setRequest (expressRequest);
+        logTool.INITIALIZE ();
+
+        let resultObject: Record<string, any> = {};
+
+        try {
+
+            resultObject = await this.backendService.postRebuildRelationalAction (logTool.getTrace (), paramsObject);
+
+            logTool.OK ();
+
+        } catch (exception) {
+
+            logTool.ERR (LogConstants.CONTROLLER);
+
+        }
+
+        expressResponse.send (resultObject);
+
+        logTool.FINALIZE ();
+
+    }
+
+    private async postReloadIndicatorsAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<void> {
+
+        const logTool = this.logToolFactory ();
+        logTool.setRequest (expressRequest);
+        logTool.INITIALIZE ();
+
+        paramsObject.txt_host_dollar = await this.propertiesTool.get ('scheduler.indicators.host.dollar');
+        paramsObject.txt_host_euro = await this.propertiesTool.get ('scheduler.indicators.host.euro');
+        paramsObject.txt_host_foment_unit = await this.propertiesTool.get ('scheduler.indicators.host.foment_unit');
+        paramsObject.txt_host_monthly_tax_unit = await this.propertiesTool.get ('scheduler.indicators.host.monthly_tax_unit');
+        paramsObject.txt_token = await this.propertiesTool.get ('scheduler.indicators.token');
+
+        let resultObject: Record<string, any> = {};
+
+        try {
+
+            resultObject = await this.backendService.postReloadIndicatorsAction (logTool.getTrace (), paramsObject);
+
+            logTool.OK ();
+
+        } catch (exception) {
+
+            logTool.ERR (LogConstants.CONTROLLER);
+
+        }
+
+        expressResponse.send (resultObject);
+
+        logTool.FINALIZE ();
 
     }
 

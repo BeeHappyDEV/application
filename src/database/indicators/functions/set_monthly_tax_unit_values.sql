@@ -15,7 +15,7 @@ declare
     var_last_date date;
 begin
 
-    var_jsn_status = result_initializer ();
+    var_jsn_status = result.initializer ();
     var_jsn_incoming = framework.get_empty_node ((in_jsn_object) :: json);
     var_jsn_outgoing = framework.get_empty_node (null :: json);
 
@@ -31,11 +31,11 @@ begin
         from
             json_array_elements (var_jsn_data) json
         order by
-           1
+            1
 
     loop
 
-        insert into dat_monthly_tax_units (
+        insert into indicators.monthly_tax_units (
             idf_monthly_tax_unit,
             num_month,
             num_value,
@@ -82,13 +82,13 @@ begin
             select
                 1
             from
-                dat_monthly_tax_units
+                indicators.monthly_tax_units mtu
             where
-                idf_monthly_tax_unit = var_rec_month.num_previous
+                mtu.idf_monthly_tax_unit = var_rec_month.num_previous
 
         ) then
 
-            insert into dat_monthly_tax_units (
+            insert into indicators.monthly_tax_units (
                 idf_monthly_tax_unit,
                 num_month,
                 num_value,
@@ -100,13 +100,13 @@ begin
                 coalesce (
                     (
                         select
-                            num_value
+                            mtu.num_value
                         from
-                            dat_monthly_tax_units
+                            indicators.monthly_tax_units mtu
                         where
-                            idf_monthly_tax_unit < var_rec_month.num_previous
+                            mtu.idf_monthly_tax_unit < var_rec_month.num_previous
                         order by
-                            idf_monthly_tax_unit desc
+                            mtu.idf_monthly_tax_unit desc
                         limit
                             1
                     ),
@@ -118,38 +118,38 @@ begin
 
     end loop;
 
-    with tmp_monthly_tax_units as (
+    with temp_monthly_tax_units as (
         select
-            idf_monthly_tax_unit,
-            num_value,
-            lag (num_value) over (order by idf_monthly_tax_unit) as prev_value
+            mtu.idf_monthly_tax_unit,
+            mtu.num_value,
+            lag (mtu.num_value) over (order by mtu.idf_monthly_tax_unit) as prev_value
         from
-            dat_monthly_tax_units
+            indicators.monthly_tax_units mtu
         where
-            num_year = var_num_year
+            mtu.num_year = var_num_year
     )
-    update dat_monthly_tax_units mtu
+    update indicators.monthly_tax_units mtu
     set
-        num_absolute = mtu.num_value - tmp.prev_value,
-        num_variation = sign (mtu.num_value - tmp.prev_value),
+        num_absolute = mtu.num_value - temp.prev_value,
+        num_variation = sign (mtu.num_value - temp.prev_value),
         num_percentage =
-        case
-            when tmp.prev_value = 0 then
-                null
-            else
-                round (((mtu.num_value - tmp.prev_value) / tmp.prev_value * 100) :: numeric, 2)
-        end
+            case
+                when temp.prev_value = 0 then
+                    null
+                else
+                    round (((mtu.num_value - temp.prev_value) / temp.prev_value * 100) :: numeric, 2)
+            end
     from
-        tmp_monthly_tax_units tmp
+        temp_monthly_tax_units temp
     where
-        mtu.idf_monthly_tax_unit = tmp.idf_monthly_tax_unit
-        and tmp.prev_value is not null;
+        mtu.idf_monthly_tax_unit = temp.idf_monthly_tax_unit
+        and temp.prev_value is not null;
 
-    return result_successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
+    return result.successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);
 
 exception
     when others then
-        return result_failed (var_jsn_status, var_jsn_incoming);
+        return result.failed (var_jsn_status, var_jsn_incoming);
 
 end;
 $body$ language plpgsql;

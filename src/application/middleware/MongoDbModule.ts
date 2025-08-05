@@ -1,81 +1,133 @@
+import {Db, MongoClient} from 'mongodb';
 import {inject, injectable} from 'tsyringe';
 
-import {MongoClient} from 'mongodb';
-
-import {ExceptionTool} from '../toolkit/ExceptionTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
-
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
 
 @injectable ()
 export class MongoDbModule {
+
+    private initializedBoolean = false;
+    private mongoClient!: MongoClient;
+    private mongoDatabase!: Db;
+    private mongoBuffer: any[] = [];
+    private flushInterval!: NodeJS.Timeout;
+    private readonly bufferSize = 100;
+    private readonly flushIntervalMs = 5000;
 
     constructor (
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
 
-    // @ts-ignore
-    public async insertTrace (logObject: JsonObject): Promise<void> {
+    public async initialize (): Promise<void> {
 
-        //console.log(logObject.all());
+        if (this.initializedBoolean) {
 
-        /*
-        let mongoClient = new MongoClient (await this.propertiesTool.get ('integration.mongo.host'));
+            return;
+
+        }
 
         try {
 
-            await mongoClient.connect ();
+            if (!this.mongoClient) {
 
-            const documentObject = {
-                ...logObject.all (),
-                _id: new ObjectId ()
-            };
+                this.mongoClient = new MongoClient (
+                    await this.propertiesTool.get ('integration.mongodb.host'),
+                    {
+                        maxPoolSize: 10,
+                        connectTimeoutMS: 5000,
+                        socketTimeoutMS: 30000
+                    }
+                );
 
-            delete documentObject._id;
+                await this.mongoClient.connect ();
 
-            let mongoDatabase = mongoClient.db (await this.propertiesTool.get ('integration.mongo.database'));
+                this.mongoDatabase = this.mongoClient.db (
+                    await this.propertiesTool.get ('integration.mongodb.database')
+                );
 
-            let mongoCollection = mongoDatabase.collection (await this.propertiesTool.get ('integration.mongo.traces'));
+            }
 
-            await mongoCollection.insertOne (documentObject);
+            this.flushInterval = setInterval (async () => {
 
-        } catch (exception) {
-            console.log (exception)
-        } finally {
+                if (this.mongoBuffer.length > 0) {
 
-            await mongoClient.close ();
+                    await this.flushTracking ();
+
+                }
+
+            }, this.flushIntervalMs);
+
+            this.initializedBoolean = true;
+
+        } catch (error) {
+
+            this.initializedBoolean = false;
 
         }
-        */
 
     }
 
-    // @ts-ignore
-    public async rebuild (traceObject: JsonObject) {
+    public async isInitialized (): Promise<boolean> {
 
-        //const reflectionStringArray = await CommonsTool.getStackStringArray ();
+        return this.initializedBoolean;
 
-        //let logTool = new LogTool (this, this.propertiesTool);
-        //logTool.initialize (traceObject, reflectionStringArray);
+    }
 
-        let resultObject =  new ResultObject ();
+    public async insertTracking (logObject: Record<string, any>): Promise<void> {
 
-        let mongoClient = new MongoClient (await this.propertiesTool.get ('integration.mongo.host'));
-        await mongoClient.connect ();
+        await this.initialize ();
 
-        let mongoDatabase = mongoClient.db (await this.propertiesTool.get ('integration.mongo.database'));
-        await mongoDatabase.dropCollection (await this.propertiesTool.get ('integration.mongo.collection'));
-        await mongoDatabase.createCollection (await this.propertiesTool.get ('integration.mongo.collection'));
+        this.mongoBuffer.push (logObject);
 
-        await mongoClient.close ();
+        if (this.mongoBuffer.length >= this.bufferSize) {
 
-        resultObject.setResult (ExceptionTool.SUCCESSFUL ());
+            await this.flushTracking ();
 
-        //logTool.finalize ();
+        }
 
-        return resultObject;
+    }
+
+    public async rebuildTraces (): Promise<void> {
+
+        await this.initialize ();
+
+        const mongoCollection = await this.propertiesTool.get ('integration.mongodb.traces');
+
+        await this.mongoDatabase.dropCollection (mongoCollection);
+
+        await this.mongoDatabase.createCollection (mongoCollection);
+
+    }
+
+    private async flushTracking (): Promise<void> {
+
+        const trackingArray = this.mongoBuffer.splice (0, this.mongoBuffer.length);
+
+        try {
+
+            const collection = this.mongoDatabase.collection (await this.propertiesTool.get ('integration.mongo.traces'));
+
+            await collection.insertMany (trackingArray);
+
+        } catch (error) {
+
+            this.mongoBuffer.unshift (...trackingArray);
+
+        }
+
+    }
+
+    public async close (): Promise<void> {
+
+        clearInterval (this.flushInterval);
+
+        if (this.mongoClient) {
+
+            await this.flushTracking ();
+            await this.mongoClient.close ();
+
+        }
 
     }
 

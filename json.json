@@ -1,0 +1,15 @@
+{
+    "level": 30,
+    "time": 1752726985653,
+    "pid": 15976,
+    "hostname": "Thinkpad",
+    "starting": "2025/07/17 00:36:25.632",
+    "transaction": "0d227380d19e4e2ba5c020c9e9db46a6",
+    "level": "OK",
+    "operation": "6d2af2f1ba9a48e6a43105536601f411",
+    "ending": "2025/07/17 00:36:25.653",
+    "difference": "0.021",
+    "message": "MongoDb",
+    "data": "Initialized",
+    "depth": null
+}

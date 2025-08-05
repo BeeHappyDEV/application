@@ -1,433 +1,781 @@
-import {inject, injectable} from 'tsyringe';
+import {Writable} from 'stream';
 
-import crypto from 'crypto';
+import {hrtime} from 'process';
+import {inject, injectable} from 'tsyringe';
+import {v4 as uuidv4} from 'uuid';
+
 import express from 'express';
 import kleur from 'kleur';
+import pino from 'pino';
 import url from 'url';
 
 import {MongoDbModule} from '../middleware/MongoDbModule';
 
-import {PropertiesTool} from '../toolkit/PropertiesTool';
-
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {LogConstants} from "../constants/LogConstants";
+import {CommonsTool} from "./CommonsTool";
 
 @injectable ()
 export class LogTool {
 
-    private logObject: any = null;
+    private context: Record<string, any> = {};
+    private logger: pino.Logger;
 
     constructor (
-        @inject (MongoDbModule) private mongoDbModule: MongoDbModule,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (MongoDbModule) private mongoDbModule: MongoDbModule
     ) {
-    }
 
-    public initialize (stackStringArray: string[], traceObject: JsonObject | null = null, depthNumber?: number): void {
+        const date = new Date ();
 
-        if (traceObject === null) {
+        this.context.starting = this.getDatetime (date);
+        this.context.transaction = this.getUuid ();
+        this.context.environment = process.argv [2].slice (2).toUpperCase ();
+        this.context.depth = 1;
+        this.context.overwrite = true;
 
-            this.logObject = new JsonObject ();
+        const consoleStream = new Writable ({
 
-        } else {
+            write: (_chunk: { toString: () => string }, _encoding: any, callback: () => void) => {
 
-            this.logObject = traceObject;
+                let logString = ''
+                logString += this.getPrefix ();
+                logString += this.getSuffix ();
 
-        }
+                process.stdout.write (logString + '\n');
 
-        this.logObject.set ('exception', false);
-        this.logObject.set ('carry', false);
-        this.logObject.set ('starting', Date.now ());
-        this.logObject.set ('offset', crypto.randomUUID ().split ('-').join (''));
-        this.logObject.set ('class', stackStringArray [0]);
-        this.logObject.set ('method', stackStringArray [1]);
-
-        switch (stackStringArray [2]) {
-
-            case 'frontend':
-            case 'backend':
-            case 'schedule':
-
-                this.logObject.set ('source', stackStringArray [2]);
-
-                break;
-
-            case 'launcher':
-
-                this.logObject.set ('source', 'start');
-
-                break;
-
-            default:
-
-                this.logObject.set ('source', 'tool');
-
-        }
-
-        if (traceObject === null) {
-
-            this.logObject.set ('depth', 1);
-            this.logObject.set ('thread', crypto.randomUUID ().split ('-').join (''));
-
-        } else {
-
-            if (depthNumber !== null && depthNumber !== undefined) {
-
-                this.logObject.set ('depth', depthNumber);
-
-            } else {
-
-                if (this.logObject.get ('depth') === null) {
-
-                    this.logObject.set ('depth', 1);
-
-                } else {
-
-                    this.logObject.set ('depth', Number (Number (traceObject.get ('depth')) + 1));
-
-                }
+                callback ();
 
             }
 
-        }
+        });
+
+        const mongoStream = new Writable ({
+
+            write: async (_chunk: any, _encoding: any, callback: (error?: Error) => void) => {
+
+                const logObject = this.getJson (this.context);
+
+                await this.mongoDbModule.insertTracking (logObject);
+
+                callback ();
+
+            },
+            autoDestroy: true,
+            emitClose: true
+
+        });
+
+        this.logger = pino ({
+            level: 'info',
+            base: null
+        }, pino.multistream ([
+            {stream: consoleStream},
+            {stream: mongoStream}
+        ]));
 
     }
 
-    public contextualize (expressRequest: express.Request): void {
+    public OK (keyString?: any, valueString?: string): void {
 
-        if (Object.keys (expressRequest.query).length !== 0) {
+        this.context.level = LogConstants.OK;
+        this.context.event = LogConstants.OK_EXECUTE.event;
 
-            let depthNumber = Number (expressRequest.query ['depth']);
+        if (keyString) {
 
-            this.logObject.set ('depth', depthNumber + 1);
-            this.logObject.set ('thread', expressRequest.query ['thread'] || {});
+            this.context.message = keyString;
 
         }
+
+        if (valueString) {
+
+            this.context.data = valueString;
+
+        }
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
 
     }
 
-    public request (expressRequest: express.Request) {
+    public NOK (keyString?: any, valueString?: string): void {
 
-        let urlObject = url.parse (expressRequest.url, true);
+        this.context.level = LogConstants.NOK;
+        this.context.event = LogConstants.NOK_EXECUTE.event;
 
-        this.logObject.set ('verb', expressRequest.method);
+        if (keyString) {
 
-        if (urlObject.pathname != null) {
-
-            this.logObject.set ('url', urlObject.pathname);
+            this.context.message = keyString;
 
         }
 
-        if (Object.keys (urlObject.query).length > 0) {
+        if (valueString) {
 
-            this.logObject.set ('query', urlObject.query);
+            this.context.data = valueString;
+
+        }
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public ERR (keyString?: any, valueString?: string): void {
+
+        this.context.level = LogConstants.ERR;
+        this.context.event = LogConstants.ERR_EXECUTE.event;
+
+        if (keyString) {
+
+            this.context.message = keyString;
+
+        }
+
+        if (valueString) {
+
+            this.context.data = valueString;
+
+        }
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public INITIALIZE (): void {
+
+        this.context.level = LogConstants.DBG;
+        this.context.event = LogConstants.DBG_INITIALIZE.event;
+        this.context.phase = LogConstants.DBG_INITIALIZE.message;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public FINALIZE (): void {
+
+        this.context.level = LogConstants.DBG;
+        this.context.event = LogConstants.DBG_FINALIZE.event;
+        this.context.phase = LogConstants.DBG_FINALIZE.message;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    /*
+    *
+    *
+    *
+    *
+    *
+    */
+
+    public setScpExecute (fileString: string, contentString: string) {
+
+        this.context.level = LogConstants.OK;
+        this.context.event = LogConstants.SCP_EXECUTE.event;
+        this.context.file = fileString;
+        this.context.content = contentString;
+        this.context.message = LogConstants.SCP_EXECUTE.message;
+        this.context.data = fileString;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public setScpSuccess (fileString: string) {
+
+        this.context.level = LogConstants.OK;
+        this.context.event = LogConstants.SCP_SUCCESS.event;
+        this.context.file = fileString;
+        delete this.context.content;
+        this.context.message = LogConstants.SCP_SUCCESS.message;
+        this.context.data = fileString;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public setScpPostgres () {
+
+        this.context.level = LogConstants.ERR;
+        this.context.event = LogConstants.SCP_POSTGRES.event;
+        delete this.context.file;
+        delete this.context.content;
+        this.context.message = LogConstants.SCP_POSTGRES.message;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public setFncExecute (functionString: string, paramsObject: Record<string, any>) {
+
+        this.context.level = LogConstants.OK;
+        this.context.event = LogConstants.FNC_EXECUTE.event;
+        this.context.function = functionString;
+
+        if (paramsObject) {
+
+            this.context.params = JSON.stringify (paramsObject);
+
+        }
+
+        this.context.message = LogConstants.FNC_EXECUTE.message;
+        this.context.data = functionString;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public setFncSuccess (functionString: string) {
+
+        this.context.level = LogConstants.OK;
+        this.context.event = LogConstants.FNC_SUCCESS.event;
+        this.context.function = functionString;
+        delete this.context.params;
+        this.context.message = LogConstants.FNC_SUCCESS.message;
+        this.context.data = functionString;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public setFncFunction (functionString: string) {
+
+        this.context.level = LogConstants.ERR;
+        this.context.event = LogConstants.FNC_FUNCTION.event;
+        this.context.function = functionString;
+        this.context.message = LogConstants.FNC_FUNCTION.message;
+        this.context.data = functionString;
+
+        this.setEnding (4);
+
+        this.logger.error (this.context);
+
+    }
+
+    public setFncPostgres () {
+
+        this.context.level = LogConstants.ERR;
+        this.context.event = LogConstants.FNC_POSTGRES.event;
+        delete this.context.function;
+        this.context.message = LogConstants.FNC_POSTGRES.message;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public setWsvExecute (verbString: string, hostString: string, headersObject?: Record<string, any>, queryObject?: Record<string, any>, bodyObject?: Record<string, any>) {
+
+        this.context.level = LogConstants.OK;
+        this.context.event = LogConstants.WSV_EXECUTE.event;
+        this.context.verb = verbString;
+        this.context.host = hostString;
+
+        if (headersObject) {
+
+            this.context.headers = CommonsTool.getSafeStringify (headersObject);
+
+        }
+
+        if (queryObject) {
+
+            this.context.query = CommonsTool.getSafeStringify (queryObject);
+
+        }
+
+        if (bodyObject) {
+
+            this.context.body = CommonsTool.getSafeStringify (bodyObject);
+
+        }
+
+        this.context.message = LogConstants.WSV_EXECUTE.message;
+        this.context.data = verbString + ' ' + hostString;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public setWsvSuccess (verbString: string, hostString: string) {
+
+        this.context.level = LogConstants.OK;
+        this.context.event = LogConstants.WSV_SUCCESS.event;
+        this.context.verb = verbString;
+        this.context.host = hostString;
+        delete this.context.headers;
+        delete this.context.query;
+        delete this.context.body;
+        this.context.message = LogConstants.WSV_SUCCESS.message;
+        this.context.data = verbString + ' ' + hostString;
+
+        this.setEnding (4);
+
+        this.logger.info (this.context);
+
+    }
+
+    public setWsvWebservice (hostString: string) {
+
+        this.context.level = LogConstants.ERR;
+        this.context.host = hostString;
+
+    }
+
+    /*
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    */
+
+    public setRequest (expressRequest: express.Request): void {
+
+        let urlWithParsedQuery = url.parse (expressRequest.url, true);
+
+        this.context.verb = expressRequest.method;
+
+        if (urlWithParsedQuery.pathname != null) {
+
+            this.context.url = urlWithParsedQuery.pathname;
 
         }
 
         if (Object.keys (expressRequest.params).length !== 0) {
 
-            let arrayObject = [];
+            const paramsObject: { [key: string]: string } = {};
 
-            for (let [keyString, valueString] of Object.entries (expressRequest.params)) {
+            for (const [keyString, valueString] of Object.entries (expressRequest.params)) {
 
-                arrayObject.push ({
-                    key: keyString,
-                    value: valueString
-                });
+                paramsObject [keyString] = valueString;
 
             }
 
-            this.logObject.set ('params', arrayObject);
+            this.context.params = paramsObject;
 
         }
 
-    }
+        if (Object.keys (expressRequest.query).length !== 0) {
 
-    public response (resultObject: ResultObject): void {
+            const queryObject: { [key: string]: string } = {};
 
-        if (resultObject.getCarry () == true) {
+            for (const [keyString, valueString] of Object.entries (expressRequest.query)) {
 
-            this.logObject.set ('carry', true);
+                if (typeof valueString === 'string') {
 
-        } else {
+                    queryObject [keyString] = valueString;
 
-            this.logObject.set ('carry', false);
-
-        }
-
-        if (resultObject.hasOutgoing ()) {
-
-            let redirectString = resultObject.getRedirect ();
-            let renderString = resultObject.getRender ();
-            let statusString = resultObject.getStatus ();
-
-            if (redirectString != null) {
-
-                this.logObject.set ('redirect', redirectString);
+                }
 
             }
 
-            if (renderString != null) {
-
-                this.logObject.set ('render', renderString);
-
-            }
-
-            if (redirectString == null && renderString == null) {
-
-                this.logObject.set ('status', statusString);
-
-            }
+            this.context.query = queryObject;
 
         }
 
     }
 
-    public resource (resourceString: string): void {
+    /*
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    *
+    */
 
-        this.logObject.set ('resource', resourceString);
+    public getTrace (): Record<string, any> {
+
+        return this.context;
 
     }
 
-    public exception (): void {
+    public setTrace (traceObject: Record<string, any>): void {
 
-        this.logObject.set ('carry', true);
-        this.logObject.set ('exception', true);
+        this.context.starting = traceObject.starting;
+        this.context.transaction = traceObject.transaction;
+        this.context.depth = Number (traceObject.depth) + 1;
 
     }
 
-    public comment (commentString: string, highlightString: string, exceptionBoolean?: boolean): void {
+    public setSoftTrace (traceObject: Record<string, any>): void {
 
-        if (exceptionBoolean) {
+        this.context.transaction = traceObject.transaction;
+        this.context.depth = Number (traceObject.depth);
 
-            this.logObject.set ('carry', true);
+    }
+
+    public setHardTrace (traceObject: Record<string, any>): void {
+
+        this.context.starting = traceObject.starting;
+        this.context.transaction = traceObject.transaction;
+        this.context.depth = Number (traceObject.depth);
+        this.context.overwrite = false;
+        this.context.class = traceObject.class;
+        this.context.method = traceObject.method;
+
+    }
+
+    /*
+    *
+    *
+    *
+    *
+    *
+    */
+
+    private getDatetime (date: Date): string {
+
+        let datetimeString = '';
+        datetimeString += date.getFullYear ();
+        datetimeString += '/';
+        datetimeString += (date.getMonth () + 1).toString ().padStart (2, '0');
+        datetimeString += '/';
+        datetimeString += date.getDate ().toString ().padStart (2, '0');
+        datetimeString += ' ';
+        datetimeString += date.getHours ().toString ().padStart (2, '0');
+        datetimeString += ':';
+        datetimeString += date.getMinutes ().toString ().padStart (2, '0');
+        datetimeString += ':';
+        datetimeString += date.getSeconds ().toString ().padStart (2, '0');
+        datetimeString += '.';
+        datetimeString += date.getMilliseconds ().toString ().padStart (3, '0');
+
+        return datetimeString;
+
+    }
+
+    private getDifference (endingString: string, startingString: string): string {
+
+        return ((this.getTimestamp (endingString) - this.getTimestamp (startingString)) / 1000).toFixed (3);
+
+    }
+
+    private getId (date: Date): bigint {
+
+        let datetimeNumber = date.getTime ();
+
+        const nanoBigint = hrtime.bigint () % 1_000_000n;
+
+        const currentNumber = Date.now ();
+
+        if (currentNumber !== datetimeNumber) {
+
+            datetimeNumber = currentNumber;
 
         }
 
-        this.logObject.set ('comment', commentString);
-        this.logObject.set ('highlight', highlightString);
+        return (BigInt (datetimeNumber) * 1_000_000n + nanoBigint) / 1000n;
 
     }
 
-    public trace (): JsonObject {
+    private getJson (logObject: Record<string, any>): Record<string, any> {
 
-        let traceObject = new JsonObject ();
+        return Object.entries (logObject).reduce ((recordStringAny: Record<string, any>, [keyString, valueAny]: [string, any]): Record<string, any> => {
 
-        traceObject.set ('thread', this.logObject.get ('thread'));
-        traceObject.set ('depth', this.logObject.get ('depth'));
-        traceObject.set ('method', this.logObject.get ('method'));
+            if (typeof valueAny === 'bigint') {
 
-        return traceObject;
+                recordStringAny [keyString] = valueAny.toString ();
 
-    }
+            } else if (typeof valueAny === 'object' && valueAny !== null) {
 
-    public finalize (): void {
-
-        this.logObject.set ('ending', Date.now ());
-        this.logObject.set ('interval', ((new Date (this.logObject.get ('ending')).getTime () - new Date (this.logObject.get ('starting')).getTime ()) / 1000).toFixed (3));
-
-        let startingString = this.logObject.get ('starting');
-
-        let startingDate: Date;
-
-        if (startingString instanceof Date) {
-
-            startingDate = startingString;
-
-        } else if (typeof startingString === 'number') {
-
-            startingDate = new Date (startingString);
-
-        } else if (typeof startingString === 'string') {
-
-            startingDate = new Date (startingString.includes ('T') ? startingString : startingString.replace (' ', 'T'));
-
-        } else {
-
-            throw new Error ();
-
-        }
-
-        const yyStartingString = String (startingDate.getFullYear ());
-        const mmStartingString = String (startingDate.getMonth () + 1).padStart (2, '0');
-        const ddStartingString = String (startingDate.getDate ()).padStart (2, '0');
-        const hhStartingString = String (startingDate.getHours ()).padStart (2, '0');
-        const miStartingString = String (startingDate.getMinutes ()).padStart (2, '0');
-        const ssStartingString = String (startingDate.getSeconds ()).padStart (2, '0');
-        const msStartingString = String (startingDate.getMilliseconds ()).padStart (3, '0');
-
-        startingString = '';
-        startingString = startingString + yyStartingString + '-';
-        startingString = startingString + mmStartingString + '-';
-        startingString = startingString + ddStartingString + ' ';
-        startingString = startingString + hhStartingString + ':';
-        startingString = startingString + miStartingString + ':';
-        startingString = startingString + ssStartingString + '.';
-        startingString = startingString + msStartingString;
-
-        this.logObject.set ('starting', startingString);
-
-        let endingString = this.logObject.get ('ending');
-
-        let endingDate: Date;
-
-        if (endingString instanceof Date) {
-
-            endingDate = endingString;
-
-        } else if (typeof endingString === 'number') {
-
-            endingDate = new Date (endingString);
-
-        } else if (typeof endingString === 'string') {
-
-            endingDate = new Date (endingString.includes ('T') ? endingString : endingString.replace (' ', 'T'));
-
-        } else {
-
-            throw new Error ();
-
-        }
-
-        const yyEndingString = String (endingDate.getFullYear ());
-        const mmEndingString = String (endingDate.getMonth () + 1).padStart (2, '0');
-        const ddEndingString = String (endingDate.getDate ()).padStart (2, '0');
-        const hhEndingString = String (endingDate.getHours ()).padStart (2, '0');
-        const miEndingString = String (endingDate.getMinutes ()).padStart (2, '0');
-        const ssEndingString = String (endingDate.getSeconds ()).padStart (2, '0');
-        const msEndingString = String (endingDate.getMilliseconds ()).padStart (3, '0');
-
-        endingString = '';
-        endingString = endingString + yyEndingString + '-';
-        endingString = endingString + mmEndingString + '-';
-        endingString = endingString + ddEndingString + ' ';
-        endingString = endingString + hhEndingString + ':';
-        endingString = endingString + miEndingString + ':';
-        endingString = endingString + ssEndingString + '.';
-        endingString = endingString + msEndingString;
-
-        this.logObject.set ('ending', endingString);
-
-        let captionString = '';
-        captionString = captionString + kleur.magenta (this.logObject.get ('thread')) + ' [';
-
-        if (this.logObject.get ('exception')) {
-
-            this.logObject.set ('status', 'ERR');
-
-            captionString = captionString + kleur.red ('ERR') + '] [';
-
-        } else {
-
-            if (this.logObject.get ('carry') == true) {
-
-                this.logObject.set ('status', 'NOK');
-
-                captionString = captionString + kleur.yellow ('NOK') + '] [';
+                recordStringAny [keyString] = this.getJson (valueAny);
 
             } else {
 
-                this.logObject.set ('status', 'OK');
-
-                captionString = captionString + kleur.green ('OK ') + '] [';
+                recordStringAny[keyString] = valueAny;
 
             }
+
+            return recordStringAny;
+
+        }, {} as Record<string, any>);
+
+    }
+
+    private getLocation (depthNumber: number): string[] {
+
+        const stackString = new Error ().stack?.split ('\n');
+
+        if (!stackString || stackString.length <= 3) {
+
+            return [];
 
         }
 
-        this.logObject.del ('carry');
-        this.logObject.del ('exception');
+        const regExpMatchArray = stackString [depthNumber].match (/\sat\s(\w+)\.(\w+)/);
 
-        captionString = captionString + kleur.cyan (this.logObject.get ('interval')) + '] [';
-        captionString = captionString + kleur.cyan (this.logObject.get ('depth')) + '] ';
-        captionString = captionString + this.logObject.get ('class') + '.';
-        captionString = captionString + this.logObject.get ('method');
+        if (!regExpMatchArray) {
 
-        let continueBoolean = true;
-
-        if (this.logObject.get ('comment') != null || this.logObject.get ('highlight') != null) {
-
-            captionString = captionString + ' - ' + (this.logObject.get ('comment') + ' ' + kleur.blue (this.logObject.get ('highlight')).trim ());
-
-            continueBoolean = false;
+            return [];
 
         }
 
-        if (continueBoolean) {
+        const [_, classString, methodString] = regExpMatchArray;
 
-            if (this.logObject.get ('class').endsWith ('Controller')) {
+        return [classString, methodString];
 
-                if (this.logObject.get ('params') != null) {
+    }
 
-                    let paramsString = '{';
+    private getPrefix (): string {
 
-                    for (const paramObject of this.logObject.get ('params')) {
+        let outputString = '';
+        outputString += kleur.magenta (this.context.transaction);
+        outputString += ' [';
 
-                        paramsString = paramsString + paramObject.key + ': ';
-                        paramsString = paramsString + paramObject.value + ', ';
+        switch (this.context.level) {
 
-                    }
+            case LogConstants.OK:
 
-                    paramsString = paramsString.slice (0, paramsString.length - 2);
-                    paramsString = paramsString + '}';
+                outputString += kleur.green (this.context.level + ' ');
 
-                    captionString = captionString + ' - Params: ' + kleur.blue (paramsString);
+                break;
 
-                }
+            case LogConstants.NOK:
 
-                if (this.logObject.get ('redirect') != null) {
+                outputString += kleur.yellow (this.context.level);
 
-                    captionString = captionString + ' - Redirect: ' + kleur.blue (this.logObject.get ('redirect'));
+                break;
 
-                }
+            case LogConstants.ERR:
 
-                if (this.logObject.get ('render') != null) {
+                outputString += kleur.red (this.context.level);
 
-                    captionString = captionString + ' - View: ' + kleur.blue (this.logObject.get ('render'));
+                break;
 
-                }
+            case LogConstants.DBG:
 
-                if (this.logObject.get ('redirect') == null && this.logObject.get ('render') == null) {
+                outputString += kleur.gray (this.context.level);
 
-                    let outgoingString = JSON.stringify (this.logObject.get ('outgoing'));
-
-                    if (outgoingString == null) {
-
-                        outgoingString = 'void';
-
-                    }
-
-                    captionString = captionString + ' - Return: ' + kleur.blue (outgoingString);
-
-                }
-
-            }
-
-            if (this.logObject.get ('class').endsWith ('PostgresModule')) {
-
-                if (this.logObject.get ('resource') != null) {
-
-                    captionString = captionString + ' - Function: ' + kleur.blue (this.logObject.get ('resource'));
-
-                }
-
-            }
-
-            if (this.logObject.get ('class').endsWith ('WebserviceModule')) {
-
-                captionString = captionString + ' - Endpoint: ' + kleur.blue (this.logObject.get ('resource'));
-
-            }
+                break;
 
         }
 
-        this.logObject.set ('interval', parseFloat (this.logObject.get ('interval')));
+        outputString += '] [';
+        outputString += kleur.cyan (this.context.difference);
+        outputString += '] [';
+        outputString += kleur.cyan (this.context.depth);
+        outputString += '] ';
 
-        console.log (captionString);
+        if (this.context.level === LogConstants.DBG) {
 
-        if (Boolean (this.propertiesTool.get ('system.log.persist'))) {
+            outputString += '[';
+            outputString += kleur.gray (this.context.phase);
+            outputString += '] ';
 
-            this.mongoDbModule.insertTrace (this.logObject).then ();
+        }
+
+        outputString += this.context.class;
+        outputString += '.';
+        outputString += this.context.method;
+
+        return outputString;
+
+    }
+
+    private getSuffix (): string {
+
+        let outputString = '';
+
+        switch (this.context.event) {
+
+            case LogConstants.OK_EXECUTE.event:
+
+                if (this.context.message) {
+
+                    outputString += ' - ';
+                    outputString += this.context.message;
+                    outputString += ': ';
+                    outputString += kleur.blue (this.context.data);
+
+                }
+
+                break;
+
+            case LogConstants.NOK_EXECUTE.event:
+
+                if (this.context.message) {
+
+                    outputString += ' - ';
+                    outputString += this.context.message;
+                    outputString += ': ';
+                    outputString += kleur.blue (this.context.data);
+
+                }
+
+                break;
+
+            case LogConstants.ERR_EXECUTE.event:
+
+                if (this.context.message) {
+
+                    outputString += ' - ';
+                    outputString += this.context.message;
+
+                }
+
+                if (this.context.data) {
+
+                    outputString += ': ';
+                    outputString += kleur.blue (this.context.data);
+
+                }
+
+                break;
+
+            case LogConstants.SCP_EXECUTE.event:
+
+                outputString += ' - ';
+                outputString += this.context.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+            case LogConstants.SCP_SUCCESS.event:
+
+                outputString += ' - ';
+                outputString += this.context.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+            case LogConstants.SCP_POSTGRES.event:
+
+                outputString += ' - ';
+                outputString += LogConstants.SCP_POSTGRES.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+            case LogConstants.FNC_EXECUTE.event:
+
+                outputString += ' - ';
+                outputString += this.context.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+            case LogConstants.FNC_SUCCESS.event:
+
+                outputString += ' - ';
+                outputString += this.context.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+            case LogConstants.FNC_FUNCTION.event:
+
+                outputString += ' - ';
+                outputString += LogConstants.FNC_FUNCTION.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+            case LogConstants.FNC_POSTGRES.event:
+
+                outputString += ' - ';
+                outputString += LogConstants.FNC_POSTGRES.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+            case LogConstants.WSV_EXECUTE.event:
+
+                outputString += ' - ';
+                outputString += LogConstants.WSV_EXECUTE.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+            case LogConstants.WSV_SUCCESS.event:
+
+                outputString += ' - ';
+                outputString += LogConstants.WSV_SUCCESS.message;
+                outputString += ': ';
+                outputString += kleur.blue (this.context.data);
+
+                break;
+
+        }
+
+        return outputString;
+
+    }
+
+    private getTimestamp (datetimeString: string): number {
+
+        const [date, time] = datetimeString.split (' ');
+        const [yy, mm, dd] = date.split ('/').map (Number);
+        const [hms, ms] = time.split ('.');
+        const [hh, mi, ss] = hms.split (':').map (Number);
+        const zz = Number (ms);
+
+        return new Date (yy, mm - 1, dd, hh, mi, ss, zz).getTime ();
+
+    }
+
+    private getUuid (): string {
+
+        return uuidv4 ().replace (/-/g, '');
+
+    }
+
+    private setEnding (depthNumber: number) {
+
+        const locationStringArray: string [] = this.getLocation (depthNumber);
+
+        const date = new Date ();
+
+        this.context.ending = this.getDatetime (date);
+        this.context._id = this.getId (date);
+        this.context.operation = this.getUuid ();
+        this.context.difference = this.getDifference (this.context.ending, this.context.starting);
+
+        if (this.context.overwrite === true) {
+
+            this.context.class = locationStringArray [0];
+            this.context.method = locationStringArray [1];
 
         }
 

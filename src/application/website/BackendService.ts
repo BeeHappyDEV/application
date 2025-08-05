@@ -6,157 +6,250 @@ import {MongoDbModule} from '../middleware/MongoDbModule';
 import {PostgresModule} from '../middleware/PostgresModule';
 import {WebserviceModule} from '../middleware/WebserviceModule';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
 import {LogTool} from '../toolkit/LogTool';
 
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {LogConstants} from '../constants/LogConstants';
 
 @injectable ()
 export class BackendService {
 
     constructor (
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (MongoDbModule) private mongoDbModule: MongoDbModule,
         @inject (PostgresModule) private postgresModule: PostgresModule,
-        @inject (WebserviceModule) private webserviceModule: WebserviceModule,
-        @inject (LogTool) private logTool: LogTool
+        @inject (WebserviceModule) private webserviceModule: WebserviceModule
     ) {
     }
 
-    public async postWakeupAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async postWakeupAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            paramsObject.set ('txt_schema', 'backend');
-            paramsObject.set ('txt_function', 'wakeup_action');
+            paramsObject.txt_schema = 'backend';
+            paramsObject.txt_function = 'wakeup_action';
 
-            resultObject = await this.postgresModule.execute (paramsObject, this.logTool.trace ());
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), paramsObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    public async postDeleteCacheAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async postDeleteCacheAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        const headersObject = new JsonObject ();
-        headersObject.set ('authorization', 'Bearer ' + paramsObject.get ('txt_token'));
-        headersObject.set ('content-type', 'application/json');
-
-        const bodyObject = new JsonObject ();
-        bodyObject.set ('purge_everything', true);
-
-        const resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            await this.webserviceModule.delete (paramsObject.get ('txt_host'), headersObject, null, bodyObject, this.logTool.trace ());
+            const headersObject: Record<string, any> = {};
+            headersObject.authorization = 'Bearer ' + paramsObject.txt_token;
+            headersObject.content_type = 'application/json';
 
-            resultObject.setResult (ExceptionTool.SUCCESSFUL ());
+            const bodyObject: Record<string, any> = {};
+            bodyObject.purge_everything = true;
+
+            resultObject = await this.webserviceModule.delete (logTool.getTrace (), paramsObject.txt_host, headersObject, undefined, bodyObject);
+
+            logTool.OK ();
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
+            resultObject.status = {};
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
-            this.logTool.exception ();
+            logTool.ERR (LogConstants.SERVICE);
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    public async postRebuildDocumentalAction (traceObject: JsonObject): Promise<ResultObject> {
+    public async postRebuildDocumentalAction (traceObject: Record<string, any>, _paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        const resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            await this.mongoDbModule.rebuild (this.logTool.trace ());
+            await this.mongoDbModule.rebuildTraces ();
 
-            resultObject.setResult (ExceptionTool.SUCCESSFUL ());
+            resultObject.status = {};
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
+            resultObject.status = {};
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
-            this.logTool.exception ();
+            logTool.ERR (LogConstants.SERVICE);
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    public async postRebuildRelationalAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async postRebuildRelationalAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        const resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            await this.rebuildReadMainFile (paramsObject, this.logTool.trace ());
-
-            resultObject.setResult (ExceptionTool.SUCCESSFUL ());
+            resultObject = await this.rebuildReadMainFile (logTool.getTrace (), paramsObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    private async rebuildReadMainFile (paramsObject: JsonObject, traceObject: JsonObject): Promise<void> {
+    public async postReloadIndicatorsAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
+        let resultObject: Record<string, any> = {};
 
-        const resultObject = new ResultObject ();
+        try {
 
-        const contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_file'));
+            await this.reloadDollarIndicators (logTool.getTrace (), paramsObject);
+            await this.reloadEuroIndicators (logTool.getTrace (), paramsObject);
+            await this.reloadFomentUnitIndicators (logTool.getTrace (), paramsObject);
+            await this.reloadMonthlyTaxUnitIndicators (logTool.getTrace (), paramsObject);
+
+            logTool.OK ();
+
+        } catch (exception) {
+
+            if (!resultObject.status) {
+
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.INDICATOR);
+
+        }
+
+        logTool.FINALIZE ();
+
+        return resultObject;
+
+    }
+
+    private async rebuildReadMainFile (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
+
+        let resultObject: Record<string, any> = {};
+
+        let exceptionBoolean = false;
+
+        const contentBuffer = fsExtra.readFileSync (paramsObject.txt_path + paramsObject.txt_file);
 
         const contentString = contentBuffer.toString ();
 
@@ -172,30 +265,59 @@ export class BackendService {
 
             }
 
-            paramsObject.set ('txt_folder', lineString);
+            paramsObject.txt_folder = lineString;
 
-            await this.rebuildReadFolderFile (paramsObject, this.logTool.trace ());
+            resultObject = await this.rebuildReadFolderFile (logTool.getTrace (), paramsObject);
+
+            if (resultObject.status.boo_exception == true) {
+
+                exceptionBoolean = true;
+
+            }
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (!exceptionBoolean) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ('Main Success', paramsObject.txt_path + paramsObject.txt_file);
+
+        } else {
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.NOK ('Main Failed', paramsObject.txt_path + paramsObject.txt_file);
+
+        }
+
+        logTool.FINALIZE ();
+
+        return resultObject;
 
     }
 
-    private async rebuildReadFolderFile (paramsObject: JsonObject, traceObject: JsonObject): Promise<void> {
+    private async rebuildReadFolderFile (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setSoftTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
+        paramsObject.txt_folder = paramsObject.txt_folder.split ('/') [0] + '/';
 
-        paramsObject.set ('txt_folder', paramsObject.get ('txt_folder').split ('/') [0] + '/');
-
-        const contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_folder') + paramsObject.get ('txt_file'));
+        const contentBuffer = fsExtra.readFileSync (paramsObject.txt_path + paramsObject.txt_folder + paramsObject.txt_file);
 
         const contentString = contentBuffer.toString ();
 
         const linesString = contentString.split (/\r?\n/);
+
+        let resultObject: Record<string, any> = {};
+
+        let exceptionBoolean = false;
 
         for (let offsetNumber = 0; offsetNumber < linesString.length; offsetNumber++) {
 
@@ -207,258 +329,394 @@ export class BackendService {
 
             }
 
-            paramsObject.set ('txt_script', lineString);
+            paramsObject.txt_script = lineString;
 
-            await this.rebuildReadScriptFile (paramsObject, this.logTool.trace ());
+            resultObject = await this.rebuildReadScriptFile (logTool.getTrace (), paramsObject);
+
+            if (resultObject.status.boo_exception == true) {
+
+                exceptionBoolean = true;
+
+            }
 
         }
 
-        this.logTool.comment ('Folder:', paramsObject.get ('txt_folder').split ('/') [0]);
-        this.logTool.finalize ();
+        if (!exceptionBoolean) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ('Folder Success', paramsObject.txt_path + paramsObject.txt_folder.split ('/') [0]);
+
+        } else {
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.NOK ('Folder Failed', paramsObject.txt_path + paramsObject.txt_folder.split ('/') [0]);
+
+        }
+
+        logTool.FINALIZE ();
+
+        return resultObject;
 
     }
 
-    private async rebuildReadScriptFile (paramsObject: JsonObject, traceObject: JsonObject): Promise<void> {
+    private async rebuildReadScriptFile (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setSoftTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
+        const contentBuffer = fsExtra.readFileSync (paramsObject.txt_path + paramsObject.txt_folder + paramsObject.txt_script);
 
-        const contentBuffer = fsExtra.readFileSync (paramsObject.get ('txt_path') + paramsObject.get ('txt_folder') + paramsObject.get ('txt_script'));
         const contentString = contentBuffer.toString ();
 
-        paramsObject.set ('txt_content', contentString);
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            await this.postgresModule.execute (paramsObject, this.logTool.trace ());
+            paramsObject.txt_content = contentString;
+
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), paramsObject);
 
         } catch (exception) {
 
-            this.logTool.exception ();
+            if (!resultObject.status) {
+
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.comment ('File:', paramsObject.get ('txt_folder') + paramsObject.get ('txt_script'));
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
 
-    }
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
-    public async postReloadIndicatorsAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+            logTool.OK ();
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        } else {
 
-        this.logTool.initialize (stackStringArray, traceObject);
-
-        const resultObject = new ResultObject ();
-
-        try {
-
-            await this.reloadDollarIndicators (paramsObject, this.logTool.trace ());
-            await this.reloadEuroIndicators (paramsObject, this.logTool.trace ());
-            await this.reloadFomentUnitIndicators (paramsObject, this.logTool.trace ());
-            await this.reloadMonthlyTaxUnitIndicators (paramsObject, this.logTool.trace ());
-
-            resultObject.setResult (ExceptionTool.SUCCESSFUL ());
-
-        } catch (exception) {
-
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
-
-            this.logTool.exception ();
+            logTool.NOK (resultObject.txt_exception);
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    private async reloadDollarIndicators (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    private async reloadDollarIndicators (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setSoftTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
+        const headersObject: Record<string, any> = {};
 
-        const headersObject = new JsonObject ();
+        const queryObject: Record<string, any> = {};
+        delete queryObject.jsn_data;
+        queryObject.apikey = paramsObject.txt_token;
+        queryObject.formato = 'json';
 
-        const queryObject = new JsonObject ();
-        queryObject.del ('jsn_data');
-        queryObject.set ('apikey', paramsObject.get ('txt_token'));
-        queryObject.set ('formato', 'json');
+        const bodyObject: Record<string, any> = {};
 
-        const bodyObject = new JsonObject ();
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_dollar') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject, this.logTool.trace ());
-            resultObject.set ('outgoing', resultObject.get (['outgoing', 'Dolares']));
-            resultObject.rename ('Fecha', 'date');
-            resultObject.rename ('Valor', 'value');
+            resultObject = await this.webserviceModule.get (logTool.getTrace (), paramsObject.txt_host_dollar + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject);
 
-            queryObject.del ('apikey');
-            queryObject.del ('formato');
-            queryObject.set ('jsn_data', resultObject.get ('outgoing'));
-            queryObject.set ('txt_schema', 'indicators');
-            queryObject.set ('txt_function', 'set_dollar_values');
+            let transientObject: Record<string, any> = JSON.parse (resultObject.outgoing.text);
+            transientObject = transientObject.Dolares;
+            transientObject = transientObject.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
+                value: item.Valor,
+                date: item.Fecha
+            }));
 
-            await this.postgresModule.execute (queryObject, this.logTool.trace ());
+            delete queryObject.apikey;
+            delete queryObject.formato;
+            queryObject.jsn_data = transientObject;
+            queryObject.txt_schema = 'indicators';
+            queryObject.txt_function = 'set_dollar_values';
+
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), queryObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.INDICATORS_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    private async reloadEuroIndicators (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    private async reloadEuroIndicators (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setSoftTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
+        const headersObject: Record<string, any> = {};
 
-        const headersObject = new JsonObject ();
+        const queryObject: Record<string, any> = {};
+        delete queryObject.jsn_data;
+        queryObject.apikey = paramsObject.txt_token;
+        queryObject.formato = 'json';
 
-        const queryObject = new JsonObject ();
-        queryObject.del ('jsn_data');
-        queryObject.set ('apikey', paramsObject.get ('txt_token'));
-        queryObject.set ('formato', 'json');
+        const bodyObject: Record<string, any> = {};
 
-        const bodyObject = new JsonObject ();
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_euro') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject, this.logTool.trace ());
-            resultObject.set ('outgoing', resultObject.get (['outgoing', 'Euros']));
-            resultObject.rename ('Fecha', 'date');
-            resultObject.rename ('Valor', 'value');
+            resultObject = await this.webserviceModule.get (logTool.getTrace (), paramsObject.txt_host_euro + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject);
 
-            queryObject.del ('apikey');
-            queryObject.del ('formato');
-            queryObject.set ('jsn_data', resultObject.get ('outgoing'));
-            queryObject.set ('txt_schema', 'indicators');
-            queryObject.set ('txt_function', 'set_euro_values');
+            let transientObject: Record<string, any> = JSON.parse (resultObject.outgoing.text);
+            transientObject = transientObject.Euros;
+            transientObject = transientObject.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
+                value: item.Valor,
+                date: item.Fecha
+            }));
 
-            await this.postgresModule.execute (queryObject, this.logTool.trace ());
+            delete queryObject.apikey;
+            delete queryObject.formato;
+            queryObject.jsn_data = transientObject;
+            queryObject.txt_schema = 'indicators';
+            queryObject.txt_function = 'set_euro_values';
+
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), queryObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.INDICATORS_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    private async reloadFomentUnitIndicators (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    private async reloadFomentUnitIndicators (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setSoftTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
+        const headersObject: Record<string, any> = {};
 
-        let headersObject = new JsonObject ();
+        const queryObject: Record<string, any> = {};
+        delete queryObject.jsn_data;
+        queryObject.apikey = paramsObject.txt_token;
+        queryObject.formato = 'json';
 
-        let queryObject = new JsonObject ();
-        queryObject.del ('jsn_data');
-        queryObject.set ('apikey', paramsObject.get ('txt_token'));
-        queryObject.set ('formato', 'json');
+        const bodyObject: Record<string, any> = {};
 
-        const bodyObject = new JsonObject ();
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_foment_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject, this.logTool.trace ());
-            resultObject.set ('outgoing', resultObject.get (['outgoing', 'UFs']));
-            resultObject.rename ('Fecha', 'date');
-            resultObject.rename ('Valor', 'value');
+            resultObject = await this.webserviceModule.get (logTool.getTrace (), paramsObject.txt_host_foment_unit + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject);
 
-            queryObject.del ('apikey');
-            queryObject.del ('formato');
-            queryObject.set ('jsn_data', resultObject.get ('outgoing'));
-            queryObject.set ('txt_schema', 'indicators');
-            queryObject.set ('txt_function', 'set_foment_unit_values');
+            let transientObject: Record<string, any> = JSON.parse (resultObject.outgoing.text);
+            transientObject = transientObject.UFs;
+            transientObject = transientObject.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
+                value: item.Valor,
+                date: item.Fecha
+            }));
 
-            await this.postgresModule.execute (queryObject, this.logTool.trace ());
+            delete queryObject.apikey;
+            delete queryObject.formato;
+            queryObject.jsn_data = transientObject;
+            queryObject.txt_schema = 'indicators';
+            queryObject.txt_function = 'set_foment_unit_values';
+
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), queryObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.INDICATORS_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 
     }
 
-    private async reloadMonthlyTaxUnitIndicators (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    private async reloadMonthlyTaxUnitIndicators (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setSoftTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
+        const headersObject: Record<string, any> = {};
 
-        let headersObject = new JsonObject ();
+        const queryObject: Record<string, any> = {};
+        delete queryObject.jsn_data;
+        queryObject.apikey = paramsObject.txt_token;
+        queryObject.formato = 'json';
 
-        let queryObject = new JsonObject ();
-        queryObject.del ('jsn_data');
-        queryObject.set ('apikey', paramsObject.get ('txt_token'));
-        queryObject.set ('formato', 'json');
+        const bodyObject: Record<string, any> = {};
 
-        const bodyObject = new JsonObject ();
-
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.get (paramsObject.get ('txt_host_monthly_tax_unit') + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject, this.logTool.trace ());
-            resultObject.set ('outgoing', resultObject.get (['outgoing', 'UTMs']));
-            resultObject.rename ('Fecha', 'date');
-            resultObject.rename ('Valor', 'value');
+            resultObject = await this.webserviceModule.get (logTool.getTrace (), paramsObject.txt_host_monthly_tax_unit + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject);
 
-            queryObject.del ('apikey');
-            queryObject.del ('formato');
-            queryObject.set ('jsn_data', resultObject.get ('outgoing'));
-            queryObject.set ('txt_schema', 'indicators');
-            queryObject.set ('txt_function', 'set_monthly_tax_unit_values');
+            let transientObject: Record<string, any> = JSON.parse (resultObject.outgoing.text);
+            transientObject = transientObject.UTMs;
+            transientObject = transientObject.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
+                value: item.Valor,
+                date: item.Fecha
+            }));
 
-            await this.postgresModule.execute (queryObject, this.logTool.trace ());
+            delete queryObject.apikey;
+            delete queryObject.formato;
+            queryObject.jsn_data = transientObject;
+            queryObject.txt_schema = 'indicators';
+            queryObject.txt_function = 'set_monthly_tax_unit_values';
+
+            resultObject = await this.postgresModule.execute (logTool.getTrace (), queryObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.INDICATORS_EXCEPTION (stackStringArray));
+            if (!resultObject.status) {
 
-            this.logTool.exception ();
+                resultObject.status = {};
+
+            }
+
+            resultObject.status.boo_exception = true;
+            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+
+            logTool.ERR (LogConstants.SERVICE);
+            logTool.FINALIZE ();
+
+            return resultObject;
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 

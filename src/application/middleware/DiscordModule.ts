@@ -1,21 +1,30 @@
-import {singleton} from 'tsyringe';
-import {inject} from "tsyringe";
-import {LogTool} from "../toolkit/LogTool";
-import {PropertiesTool} from "../toolkit/PropertiesTool";
+import {inject, injectable} from 'tsyringe';
 
-@singleton ()
+import express from 'express';
+
+import {LogTool} from '../toolkit/LogTool';
+import {PropertiesTool} from '../toolkit/PropertiesTool';
+
+@injectable ()
 export class DiscordModule {
 
     constructor (
-        @inject (LogTool) private logTool: LogTool,
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
 
-    public async initialize (): Promise<void> {
+    // @ts-ignore
+    public async initialize (expressApplication: express.Application): Promise<void> {
 
-        console.log (this.logTool);
+        const logTool = this.logToolFactory ();
+        logTool.OK ();
+
+        const originalConsole = {...console};
+        console.log = () => {
+        };
         console.log (this.propertiesTool);
+        console.log = originalConsole.log;
 
     }
 

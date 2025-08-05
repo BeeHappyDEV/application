@@ -1,0 +1,17 @@
+{
+  "": "",
+  "intent": "consultar_contacto",
+  "utterances": [
+    "correo de contacto",
+    "cual es el email de soporte",
+    "a donde puedo escribir un correo",
+    "necesito el email de la empresa",
+    "como los puedo contactar por email",
+    "dame tu correo"
+  ],
+  "actions": ["getInfo.contactEmail"],
+  "responses": [
+    "Puedes escribirnos a nuestro correo de contacto: soporte@miempresa.com",
+    "Claro, nuestro email de soporte es soporte@miempresa.com. ¿Te puedo ayudar en algo más?"
+  ]
+}

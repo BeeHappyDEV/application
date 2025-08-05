@@ -7,76 +7,51 @@ create or replace function framework.set_text (
 )
 returns json as $body$
 declare
-    var_boo_array boolean;
-    var_jsn_object json;
-    var_jsn_value json;
-    var_txt_node text;
+    var_jsn_current jsonb;
+    var_jsn_result jsonb;
+    var_txt_current text;
 begin
 
-    if (in_txt_key is null) then
+    var_jsn_result := framework.get_empty_node (in_jsn_object) :: jsonb;
 
-        raise exception 'the key cannot be null';
+    var_jsn_current := var_jsn_result -> in_txt_key;
 
-    end if;
+    if (var_jsn_result = '{}' :: jsonb or var_jsn_current is null) then
 
-    if (in_txt_value is null) then
+        var_jsn_result := var_jsn_result || jsonb_build_object (in_txt_key, to_jsonb (in_txt_value));
 
-        raise exception 'the value cannot be null';
-
-    end if;
-
-    in_jsn_object = framework.get_empty_node (in_jsn_object);
-
-    if (in_jsn_object :: text = '{}') then
-
-        return json_build_object (in_txt_key, in_txt_value);
-
-    end if;
-
-    var_txt_node = framework.get_text (in_jsn_object, in_txt_key);
-
-    if (var_txt_node is null) then
-
-        return in_jsn_object :: jsonb || json_build_object (in_txt_key, in_txt_value) :: jsonb;
-
-    end if;
-
-    var_jsn_value = in_jsn_object -> in_txt_key;
-
-    var_boo_array = (json_typeof (var_jsn_value) = 'array');
-
-    if var_boo_array then
+    elsif (jsonb_typeof (var_jsn_current) = 'array') then
 
         perform
             1
         from
-            jsonb_array_elements (var_jsn_value :: jsonb) var_tmp_element
+            jsonb_array_elements (var_jsn_current) "obj_element"
         where
-            json_typeof (var_tmp_element) != 'text'
+            jsonb_typeof (obj_element) not in ('string')
         limit
             1;
 
         if found then
 
-            raise exception 'the existing array contains non-text elements';
+            raise exception '';
 
         end if;
 
-        var_jsn_object = json_build_object (in_txt_key, var_jsn_value :: jsonb || to_json (in_txt_value) :: jsonb);
+        var_jsn_result := jsonb_set (var_jsn_result, array [in_txt_key], var_jsn_current || to_jsonb (in_txt_value));
+
+    elsif (jsonb_typeof (var_jsn_current) = 'string') then
+
+        var_txt_current := var_jsn_current #>> '{}';
+
+        var_jsn_result := var_jsn_result - in_txt_key || jsonb_build_object (in_txt_key, jsonb_build_array (var_txt_current, in_txt_value));
 
     else
 
-        if json_typeof (var_jsn_value) != 'text' then
-
-            raise exception 'the existing value for the key % is not text', in_txt_key;
-
-        end if;
-
-        var_jsn_object = json_build_object (in_txt_key, json_build_array (var_txt_node) || to_json (in_txt_value) :: jsonb);
+        raise exception '';
 
     end if;
 
-    return in_jsn_object :: jsonb || var_jsn_object :: jsonb;
+    return var_jsn_result :: json;
 
-end ;
+end;
 $body$ language plpgsql;

@@ -7,53 +7,27 @@ create or replace function framework.set_array (
 )
 returns json as $body$
 declare
-    var_boo_array boolean;
-    var_jsn_object json;
-    var_jsn_value json;
-    var_jsn_node json;
+    var_jsn_current jsonb;
+    var_jsn_result jsonb;
 begin
 
-    if (in_txt_key is null) then
+    var_jsn_result = framework.get_empty_node (in_jsn_object);
 
-        raise exception 'the key cannot be null';
+    var_jsn_current = var_jsn_result -> in_txt_key;
 
-    end if;
+    if (var_jsn_result = '{}' :: jsonb or var_jsn_current is null) then
 
-    if (in_jsn_value is null) then
+       return (var_jsn_result || jsonb_build_object (in_txt_key, jsonb_build_array (in_jsn_value))) :: json;
 
-        raise exception 'the value cannot be null';
+    elsif (jsonb_typeof (var_jsn_current) = 'array') then
 
-    end if;
+        return jsonb_set (var_jsn_result, array [in_txt_key], var_jsn_current || in_jsn_value :: jsonb) :: json;
 
-    in_jsn_object = framework.get_empty_node (in_jsn_object);
+    else
 
-    if (in_jsn_object :: text = '{}') then
-
-        return json_build_object (in_txt_key, jsonb_build_array (in_jsn_value));
+        raise exception '';
 
     end if;
-
-    var_jsn_node = framework.get_node (in_jsn_object, in_txt_key);
-
-    if (var_jsn_node is null) then
-
-        return in_jsn_object :: jsonb || json_build_object (in_txt_key, jsonb_build_array (in_jsn_value)) :: jsonb;
-
-    end if;
-
-    var_jsn_value = in_jsn_object -> in_txt_key;
-
-    var_boo_array = (json_typeof (var_jsn_value) != 'array');
-
-    if var_boo_array then
-
-        raise exception 'the existing is not an array';
-
-    end if;
-
-    var_jsn_object = json_build_object (in_txt_key, var_jsn_node :: jsonb || in_jsn_value :: jsonb);
-
-    return in_jsn_object :: jsonb || var_jsn_object :: jsonb;
 
 end ;
 $body$ language plpgsql;

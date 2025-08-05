@@ -1,0 +1,17 @@
+{
+  "intent": "despedirse",
+  "utterances": [
+    "adios",
+    "chao",
+    "hasta luego",
+    "gracias por la ayuda",
+    "eso es todo gracias",
+    "nos vemos"
+  ],
+  "actions": ["conversation.end"],
+  "responses": [
+    "¡De nada! Que tengas un excelente día.",
+    "Ha sido un placer ayudarte. ¡Adiós!",
+    "Cualquier otra cosa, no dudes en volver a preguntar. ¡Chao!"
+  ]
+}

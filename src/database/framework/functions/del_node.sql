@@ -13,12 +13,6 @@ begin
 
     end if;
 
-    if (in_txt_key is null) then
-
-        raise exception 'the key cannot be null';
-
-    end if;
-
     return in_jsn_object :: jsonb - in_txt_key;
 
 end;

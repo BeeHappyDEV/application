@@ -15,67 +15,27 @@ alter table members.users enable row level security;
 
 comment on table members.users is 'usr';
 
-with tabled_data as (
-    select *
-    from (values
-        (true, 'BeeHappy', null, 'hola@beehappy.dev', '56977533622', 'Avenida Apoquindo 5950,<br>Las Condes', 'https://maps.app.goo.gl/xZBD8AerhrRa4yaHA'),
-        (true, 'BeeBee', null, 'hola@beehappy.dev', '56944244244', null, 'https://maps.app.goo.gl/xZBD8AerhrRa4yaHA'),
-        (true, 'BeeJay', null, 'hola@beehappy.dev', '56944744744', null, 'https://maps.app.goo.gl/xZBD8AerhrRa4yaHA'),
-        (true, 'Alexis', 'Bacian', 'alexis@beehappy.dev', '56991220195', null, null),
-        (true, 'Isabel', 'Gonzalez', 'isabelangelica@gmail.com', '56995995422', null, null)
-    ) as data (boo_active, txt_first_name, txt_last_name, txt_mail, txt_phone, txt_address, txt_location)
-),
-registries_insert as (
-    insert into framework.registries
-    select from generate_series (1, (select count (*) from tabled_data))
-    returning idf_registry
-),
-matched_data as (
-    select
-        e.idf_registry,
-        t.boo_active,
-        t.txt_first_name,
-        t.txt_last_name,
-        t.txt_phone,
-        t.txt_mail,
-        t.txt_address,
-        t.txt_location
-    from (
-        select
-            row_number() over () as rn,
-            boo_active,
-            txt_first_name,
-            txt_last_name,
-            txt_phone,
-            txt_mail,
-            txt_address,
-            txt_location
-        from tabled_data
-    ) t
-    join (
-        select
-            row_number() over () as rn,
-            idf_registry
-        from registries_insert
-    ) e on t.rn = e.rn
-)
-insert into members.users (
-    idf_user,
-    boo_active,
-    txt_first_name,
-    txt_last_name,
-    txt_phone,
-    txt_mail,
-    txt_address,
-    txt_location
-)
-select
-    idf_registry,
-    boo_active,
-    txt_first_name,
-    txt_last_name,
-    txt_phone,
-    txt_mail,
-    txt_address,
-    txt_location
-from matched_data;
+with new_registry as (insert into framework.registries default values returning idf_registry)
+insert into members.users (idf_user, boo_active, txt_first_name, txt_last_name, txt_phone, txt_mail, txt_address, txt_location)
+select idf_registry, true, 'BeeHappy', null, 'hola@beehappy.dev', '56977533622', 'Avenida Apoquindo 5950,<br>Las Condes', 'https://maps.app.goo.gl/xZBD8AerhrRa4yaHA'
+from new_registry;
+
+with new_registry as (insert into framework.registries default values returning idf_registry)
+insert into members.users (idf_user, boo_active, txt_first_name, txt_last_name, txt_phone, txt_mail, txt_address, txt_location)
+select idf_registry, true, 'BeeBee', null, 'hola@beehappy.dev', '56944244244', null, 'https://maps.app.goo.gl/xZBD8AerhrRa4yaHA'
+from new_registry;
+
+with new_registry as (insert into framework.registries default values returning idf_registry)
+insert into members.users (idf_user, boo_active, txt_first_name, txt_last_name, txt_phone, txt_mail, txt_address, txt_location)
+select idf_registry, true, 'BeeJay', null, 'hola@beehappy.dev', '56944744744', null, 'https://maps.app.goo.gl/xZBD8AerhrRa4yaHA'
+from new_registry;
+
+with new_registry as (insert into framework.registries default values returning idf_registry)
+insert into members.users (idf_user, boo_active, txt_first_name, txt_last_name, txt_phone, txt_mail, txt_address, txt_location)
+select idf_registry, true, 'Alexis', 'Bacian', 'alexis@beehappy.dev', '56991220195', null, null
+from new_registry;
+
+with new_registry as (insert into framework.registries default values returning idf_registry)
+insert into members.users (idf_user, boo_active, txt_first_name, txt_last_name, txt_phone, txt_mail, txt_address, txt_location)
+select idf_registry, true, 'Isabel', 'Gonzalez', 'isabelangelica@gmail.com', '56995995422', null, null
+from new_registry;

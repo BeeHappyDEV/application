@@ -2,52 +2,67 @@ import {inject, injectable} from 'tsyringe';
 
 import {WebserviceModule} from '../middleware/WebserviceModule';
 
-import {CommonsTool} from '../toolkit/CommonsTool';
-import {ExceptionTool} from '../toolkit/ExceptionTool';
 import {LogTool} from '../toolkit/LogTool';
 
-import {JsonObject} from '../object/JsonObject';
-import {ResultObject} from '../object/ResultObject';
+import {LogConstants} from '../constants/LogConstants';
 
 @injectable ()
 export class ScheduleService {
 
     constructor (
-        @inject (WebserviceModule) private webserviceModule: WebserviceModule,
-        @inject (LogTool) private logTool: LogTool
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        @inject (WebserviceModule) private webserviceModule: WebserviceModule
     ) {
     }
 
-    public async cronScheduleAction (paramsObject: JsonObject, traceObject: JsonObject): Promise<ResultObject> {
+    public async cronScheduleAction (traceObject:  Record<string, any>, paramsObject:  Record<string, any>): Promise<Record<string, any>> {
 
-        const stackStringArray = CommonsTool.getStackStringArray ();
+        const logTool = this.logToolFactory ();
+        logTool.setTrace (traceObject);
+        logTool.INITIALIZE ();
 
-        this.logTool.initialize (stackStringArray, traceObject);
+        const headersObject: Record<string, any> = {};
 
-        let headersObject = new JsonObject ();
+        let queryObject: Record<string, any> = {};
+        //queryObject.set ('depth', '3');
+        queryObject = traceObject;
 
-        const queryObject = new JsonObject ();
-        queryObject.set ('depth', '3');
-        queryObject.set ('thread', this.logTool.trace ().get ('thread'));
+/*
+        const transientObject: Record<string, any> = traceObject;
 
-        const bodyObject = new JsonObject ();
+        queryObject.set ('starting', transientObject ['starting']);
+        queryObject.set ('transaction', transientObject ['transaction']);
+        queryObject.set ('depth', transientObject ['depth']);
+*/
+        const bodyObject: Record<string, any> = {};
 
-        let resultObject = new ResultObject ();
+        let resultObject: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.post (await paramsObject.get ('txt_host'), headersObject, queryObject, bodyObject, this.logTool.trace ());
+            resultObject = await this.webserviceModule.post (logTool.getTrace (), await paramsObject.txt_host, headersObject, queryObject, bodyObject);
 
         } catch (exception) {
 
-            resultObject.setResult (ExceptionTool.APPLICATION_EXCEPTION (stackStringArray));
-
-            this.logTool.exception ();
+            logTool.ERR (LogConstants.WEBSERVICE);
 
         }
 
-        this.logTool.response (resultObject);
-        this.logTool.finalize ();
+        if (resultObject.status.num_exception === 0) {
+
+            resultObject.status.boo_exception = false;
+            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+
+            logTool.OK ();
+
+        } else {
+
+            logTool.NOK (resultObject.txt_exception);
+
+        }
+
+        logTool.FINALIZE ();
 
         return resultObject;
 

@@ -1,0 +1,28 @@
+{
+  "intent": "consultar_ejecutivo",
+  "utterances": [
+    "cual es el ejecutivo que me atiende",
+    "quien es mi ejecutivo de cuentas",
+    "necesito el nombre de mi agente",
+    "con quien puedo hablar sobre mi cuenta",
+    "dime quien ve mi caso",
+    "quien está asignado a mi cuenta"
+  ],
+  "actions": [
+    "api.getAccountExecutive"
+  ],
+  "responses": [
+    {
+      "id": "1412675d-584c-4f69-9f0c-2fc3d0613918",
+      "response": "Tu ejecutivo asignado es {nombre_ejecutivo}. ¿Necesitas sus datos de contacto?"
+    },
+    {
+      "id": "630dd35f-2cfb-4b4b-bc24-9067663b92de",
+      "response": "Claro, la persona a cargo de tu cuenta es {nombre_ejecutivo}."
+    },
+    {
+      "id": "12d36484-5711-46bb-8877-14c824de6d4b",
+      "response": "Un momento, estoy verificando... Tu ejecutivo es {nombre_ejecutivo}."
+    }
+  ]
+}

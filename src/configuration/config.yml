@@ -8,11 +8,9 @@ application:
 # INTEGRATIONS #
 
 integration:
-  auth:
-    suffix: user.beehappy.dev
   cloudflare:
-    host: https://api.cloudflare.com/client/v4/zones/9cd5ceaf174e17679d4d11bc8dfe0fe6/purge_cache
-    token: Xj717vFt8wVLISFbMkQySM40d7SjRBrfuburg-3o
+    host: https://api.cloudflare.com/client/v4/zones/74ae119af953cb4a1446f3195b062c14/purge_cache
+    token: Iw4yEBl68GmXxncUFK2jJgDjwXcs37bytPLrD5tv
   public: https://api64.ipify.org?format=json
 
 # SCHEDULERS #
