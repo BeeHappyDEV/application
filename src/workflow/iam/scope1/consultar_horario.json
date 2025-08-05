@@ -1,16 +1,26 @@
 {
-  "intent": "consultar_horario",
-  "utterances": [
-    "en que horario atienden",
-    "cual es el horario de atencion",
-    "hasta que hora trabajan",
-    "cuando estan abiertos",
-    "puedo llamar ahora",
-    "cuales son sus horas de oficina"
-  ],
-  "actions": ["getInfo.businessHours"],
-  "responses": [
-    "Nuestro horario de atención es de lunes a viernes, de 9:00 a 18:00 hrs.",
-    "Atendemos de lunes a viernes, entre las 9:00 y las 18:00. Los fines de semana no estamos disponibles."
-  ]
+    "domain": "iam",
+    "scope": "scope1",
+    "intent": "consultar_horario",
+    "utterances": [
+        "en que horario atienden",
+        "cual es el horario de atencion",
+        "hasta que hora trabajan",
+        "cuando estan abiertos",
+        "puedo llamar ahora",
+        "cuales son sus horas de oficina"
+    ],
+    "actions": [
+        "getInfo.businessHours"
+    ],
+    "responses": [
+        {
+            "identifier": 1,
+            "message": "Nuestro horario de atención es de lunes a viernes, de 9:00 a 18:00 hrs."
+        },
+        {
+            "identifier": 2,
+            "message": "Atendemos de lunes a viernes, entre las 9:00 y las 18:00. Los fines de semana no estamos disponibles."
+        }
+    ]
 }

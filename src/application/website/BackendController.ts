@@ -72,6 +72,17 @@ export class BackendController {
 
         const logTool = this.logToolFactory ();
         logTool.setRequest (expressRequest);
+
+        if (expressRequest.body.transaction && expressRequest.body.depth) {
+
+            const traceObject: Record<string, any> = {};
+            traceObject.transaction = expressRequest.body.transaction;
+            traceObject.depth = Number (expressRequest.body.depth);
+
+            logTool.setSoftTrace (traceObject);
+
+        }
+
         logTool.INITIALIZE ();
 
         let resultObject: Record<string, any> = {};
@@ -181,6 +192,17 @@ export class BackendController {
 
         const logTool = this.logToolFactory ();
         logTool.setRequest (expressRequest);
+
+        if (expressRequest.body.transaction && expressRequest.body.depth) {
+
+            const traceObject: Record<string, any> = {};
+            traceObject.transaction = expressRequest.body.transaction;
+            traceObject.depth = Number (expressRequest.body.depth);
+
+            logTool.setSoftTrace (traceObject);
+
+        }
+
         logTool.INITIALIZE ();
 
         paramsObject.txt_host_dollar = await this.propertiesTool.get ('scheduler.indicators.host.dollar');

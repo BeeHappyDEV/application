@@ -89,31 +89,29 @@ export class ScheduleController {
 
         try {
 
+            logTool.OK ('Execute',paramsObject.txt_comment + ' runs ' + paramsObject.txt_verbose);
+
             resultObject = await this.scheduleService.cronScheduleAction (logTool.getTrace (), paramsObject);
 
             if (resultObject.outgoing) {
 
                 if (resultObject.status.num_exception === 0) {
 
-                    logTool.OK ('Redirect', resultObject.outgoing.txt_redirect);
+                    logTool.OK ('Success', paramsObject.txt_comment);
 
                 } else {
 
-                    logTool.NOK ('Redirect', resultObject.outgoing.txt_redirect);
+                    logTool.NOK ('Schedule Exception', paramsObject.txt_comment);
 
                 }
 
             } else {
 
                 resultObject.outgoing = {};
-                resultObject.outgoing.txt_redirect = '/';
 
-                logTool.NOK ('Redirect', resultObject.outgoing.txt_redirect);
+                logTool.NOK ('Schedule Exception', paramsObject.txt_comment);
 
             }
-
-            logTool.OK ('Execute', paramsObject.txt_comment + ' runs ' + paramsObject.txt_verbose);
-            //logTool.OK (paramsObject.get ('txt_comment'), paramsObject.get ('txt_verbose'));
 
         } catch (exception) {
 

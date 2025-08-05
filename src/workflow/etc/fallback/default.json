@@ -1,0 +1,15 @@
+{
+    "domain": "etc",
+    "scope": "fallback",
+    "intent": "default",
+    "responses": [
+        {
+            "identifier": 1,
+            "message": "No he encontrado una respuesta apropiada"
+        },
+        {
+            "identifier": 2,
+            "message": "No entendi lo que me preguntaste"
+        }
+    ]
+}

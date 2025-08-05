@@ -17,9 +17,9 @@ integration:
 
 scheduler:
   wakeup:
-    comment: BeeHappy.dev is running wakeup task
+    comment: Scheduled Wakeup task
   indicators:
-    comment: BeeHappy.dev is running indicators task
+    comment: Scheduled Indicators task
     host:
       dollar: https://api.cmfchile.cl/api-sbifv3/recursos_api/dolar
       euro: https://api.cmfchile.cl/api-sbifv3/recursos_api/euro
@@ -27,4 +27,46 @@ scheduler:
       monthly_tax_unit: https://api.cmfchile.cl/api-sbifv3/recursos_api/utm
     token: f9c87a4ec0b0c3321c67eec16e1a427e92d8b06c
   inspirational:
-    comment: BeeHappy.dev is running inspirational task
+    comment: Scheduled Inspirational task
+
+stopWords:
+  - a
+  - ante
+  - bajo
+  - cabe
+  - con
+  - contra
+  - de
+  - desde
+  - en
+  - entre
+  - hacia
+  - hasta
+  - para
+  - por
+  - segun
+  - sin
+  - sobre
+  - tras
+  - versus
+  - el
+  - la
+  - los
+  - las
+  - del
+  - un
+  - una
+  - unos
+  - unas
+  - hola
+  - que
+  - tal
+  - por
+  - favor
+  - gracias
+  - busco
+  - quiero
+  - necesito
+  - deseo
+  - puedo
+  - como

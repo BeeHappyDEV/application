@@ -341,21 +341,6 @@ export class LogTool {
 
     }
 
-    /*
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    */
-
     public setRequest (expressRequest: express.Request): void {
 
         let urlWithParsedQuery = url.parse (expressRequest.url, true);
@@ -384,7 +369,7 @@ export class LogTool {
 
         if (Object.keys (expressRequest.query).length !== 0) {
 
-            const queryObject: { [key: string]: string } = {};
+            const queryObject: {[key: string]: string} = {};
 
             for (const [keyString, valueString] of Object.entries (expressRequest.query)) {
 
@@ -401,21 +386,6 @@ export class LogTool {
         }
 
     }
-
-    /*
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    *
-    */
 
     public getTrace (): Record<string, any> {
 

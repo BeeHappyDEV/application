@@ -1,17 +1,30 @@
 {
-  "intent": "consultar_deuda",
-  "utterances": [
-    "cual es mi deuda",
-    "cuanto debo",
-    "quiero saber mi saldo pendiente",
-    "me puedes decir el monto de mi deuda",
-    "tengo facturas sin pagar",
-    "revisar mi estado de cuenta"
-  ],
-  "actions": ["api.getCustomerDebt"],
-  "responses": [
-    "Tu deuda actual es de ${monto}. ¿Deseas ver el detalle o realizar un pago?",
-    "Consultando tu estado de cuenta... Tienes un saldo pendiente de ${monto}.",
-    "Actualmente no registras deudas pendientes. ¡Excelente!"
-  ]
+    "domain": "iam",
+    "scope": "scope1",
+    "intent": "consultar_deuda",
+    "utterances": [
+        "cual es mi deuda",
+        "cuanto debo",
+        "quiero saber mi saldo pendiente",
+        "me puedes decir el monto de mi deuda",
+        "tengo facturas sin pagar",
+        "revisar mi estado de cuenta"
+    ],
+    "actions": [
+        "api.getCustomerDebt"
+    ],
+    "responses": [
+        {
+            "identifier": 1,
+            "message": "Tu deuda actual es de ${monto}. ¿Deseas ver el detalle o realizar un pago?"
+        },
+        {
+            "identifier": 2,
+            "message": "Consultando tu estado de cuenta... Tienes un saldo pendiente de ${monto}."
+        },
+        {
+            "identifier": 3,
+            "message": "Actualmente no registras deudas pendientes. ¡Excelente!"
+        }
+    ]
 }

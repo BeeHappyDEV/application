@@ -24,17 +24,10 @@ export class ScheduleService {
         const headersObject: Record<string, any> = {};
 
         let queryObject: Record<string, any> = {};
-        //queryObject.set ('depth', '3');
-        queryObject = traceObject;
 
-/*
-        const transientObject: Record<string, any> = traceObject;
-
-        queryObject.set ('starting', transientObject ['starting']);
-        queryObject.set ('transaction', transientObject ['transaction']);
-        queryObject.set ('depth', transientObject ['depth']);
-*/
         const bodyObject: Record<string, any> = {};
+        bodyObject.transaction = logTool.getTrace ().transaction;
+        bodyObject.depth = logTool.getTrace ().depth + 2;
 
         let resultObject: Record<string, any> = {};
 

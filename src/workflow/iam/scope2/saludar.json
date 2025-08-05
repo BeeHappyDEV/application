@@ -1,17 +1,30 @@
 {
-  "intent": "saludar",
-  "utterances": [
-    "hola",
-    "buenos dias",
-    "buenas tardes",
-    "hey",
-    "que tal",
-    "hola como estas"
-  ],
-  "actions": ["conversation.start"],
-  "responses": [
-    "¡Hola! Soy tu asistente virtual. ¿En qué te puedo ayudar hoy?",
-    "¡Buenos días! ¿Qué necesitas consultar?",
-    "¡Hola! Dime cómo puedo asistirte."
-  ]
+    "domain": "iam",
+    "scope": "scope2",
+    "intent": "saludar",
+    "utterances": [
+        "hola",
+        "buenos dias",
+        "buenas tardes",
+        "hey",
+        "que tal",
+        "hola como estas"
+    ],
+    "actions": [
+        "conversation.start"
+    ],
+    "responses": [
+        {
+            "identifier": 1,
+            "message": "¡Hola! Soy tu asistente virtual. ¿En qué te puedo ayudar hoy?"
+        },
+        {
+            "identifier": 2,
+            "message": "¡Buenos días! ¿Qué necesitas consultar?"
+        },
+        {
+            "identifier": 3,
+            "message": "¡Hola! Dime cómo puedo asistirte."
+        }
+    ]
 }

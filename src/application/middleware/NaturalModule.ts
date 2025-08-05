@@ -5,17 +5,15 @@ import natural from 'natural';
 import path from 'path';
 
 import {PropertiesTool} from '../toolkit/PropertiesTool';
-import {ApparatusClassification} from "natural";
 
 @injectable ()
 export class NaturalModule {
 
-    private bayesClassifier!: natural.BayesClassifier;
+    private bayesClassifier: natural.BayesClassifier = new natural.BayesClassifier ();
     private initializedBoolean = false;
-    private intentObject: any = {};
-    private intentObjectArray: any [] = [];
-    private stemmer: natural.Stemmer;
-    private stopWords: Set<string>;
+    private intentObject: any = null;
+    private intentObjectArray: any[] = [];
+    private stopWords!: Set<string>;
     private wordTokenizer: natural.WordTokenizer;
 
     constructor (
@@ -23,12 +21,15 @@ export class NaturalModule {
     ) {
 
         this.wordTokenizer = new natural.WordTokenizer ();
-        this.stemmer = natural.PorterStemmerEs;
-        this.stopWords = new Set ([...natural.stopwords]);
 
     }
 
     public async initialize (): Promise<void> {
+
+        this.stopWords = new Set ([
+            ...natural.stopwords,
+            await this.propertiesTool.get ('stopWords')
+        ]);
 
         if (this.initializedBoolean) {
 
@@ -36,21 +37,11 @@ export class NaturalModule {
 
         }
 
-        try {
+        await this.readIntentDirectories ();
 
-            await this.readIntentFiles ();
+        await this.trainModel ();
 
-            await this.trainModel ();
-
-            this.initializedBoolean = true;
-
-        } catch (error) {
-
-            this.initializedBoolean = false;
-
-        }
-
-        //await this.testPhrases ();
+        this.initializedBoolean = true;
 
     }
 
@@ -60,78 +51,66 @@ export class NaturalModule {
 
     }
 
-    public async getResponse (phrase: string): Promise<string> {
+    public async getResponse (preprocessedString: string): Promise<Record<string, any>> {
 
-        const processedPhrase = this.preprocessText (phrase);
+        const responseObject: Record<string, any> = {};
 
-        const apparatusClassificationArray: natural.ApparatusClassification [] = this.bayesClassifier.getClassifications (processedPhrase);
+        const processedString = await this.processString (preprocessedString);
 
-        if (apparatusClassificationArray.length === 0) {
+        const apparatusClassificationArray = this.bayesClassifier.getClassifications (processedString);
 
-            return this.getDefaultResponse ();
+        if (!apparatusClassificationArray || apparatusClassificationArray.length === 0) {
+
+            responseObject.preprocessed = preprocessedString;
+            responseObject.processed = await this.processString (preprocessedString);
+            responseObject.confidence = 0;
+            responseObject.response = this.selectRandomResponse (this.intentObject.responses);
+
+            return responseObject;
 
         }
 
-        const total = apparatusClassificationArray.reduce ((sum, apparatusClassification: ApparatusClassification) => sum + Math.exp (apparatusClassification.value), 0);
+        const totalNumber = apparatusClassificationArray.reduce ((summatoryNumber, apparatusClassification) => summatoryNumber + Math.exp (apparatusClassification.value), 0);
 
-        const [topIntent] = apparatusClassificationArray
+        const [apparatusClassification] = apparatusClassificationArray
             .map (apparatusClassification => ({
                 label: apparatusClassification.label,
-                confidence: Math.exp (apparatusClassification.value) / total
+                confidence: Math.exp (apparatusClassification.value) / totalNumber
             }))
             .sort ((a, b) => b.confidence - a.confidence);
 
-        // 3. Logging de diagnóstico
-        console.log (`Frase: "${phrase}"`);
-        console.log (`Intención detectada: ${topIntent.label} (${(topIntent.confidence * 100).toFixed (1)}% confianza)`);
+        const intentObject = this.intentObjectArray.find (obj => obj.intent === apparatusClassification.label);
 
-        // 4. Búsqueda de la respuesta
-        const intentParts = topIntent.label.split ('.');
-        const intentObject = this.intentObjectArray.find (obj =>
-            obj.domain === intentParts[0] &&
-            obj.scope === intentParts[1] &&
-            obj.intent === intentParts[2]
-        );
+        responseObject.preprocessed = preprocessedString;
+        responseObject.processed = await this.processString (preprocessedString);
+        responseObject.intent = apparatusClassification.label;
+        responseObject.confidence = (apparatusClassification.confidence * 100).toFixed (1);
+        responseObject.response = this.selectRandomResponse (intentObject.responses);
+        responseObject.actions = intentObject.actions
 
-        // 5. Retorno de respuesta aleatoria o default
-        if (intentObject?.responses?.length) {
-            const response = this.getRandomResponse (intentObject.responses);
-            console.log (`Respuesta: ${response}`);
-            return response;
-        }
-
-        return this.getDefaultResponse ();
+        return responseObject;
 
     }
 
-    private getDefaultResponse (): string {
+    private selectRandomResponse (responseObjectArray: any[]): string {
 
-        if (!this.intentObject?.responses?.length) return '';
+        const randomNumber = Math.floor (Math.random () * responseObjectArray.length);
 
-        const response = this.getRandomResponse (this.intentObject.responses);
-
-        console.log (`Respuesta (default): ${response}`);
-
-        return response;
+        return responseObjectArray [randomNumber];
 
     }
 
-    private getRandomResponse (responses: string[]): string {
-
-        return responses [Math.floor (Math.random () * responses.length)];
-
-    }
-
-    private async readIntentFiles (): Promise<void> {
+    private async readIntentDirectories (): Promise<void> {
 
         this.intentObject = null;
+
         this.intentObjectArray = [];
 
         const rootString = await this.propertiesTool.get ('integration.natural.root');
 
         const domainDirentArray = fsExtra.readdirSync (rootString, {withFileTypes: true})
             .filter (direntString => direntString.isDirectory ())
-            .sort ((aDirentString, bDirentString) => aDirentString.name.localeCompare (bDirentString.name));
+            .sort ((a, b) => a.name.localeCompare (b.name));
 
         for (const domainDirent of domainDirentArray) {
 
@@ -139,63 +118,81 @@ export class NaturalModule {
 
             const scopeDirentArray = fsExtra.readdirSync (domainString, {withFileTypes: true})
                 .filter (direntString => direntString.isDirectory ())
-                .sort ((aDirentString, bDirentString) => aDirentString.name.localeCompare (bDirentString.name));
+                .sort ((a, b) => a.name.localeCompare (b.name));
 
             for (const scopeDirent of scopeDirentArray) {
 
                 const scopeString = path.join (domainString, scopeDirent.name);
 
-                const fileDirentArray = fsExtra.readdirSync (scopeString)
+                const intentDirentArray = fsExtra.readdirSync (scopeString)
                     .filter (fileString => path.extname (fileString).toLowerCase () === '.json')
-                    .sort ((aFileString, bFileString) => aFileString.localeCompare (bFileString));
+                    .sort ((a, b) => a.localeCompare (b));
 
-                for (const fileDirent of fileDirentArray) {
+                for (const intentDirent of intentDirentArray) {
 
-                    if (path.extname (fileDirent).toLowerCase () === '.json') {
+                    let intentObject = await this.readIntentFile (rootString, domainDirent.name, scopeDirent.name, intentDirent);
 
-                        const jsonString = path.join (scopeString, fileDirent);
+                    if (intentObject.intent === 'default') {
 
-                        const contentString = fsExtra.readFileSync (jsonString, 'utf-8');
+                        this.intentObject= intentObject;
 
-                        const contentObject = JSON.parse (contentString);
-                        contentObject.domain = domainDirent.name;
-                        contentObject.scope = scopeDirent.name;
+                    } else {
 
-                        if (contentObject.intent === 'default') {
-
-                            this.intentObject = contentObject;
-
-                        } else {
-
-                            this.intentObjectArray.push (contentObject);
-
-                        }
+                        this.intentObjectArray.push (intentObject);
 
                     }
 
                 }
-
             }
 
         }
 
     }
 
-    private async trainModel () {
+    private async readIntentFile (rootString: string, domainString: string, scopeString: string, intentString: string): Promise<any> {
+
+        const sourceString = path.join (rootString, domainString, scopeString, intentString);
+
+        const contentString = fsExtra.readFileSync (sourceString, 'utf-8');
+
+        const intentObject = JSON.parse (contentString);
+        intentObject.domain = domainString;
+        intentObject.scope = scopeString;
+        intentObject.intent = path.parse (intentString).name;
+
+        let offsetNumber = 0;
+
+        for (const responseObject of intentObject.responses) {
+
+            responseObject.identifier = ++offsetNumber;
+
+        }
+
+        fsExtra.writeFileSync (sourceString, JSON.stringify (intentObject, null, 4), 'utf-8');
+
+        return intentObject;
+
+    }
+
+    private async trainModel (): Promise<void> {
 
         this.bayesClassifier = new natural.BayesClassifier ();
 
         for (const intentObject of this.intentObjectArray) {
 
-            const intentString = intentObject.domain + '.' + intentObject.scope + '.' + intentObject.intent;
+            if (!intentObject.utterances || intentObject.utterances.length === 0) {
+
+                continue;
+
+            }
 
             for (const utteranceString of intentObject.utterances) {
 
-                const processedText = this.preprocessText (utteranceString);
+                const processedString = await this.processString (utteranceString);
 
-                if (processedText) {
+                if (processedString) {
 
-                    this.bayesClassifier.addDocument (processedText, intentString);
+                    this.bayesClassifier.addDocument (processedString, intentObject.intent);
 
                 }
 
@@ -207,64 +204,23 @@ export class NaturalModule {
 
     }
 
-    private preprocessText (text: string): string {
-        if (!text || typeof text !== 'string') return '';
+    private async processString (preprocessedString: string): Promise<string> {
 
-        // 1. Normalización básica
-        let processed = text.toLowerCase ()
-            .replace (/[^\w\sáéíóúüñÁÉÍÓÚÜÑ]/g, ' ') // Conserva acentos
+        let processedString = preprocessedString.toLowerCase ()
+            .normalize ('NFD').replace (/[\u0300-\u036f]/g, '')
+            .replace (/[^\w\s]/g, ' ')
             .replace (/\s+/g, ' ')
             .trim ();
 
-        // 2. Tokenización y filtrado
-        const tokens = this.wordTokenizer.tokenize (processed) || [];
+        const tokenStringArray = this.wordTokenizer.tokenize (processedString) || [];
 
-        return tokens
-            .filter (token => token.length > 2)
-            .filter (token => !this.stopWords.has (token))
-            .map (token => this.stemmer.stem (token))
+        processedString = tokenStringArray
+            .filter (tokenString => tokenString.length > 2)
+            .filter (tokenString => !this.stopWords.has (tokenString))
             .join (' ');
-    }
-/*
-    private async testPhrases (): Promise<void> {
 
-        await this.getResponse ("cuanto debo este mes");
-        console.log ('E: ' + 'consultar_deuda');
-        console.log ();
-
-        await this.getResponse ("quien es mi agente de cuentas");
-        console.log ('E: ' + 'consultar_ejecutivo');
-        console.log ();
-
-        await this.getResponse ("a que hora cierran la oficina");
-        console.log ('E: ' + 'consultar_horario');
-        console.log ();
-
-        await this.getResponse ("necesito el correo de soporte");
-        console.log ('E: ' + 'consultar_contacto');
-        console.log ();
-
-        await this.getResponse ("hola que tal");
-        console.log ('E: ' + 'saludar');
-        console.log ();
-
-        await this.getResponse ("háblame del clima en la luna");
-        console.log ('E: ' + 'default');
-
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-        console.log(CommonsTool.getBase62(7));
-
-        await this.getResponse ("tienes el telefono del ejecutivo?");
-        console.log ('E: ' + 'saludar');
+        return processedString;
 
     }
-*/
+
 }

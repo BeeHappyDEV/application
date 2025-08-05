@@ -59,7 +59,44 @@ export class ApplicationEntry {
         logTool.OK (ApplicationConstants.LABEL_APPLICATION, ApplicationConstants.STATUS_STARTING);
 
         await this.middlewareInformation (logTool.getTrace ());
-
+/*
+        let aaa: Record<string, any> = {};
+        aaa = await this.naturalModule.getResponse ("cuanto debo este mes");
+        console.log ('-> ', aaa.preprocessed);
+        console.log ('   ', aaa.intent);
+        console.log ('   ', aaa.response.message);
+        console.log ();
+        aaa = await this.naturalModule.getResponse ("quien es mi agente de cuentas");
+        console.log ('-> ', aaa.preprocessed);
+        console.log ('   ', aaa.intent);
+        console.log ('   ', aaa.response.message);
+        console.log ();
+        aaa = await this.naturalModule.getResponse ("a que hora cierran la oficina");
+        console.log ('-> ', aaa.preprocessed);
+        console.log ('   ', aaa.intent);
+        console.log ('   ', aaa.response.message);
+        console.log ();
+        aaa = await this.naturalModule.getResponse ("necesito el correo de soporte");
+        console.log ('-> ', aaa.preprocessed);
+        console.log ('   ', aaa.intent);
+        console.log ('   ', aaa.response.message);
+        console.log ();
+        aaa = await this.naturalModule.getResponse ("hola que tal");
+        console.log ('-> ', aaa.preprocessed);
+        console.log ('   ', aaa.intent);
+        console.log ('   ', aaa.response.message);
+        console.log ();
+        aaa = await this.naturalModule.getResponse ("háblame del clima en la luna");
+        console.log ('-> ', aaa.preprocessed);
+        console.log ('   ', aaa.intent);
+        console.log ('   ', aaa.response.message);
+        console.log ();
+        aaa = await this.naturalModule.getResponse ("tienes el telefono del ejecutivo?");
+        console.log ('-> ', aaa.preprocessed);
+        console.log ('   ', aaa.intent);
+        console.log ('   ', aaa.response.message);
+        console.log ();
+*/
         await this.engineInformation (logTool.getTrace ());
 
         await this.environmentInformation (logTool.getTrace ());
