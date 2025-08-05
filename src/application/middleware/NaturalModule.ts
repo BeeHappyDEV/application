@@ -6,7 +6,6 @@ import path from 'path';
 
 import {PropertiesTool} from '../toolkit/PropertiesTool';
 import {ApparatusClassification} from "natural";
-import {CommonsTool} from "../toolkit/CommonsTool";
 
 @injectable ()
 export class NaturalModule {
@@ -226,10 +225,9 @@ export class NaturalModule {
             .map (token => this.stemmer.stem (token))
             .join (' ');
     }
-
+/*
     private async testPhrases (): Promise<void> {
 
-        /*
         await this.getResponse ("cuanto debo este mes");
         console.log ('E: ' + 'consultar_deuda');
         console.log ();
@@ -253,7 +251,6 @@ export class NaturalModule {
         await this.getResponse ("háblame del clima en la luna");
         console.log ('E: ' + 'default');
 
- */
         console.log(CommonsTool.getBase62(7));
         console.log(CommonsTool.getBase62(7));
         console.log(CommonsTool.getBase62(7));
@@ -269,5 +266,5 @@ export class NaturalModule {
         console.log ('E: ' + 'saludar');
 
     }
-
+*/
 }
