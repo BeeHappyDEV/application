@@ -2,10 +2,10 @@ import {inject, injectable} from 'tsyringe';
 
 import express from 'express';
 
-import {TelegramService} from './TelegramService';
-
 //import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
+
+import {TelegramService} from './TelegramService';
 
 @injectable ()
 export class TelegramController {
@@ -13,7 +13,7 @@ export class TelegramController {
     private initializedBoolean = false;
 
     constructor (
-        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        //@inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool,
         @inject (TelegramService) private telegramService: TelegramService
     ) {

@@ -3,10 +3,10 @@ import {inject, injectable} from 'tsyringe';
 import express from 'express';
 import expressWs from 'express-ws';
 
-import {WhatsAppService} from './WhatsAppService';
-
 //import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
+
+import {WhatsAppService} from './WhatsAppService';
 
 @injectable ()
 export class WhatsAppController {
@@ -14,7 +14,7 @@ export class WhatsAppController {
     private initializedBoolean = false;
 
     constructor (
-        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        //@inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool,
         @inject (WhatsAppService) private whatsAppService: WhatsAppService
     ) {

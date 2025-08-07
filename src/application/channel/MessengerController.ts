@@ -2,10 +2,10 @@ import {inject, injectable} from 'tsyringe';
 
 import express from 'express';
 
-import {MessengerService} from './MessengerService';
-
-import {LogTool} from '../toolkit/LogTool';
+//import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
+
+import {MessengerService} from './MessengerService';
 
 @injectable ()
 export class MessengerController {
@@ -13,7 +13,7 @@ export class MessengerController {
     private initializedBoolean = false;
 
     constructor (
-        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        //@inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool,
         @inject (MessengerService) private messengerService: MessengerService
     ) {
