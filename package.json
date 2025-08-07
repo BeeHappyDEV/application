@@ -1,7 +1,7 @@
 {
     "name": "beehappy.dev",
     "license": "Unlicense",
-    "version": "4.3/2025.08.04",
+    "version": "4.3/2025.08.07",
     "scripts": {
         "clean": "pnpx rimraf node_modules out tmp sessions package-lock.json yarn.lock pnpm-lock.yaml tsconfig.tsbuildinfo",
         "check": "pnpx depcheck",
@@ -26,12 +26,12 @@
         "newrelic": "13.0.0",
         "node-cron": "4.2.1",
         "pg": "8.16.3",
+        "pino": "9.7.0",
         "reflect-metadata": "0.2.2",
         "superagent": "10.2.3",
         "tsx": "4.20.3",
         "tsyringe": "4.10.0",
-        "pino": "9.7.0",
-        "uuid":"11.1.0"
+        "uuid": "11.1.0"
     },
     "devDependencies": {
         "@types/express": "5.0.3",

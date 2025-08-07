@@ -167,14 +167,6 @@ export class LogTool {
 
     }
 
-    /*
-    *
-    *
-    *
-    *
-    *
-    */
-
     public setScpExecute (fileString: string, contentString: string) {
 
         this.context.level = LogConstants.OK;
@@ -418,14 +410,6 @@ export class LogTool {
         this.context.method = traceObject.method;
 
     }
-
-    /*
-    *
-    *
-    *
-    *
-    *
-    */
 
     private getDatetime (date: Date): string {
 

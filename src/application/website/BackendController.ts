@@ -2,6 +2,8 @@ import {inject, injectable} from 'tsyringe';
 
 import express from 'express';
 
+import {WorkflowController} from '../workflow/WorkflowController';
+
 import {BackendService} from './BackendService';
 
 import {LogConstants} from '../constants/LogConstants';
@@ -16,8 +18,9 @@ export class BackendController {
 
     constructor (
         @inject ('LogToolFactory') private logToolFactory: () => LogTool,
-        @inject (BackendService) private backendService: BackendService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
+        @inject (WorkflowController) private workflowController: WorkflowController,
+        @inject (BackendService) private backendService: BackendService
     ) {
     }
 
@@ -55,6 +58,16 @@ export class BackendController {
         expressApplication.post ('/backend/reload/indicators', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
             this.postReloadIndicatorsAction (expressRequest, expressResponse, paramsObject);
+
+        });
+
+        expressApplication.post ('/test', async (expressRequest: express.Request, expressResponse: express.Response): Promise<void> => {
+
+            const incomingString = expressRequest.query.incoming;
+
+            const resultString = await this.workflowController.executeWorkflow (incomingString);
+
+            expressResponse.send (resultString);
 
         });
 

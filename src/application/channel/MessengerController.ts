@@ -4,7 +4,7 @@ import express from 'express';
 
 import {MessengerService} from './MessengerService';
 
-//import {LogTool} from '../toolkit/LogTool';
+import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
 
 @injectable ()
@@ -13,9 +13,9 @@ export class MessengerController {
     private initializedBoolean = false;
 
     constructor (
-        //@inject ('LogToolFactory') private logToolFactory: () => LogTool,
-        @inject (MessengerService) private messengerService: MessengerService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
+        @inject (MessengerService) private messengerService: MessengerService
     ) {
     }
 

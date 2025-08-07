@@ -14,9 +14,9 @@ export class WhatsAppController {
     private initializedBoolean = false;
 
     constructor (
-        //@inject ('LogToolFactory') private logToolFactory: () => LogTool,
-        @inject (WhatsAppService) private whatsAppService: WhatsAppService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
+        @inject (WhatsAppService) private whatsAppService: WhatsAppService
     ) {
     }
 

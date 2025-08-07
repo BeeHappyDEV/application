@@ -10,50 +10,6 @@ export class CommonsTool {
 
     }
 
-    public static getStackStringArray (): string[] {
-
-        const reflectionStringArray: string[] = [];
-
-        const stackString = new Error ().stack;
-
-        if (!stackString) {
-
-            return reflectionStringArray;
-
-        }
-
-        const stackStringArray = stackString.split ('\n');
-
-        const stackNumber = 2;
-
-        if (stackStringArray.length > stackNumber) {
-
-            const regExp = /\sat\s(\w+\.\w+)/;
-
-            let regExpMatchArray = stackStringArray[stackNumber].match (regExp);
-
-            if (regExpMatchArray?.[1]) {
-
-                const [classString, methodString] = regExpMatchArray[1].split ('.');
-
-                reflectionStringArray.push (classString, methodString);
-
-                regExpMatchArray = classString.match (/^[a-z]*[A-Z][a-z]*/);
-
-                if (regExpMatchArray?.[0]) {
-
-                    reflectionStringArray.push (regExpMatchArray[0].toLowerCase ());
-
-                }
-
-            }
-
-        }
-
-        return reflectionStringArray;
-
-    }
-
     public static getSafeStringify (jsonObject: any): string {
 
         return JSON.stringify (jsonObject, (_key, value) => {

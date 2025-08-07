@@ -13,9 +13,9 @@ export class TelegramController {
     private initializedBoolean = false;
 
     constructor (
-        //@inject ('LogToolFactory') private logToolFactory: () => LogTool,
-        @inject (TelegramService) private telegramService: TelegramService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
+        @inject (TelegramService) private telegramService: TelegramService
     ) {
     }
 

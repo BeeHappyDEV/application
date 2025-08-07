@@ -37,6 +37,7 @@ export class ApplicationEntry {
 
     constructor (
         @inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
         @inject (MongoDbModule) private mongoDbModule: MongoDbModule,
         @inject (NaturalModule) private naturalModule: NaturalModule,
         @inject (PostgresModule) private postgresModule: PostgresModule,
@@ -46,8 +47,7 @@ export class ApplicationEntry {
         @inject (DefaultController) private defaultController: DefaultController,
         @inject (BackendController) private backendController: BackendController,
         @inject (FrontendController) private frontendController: FrontendController,
-        @inject (ScheduleController) private scheduleController: ScheduleController,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
+        @inject (ScheduleController) private scheduleController: ScheduleController
     ) {
         this.expressApplication = express ();
         this.expressWsInstance = expressWs (this.expressApplication);
@@ -59,44 +59,7 @@ export class ApplicationEntry {
         logTool.OK (ApplicationConstants.LABEL_APPLICATION, ApplicationConstants.STATUS_STARTING);
 
         await this.middlewareInformation (logTool.getTrace ());
-/*
-        let aaa: Record<string, any> = {};
-        aaa = await this.naturalModule.getResponse ("cuanto debo este mes");
-        console.log ('-> ', aaa.preprocessed);
-        console.log ('   ', aaa.intent);
-        console.log ('   ', aaa.response.message);
-        console.log ();
-        aaa = await this.naturalModule.getResponse ("quien es mi agente de cuentas");
-        console.log ('-> ', aaa.preprocessed);
-        console.log ('   ', aaa.intent);
-        console.log ('   ', aaa.response.message);
-        console.log ();
-        aaa = await this.naturalModule.getResponse ("a que hora cierran la oficina");
-        console.log ('-> ', aaa.preprocessed);
-        console.log ('   ', aaa.intent);
-        console.log ('   ', aaa.response.message);
-        console.log ();
-        aaa = await this.naturalModule.getResponse ("necesito el correo de soporte");
-        console.log ('-> ', aaa.preprocessed);
-        console.log ('   ', aaa.intent);
-        console.log ('   ', aaa.response.message);
-        console.log ();
-        aaa = await this.naturalModule.getResponse ("hola que tal");
-        console.log ('-> ', aaa.preprocessed);
-        console.log ('   ', aaa.intent);
-        console.log ('   ', aaa.response.message);
-        console.log ();
-        aaa = await this.naturalModule.getResponse ("háblame del clima en la luna");
-        console.log ('-> ', aaa.preprocessed);
-        console.log ('   ', aaa.intent);
-        console.log ('   ', aaa.response.message);
-        console.log ();
-        aaa = await this.naturalModule.getResponse ("tienes el telefono del ejecutivo?");
-        console.log ('-> ', aaa.preprocessed);
-        console.log ('   ', aaa.intent);
-        console.log ('   ', aaa.response.message);
-        console.log ();
-*/
+
         await this.engineInformation (logTool.getTrace ());
 
         await this.environmentInformation (logTool.getTrace ());

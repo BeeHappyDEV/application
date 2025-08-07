@@ -16,8 +16,8 @@ export class ScheduleController {
 
     constructor (
         @inject ('LogToolFactory') private logToolFactory: () => LogTool,
-        @inject (ScheduleService) private scheduleService: ScheduleService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
+        @inject (ScheduleService) private scheduleService: ScheduleService
     ) {
     }
 

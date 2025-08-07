@@ -92,7 +92,7 @@ export class NaturalModule {
 
     }
 
-    private selectRandomResponse (responseObjectArray: any[]): string {
+    private selectRandomResponse (responseObjectArray: any []): string {
 
         const randomNumber = Math.floor (Math.random () * responseObjectArray.length);
 

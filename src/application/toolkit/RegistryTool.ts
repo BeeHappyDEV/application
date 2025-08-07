@@ -1,5 +1,8 @@
 import {container, DependencyContainer} from 'tsyringe';
 
+import {LogTool} from './LogTool';
+import {PropertiesTool} from './PropertiesTool';
+
 import {DiscordModule} from '../middleware/DiscordModule';
 import {MongoDbModule} from '../middleware/MongoDbModule';
 import {NaturalModule} from '../middleware/NaturalModule';
@@ -21,8 +24,7 @@ import {FrontendService} from '../website/FrontendService';
 import {ScheduleController} from '../website/ScheduleController';
 import {ScheduleService} from '../website/ScheduleService';
 
-import {LogTool} from './LogTool';
-import {PropertiesTool} from './PropertiesTool';
+import {WorkflowController} from "../workflow/WorkflowController";
 
 export class RegistryTool {
 
@@ -99,6 +101,8 @@ export class RegistryTool {
         container.registerSingleton (this.getToken (TelegramService), TelegramService);
         container.registerSingleton (this.getToken (WhatsAppController), WhatsAppController);
         container.registerSingleton (this.getToken (WhatsAppService), WhatsAppService);
+
+        container.registerSingleton (this.getToken (WorkflowController), WorkflowController);
 
     }
 

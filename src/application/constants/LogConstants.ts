@@ -24,12 +24,6 @@ export class LogConstants {
     public static WSV_SUCCESS: Record<string, any> = {event: 42, message: 'Success'};
     public static WSV_WEBSERVICE: Record<string, any> = {event: 43, message: 'Webservice Exception'};
 
-
-
-
-
-
-
     public static EXECUTE: Record<string, any> = {txt_exception: 'Execute'};
     public static SUCCESS: Record<string, any> = {num_exception: 0, txt_exception: 'Success'};
     public static SCRIPT: Record<string, any> = {num_exception: 22, txt_exception: 'Script Exception'};

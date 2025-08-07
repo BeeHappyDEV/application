@@ -17,8 +17,8 @@ export class FrontendController {
 
     constructor (
         @inject ('LogToolFactory') private logToolFactory: () => LogTool,
-        @inject (FrontendService) private frontendService: FrontendService,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
+        @inject (FrontendService) private frontendService: FrontendService
     ) {
     }
 
