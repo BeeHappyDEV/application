@@ -66,10 +66,15 @@ export class BackendController {
             const incomingString = expressRequest.query.incoming;
 
             if (typeof incomingString === "string") {
+
                 const resultString = await this.workflowController.executeWorkflow (incomingString);
+
                 expressResponse.send (resultString);
+
             } else {
+
                 expressResponse.send ('Error');
+
             }
 
         });
