@@ -9,7 +9,7 @@ export class MongoDbModule {
     private initializedBoolean = false;
     private mongoClient!: MongoClient;
     private mongoDatabase!: Db;
-    private mongoBuffer: any[] = [];
+    private mongoBuffer: any [] = [];
     private flushInterval!: NodeJS.Timeout;
     private readonly bufferSize = 100;
     private readonly flushIntervalMs = 5000;
@@ -74,11 +74,11 @@ export class MongoDbModule {
 
     }
 
-    public async insertTracking (logObject: Record<string, any>): Promise<void> {
+    public async insertTracking (logRecord: Record<string, any>): Promise<void> {
 
         await this.initialize ();
 
-        this.mongoBuffer.push (logObject);
+        this.mongoBuffer.push (logRecord);
 
         if (this.mongoBuffer.length >= this.bufferSize) {
 
@@ -92,11 +92,11 @@ export class MongoDbModule {
 
         await this.initialize ();
 
-        const mongoCollection = await this.propertiesTool.get ('integration.mongodb.traces');
+        const collectionString = await this.propertiesTool.get ('integration.mongodb.traces');
 
-        await this.mongoDatabase.dropCollection (mongoCollection);
+        await this.mongoDatabase.dropCollection (collectionString);
 
-        await this.mongoDatabase.createCollection (mongoCollection);
+        await this.mongoDatabase.createCollection (collectionString);
 
     }
 
@@ -106,9 +106,9 @@ export class MongoDbModule {
 
         try {
 
-            const collection = this.mongoDatabase.collection (await this.propertiesTool.get ('integration.mongo.traces'));
+            const documentCollection = this.mongoDatabase.collection (await this.propertiesTool.get ('integration.mongo.traces'));
 
-            await collection.insertMany (trackingArray);
+            await documentCollection.insertMany (trackingArray);
 
         } catch (error) {
 

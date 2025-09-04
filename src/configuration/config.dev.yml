@@ -10,7 +10,7 @@ system:
     enable: false
   log:
     console: true
-    persist: false
+    persist: true
 
 # INTEGRATIONS #
 
@@ -51,6 +51,9 @@ channel:
     webhook: https://abacian.loca.lt
   whatsapp:
     enable: true
+    instances:
+      - name: beejay
+        phone: 56944744744
 
 # SCHEDULERS #
 

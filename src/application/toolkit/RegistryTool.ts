@@ -9,6 +9,7 @@ import {NaturalModule} from '../middleware/NaturalModule';
 import {PostgresModule} from '../middleware/PostgresModule';
 import {WebserviceModule} from '../middleware/WebserviceModule';
 
+import {GatewayController} from '../channel/GatewayController';
 import {MessengerController} from '../channel/MessengerController';
 import {MessengerService} from '../channel/MessengerService';
 import {TelegramController} from '../channel/TelegramController';
@@ -23,10 +24,11 @@ import {FrontendController} from '../website/FrontendController';
 import {FrontendService} from '../website/FrontendService';
 import {ScheduleController} from '../website/ScheduleController';
 import {ScheduleService} from '../website/ScheduleService';
-
-import {WorkflowController} from "../workflow/WorkflowController";
+import {ExampleController} from "../channel/ExampleController";
 
 export class RegistryTool {
+
+    public static classRecord: Record<string, any> = {};
 
     public static async initialize (): Promise<void> {
 
@@ -35,6 +37,13 @@ export class RegistryTool {
         this.registerWebsite ();
         this.registerChannels ();
 
+    }
+
+    public static async getClass<T> (classString: string): Promise<T> {
+
+        const classObject = this.classRecord [classString];
+
+        return container.resolve (classObject) as T;
     }
 
     private static async registerToolkit (): Promise<void> {
@@ -75,40 +84,50 @@ export class RegistryTool {
 
     private static registerMiddlewares (): void {
 
-        container.registerSingleton (this.getToken (DiscordModule), DiscordModule);
-        container.registerSingleton (this.getToken (MongoDbModule), MongoDbModule);
-        container.registerSingleton (this.getToken (WebserviceModule), WebserviceModule);
+        RegistryTool.registerSingletonClass (DiscordModule);
+        RegistryTool.registerSingletonClass (MongoDbModule);
+        RegistryTool.registerSingletonClass (WebserviceModule);
 
     }
 
     private static registerWebsite (): void {
 
-        container.registerSingleton (this.getToken (DefaultController), DefaultController);
-        container.registerSingleton (this.getToken (BackendController), BackendController);
-        container.registerSingleton (this.getToken (BackendService), BackendService);
-        container.registerSingleton (this.getToken (FrontendController), FrontendController);
-        container.registerSingleton (this.getToken (FrontendService), FrontendService);
-        container.registerSingleton (this.getToken (ScheduleController), ScheduleController);
-        container.registerSingleton (this.getToken (ScheduleService), ScheduleService);
+        RegistryTool.registerSingletonClass (DefaultController);
+        RegistryTool.registerSingletonClass (BackendController);
+        RegistryTool.registerSingletonClass (BackendService);
+        RegistryTool.registerSingletonClass (FrontendController);
+        RegistryTool.registerSingletonClass (FrontendService);
+        RegistryTool.registerSingletonClass (ScheduleController);
+        RegistryTool.registerSingletonClass (ScheduleService);
 
     }
 
     private static registerChannels (): void {
 
-        container.registerSingleton (this.getToken (MessengerController), MessengerController);
-        container.registerSingleton (this.getToken (MessengerService), MessengerService);
-        container.registerSingleton (this.getToken (TelegramController), TelegramController);
-        container.registerSingleton (this.getToken (TelegramService), TelegramService);
-        container.registerSingleton (this.getToken (WhatsAppController), WhatsAppController);
-        container.registerSingleton (this.getToken (WhatsAppService), WhatsAppService);
-
-        container.registerSingleton (this.getToken (WorkflowController), WorkflowController);
+        RegistryTool.registerSingletonClass (GatewayController);
+        RegistryTool.registerSingletonClass (MessengerController);
+        RegistryTool.registerSingletonClass (MessengerService);
+        RegistryTool.registerSingletonClass (TelegramController);
+        RegistryTool.registerSingletonClass (TelegramService);
+        RegistryTool.registerSingletonClass (WhatsAppController);
+        RegistryTool.registerPrototypeClass (WhatsAppService);
+        RegistryTool.registerSingletonClass (ExampleController);
 
     }
 
-    private static getToken<T> (clazz: new (...args: any[]) => T): symbol {
+    private static registerPrototypeClass<T> (clazz: new (...args: any []) => T): void {
 
-        return Symbol.for (clazz.name);
+        container.register (Symbol.for (clazz.name), clazz);
+
+        this.classRecord [clazz.name] = clazz;
+
+    }
+
+    private static registerSingletonClass<T> (clazz: new (...args: any []) => T): void {
+
+        container.registerSingleton (Symbol.for (clazz.name), clazz);
+
+        this.classRecord [clazz.name] = clazz;
 
     }
 

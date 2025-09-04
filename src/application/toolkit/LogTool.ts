@@ -17,7 +17,7 @@ import {CommonsTool} from "./CommonsTool";
 @injectable ()
 export class LogTool {
 
-    private context: Record<string, any> = {};
+    private contextRecord: Record<string, any> = {};
     private logger: pino.Logger;
 
     constructor (
@@ -26,11 +26,11 @@ export class LogTool {
 
         const date = new Date ();
 
-        this.context.starting = this.getDatetime (date);
-        this.context.transaction = this.getUuid ();
-        this.context.environment = process.argv [2].slice (2).toUpperCase ();
-        this.context.depth = 1;
-        this.context.overwrite = true;
+        this.contextRecord.starting = this.getDatetime (date);
+        this.contextRecord.transaction = this.getUuid ();
+        this.contextRecord.environment = process.argv [2].slice (2).toUpperCase ();
+        this.contextRecord.depth = 1;
+        this.contextRecord.overwrite = true;
 
         const consoleStream = new Writable ({
 
@@ -52,9 +52,9 @@ export class LogTool {
 
             write: async (_chunk: any, _encoding: any, callback: (error?: Error) => void) => {
 
-                const logObject = this.getJson (this.context);
+                const logRecord = this.getJson (this.contextRecord);
 
-                await this.mongoDbModule.insertTracking (logObject);
+                await this.mongoDbModule.insertTracking (logRecord);
 
                 callback ();
 
@@ -76,260 +76,260 @@ export class LogTool {
 
     public OK (keyString?: any, valueString?: string): void {
 
-        this.context.level = LogConstants.OK;
-        this.context.event = LogConstants.OK_EXECUTE.event;
+        this.contextRecord.level = LogConstants.OK;
+        this.contextRecord.event = LogConstants.OK_EXECUTE.event;
 
         if (keyString) {
 
-            this.context.message = keyString;
+            this.contextRecord.message = keyString;
 
         }
 
         if (valueString) {
 
-            this.context.data = valueString;
+            this.contextRecord.data = valueString;
 
         }
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public NOK (keyString?: any, valueString?: string): void {
 
-        this.context.level = LogConstants.NOK;
-        this.context.event = LogConstants.NOK_EXECUTE.event;
+        this.contextRecord.level = LogConstants.NOK;
+        this.contextRecord.event = LogConstants.NOK_EXECUTE.event;
 
         if (keyString) {
 
-            this.context.message = keyString;
+            this.contextRecord.message = keyString;
 
         }
 
         if (valueString) {
 
-            this.context.data = valueString;
+            this.contextRecord.data = valueString;
 
         }
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public ERR (keyString?: any, valueString?: string): void {
 
-        this.context.level = LogConstants.ERR;
-        this.context.event = LogConstants.ERR_EXECUTE.event;
+        this.contextRecord.level = LogConstants.ERR;
+        this.contextRecord.event = LogConstants.ERR_EXECUTE.event;
 
         if (keyString) {
 
-            this.context.message = keyString;
+            this.contextRecord.message = keyString;
 
         }
 
         if (valueString) {
 
-            this.context.data = valueString;
+            this.contextRecord.data = valueString;
 
         }
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public INITIALIZE (): void {
 
-        this.context.level = LogConstants.DBG;
-        this.context.event = LogConstants.DBG_INITIALIZE.event;
-        this.context.phase = LogConstants.DBG_INITIALIZE.message;
+        this.contextRecord.level = LogConstants.DBG;
+        this.contextRecord.event = LogConstants.DBG_INITIALIZE.event;
+        this.contextRecord.phase = LogConstants.DBG_INITIALIZE.message;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public FINALIZE (): void {
 
-        this.context.level = LogConstants.DBG;
-        this.context.event = LogConstants.DBG_FINALIZE.event;
-        this.context.phase = LogConstants.DBG_FINALIZE.message;
+        this.contextRecord.level = LogConstants.DBG;
+        this.contextRecord.event = LogConstants.DBG_FINALIZE.event;
+        this.contextRecord.phase = LogConstants.DBG_FINALIZE.message;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public setScpExecute (fileString: string, contentString: string) {
 
-        this.context.level = LogConstants.OK;
-        this.context.event = LogConstants.SCP_EXECUTE.event;
-        this.context.file = fileString;
-        this.context.content = contentString;
-        this.context.message = LogConstants.SCP_EXECUTE.message;
-        this.context.data = fileString;
+        this.contextRecord.level = LogConstants.OK;
+        this.contextRecord.event = LogConstants.SCP_EXECUTE.event;
+        this.contextRecord.file = fileString;
+        this.contextRecord.content = contentString;
+        this.contextRecord.message = LogConstants.SCP_EXECUTE.message;
+        this.contextRecord.data = fileString;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public setScpSuccess (fileString: string) {
 
-        this.context.level = LogConstants.OK;
-        this.context.event = LogConstants.SCP_SUCCESS.event;
-        this.context.file = fileString;
-        delete this.context.content;
-        this.context.message = LogConstants.SCP_SUCCESS.message;
-        this.context.data = fileString;
+        this.contextRecord.level = LogConstants.OK;
+        this.contextRecord.event = LogConstants.SCP_SUCCESS.event;
+        this.contextRecord.file = fileString;
+        delete this.contextRecord.content;
+        this.contextRecord.message = LogConstants.SCP_SUCCESS.message;
+        this.contextRecord.data = fileString;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public setScpPostgres () {
 
-        this.context.level = LogConstants.ERR;
-        this.context.event = LogConstants.SCP_POSTGRES.event;
-        delete this.context.file;
-        delete this.context.content;
-        this.context.message = LogConstants.SCP_POSTGRES.message;
+        this.contextRecord.level = LogConstants.ERR;
+        this.contextRecord.event = LogConstants.SCP_POSTGRES.event;
+        delete this.contextRecord.file;
+        delete this.contextRecord.content;
+        this.contextRecord.message = LogConstants.SCP_POSTGRES.message;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
-    public setFncExecute (functionString: string, paramsObject: Record<string, any>) {
+    public setFncExecute (functionString: string, paramsRecord: Record<string, any>) {
 
-        this.context.level = LogConstants.OK;
-        this.context.event = LogConstants.FNC_EXECUTE.event;
-        this.context.function = functionString;
+        this.contextRecord.level = LogConstants.OK;
+        this.contextRecord.event = LogConstants.FNC_EXECUTE.event;
+        this.contextRecord.function = functionString;
 
-        if (paramsObject) {
+        if (paramsRecord) {
 
-            this.context.params = JSON.stringify (paramsObject);
+            this.contextRecord.params = JSON.stringify (paramsRecord);
 
         }
 
-        this.context.message = LogConstants.FNC_EXECUTE.message;
-        this.context.data = functionString;
+        this.contextRecord.message = LogConstants.FNC_EXECUTE.message;
+        this.contextRecord.data = functionString;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public setFncSuccess (functionString: string) {
 
-        this.context.level = LogConstants.OK;
-        this.context.event = LogConstants.FNC_SUCCESS.event;
-        this.context.function = functionString;
-        delete this.context.params;
-        this.context.message = LogConstants.FNC_SUCCESS.message;
-        this.context.data = functionString;
+        this.contextRecord.level = LogConstants.OK;
+        this.contextRecord.event = LogConstants.FNC_SUCCESS.event;
+        this.contextRecord.function = functionString;
+        delete this.contextRecord.params;
+        this.contextRecord.message = LogConstants.FNC_SUCCESS.message;
+        this.contextRecord.data = functionString;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public setFncFunction (functionString: string) {
 
-        this.context.level = LogConstants.ERR;
-        this.context.event = LogConstants.FNC_FUNCTION.event;
-        this.context.function = functionString;
-        this.context.message = LogConstants.FNC_FUNCTION.message;
-        this.context.data = functionString;
+        this.contextRecord.level = LogConstants.ERR;
+        this.contextRecord.event = LogConstants.FNC_FUNCTION.event;
+        this.contextRecord.function = functionString;
+        this.contextRecord.message = LogConstants.FNC_FUNCTION.message;
+        this.contextRecord.data = functionString;
 
         this.setEnding (4);
 
-        this.logger.error (this.context);
+        this.logger.error (this.contextRecord);
 
     }
 
     public setFncPostgres () {
 
-        this.context.level = LogConstants.ERR;
-        this.context.event = LogConstants.FNC_POSTGRES.event;
-        delete this.context.function;
-        this.context.message = LogConstants.FNC_POSTGRES.message;
+        this.contextRecord.level = LogConstants.ERR;
+        this.contextRecord.event = LogConstants.FNC_POSTGRES.event;
+        delete this.contextRecord.function;
+        this.contextRecord.message = LogConstants.FNC_POSTGRES.message;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
-    public setWsvExecute (verbString: string, hostString: string, headersObject?: Record<string, any>, queryObject?: Record<string, any>, bodyObject?: Record<string, any>) {
+    public setWsvExecute (verbString: string, hostString: string, headersRecord?: Record<string, any>, queryRecord?: Record<string, any>, bodyRecord?: Record<string, any>) {
 
-        this.context.level = LogConstants.OK;
-        this.context.event = LogConstants.WSV_EXECUTE.event;
-        this.context.verb = verbString;
-        this.context.host = hostString;
+        this.contextRecord.level = LogConstants.OK;
+        this.contextRecord.event = LogConstants.WSV_EXECUTE.event;
+        this.contextRecord.verb = verbString;
+        this.contextRecord.host = hostString;
 
-        if (headersObject) {
+        if (headersRecord) {
 
-            this.context.headers = CommonsTool.getSafeStringify (headersObject);
-
-        }
-
-        if (queryObject) {
-
-            this.context.query = CommonsTool.getSafeStringify (queryObject);
+            this.contextRecord.headers = CommonsTool.getSafeStringify (headersRecord);
 
         }
 
-        if (bodyObject) {
+        if (queryRecord) {
 
-            this.context.body = CommonsTool.getSafeStringify (bodyObject);
+            this.contextRecord.query = CommonsTool.getSafeStringify (queryRecord);
 
         }
 
-        this.context.message = LogConstants.WSV_EXECUTE.message;
-        this.context.data = verbString + ' ' + hostString;
+        if (bodyRecord) {
+
+            this.contextRecord.body = CommonsTool.getSafeStringify (bodyRecord);
+
+        }
+
+        this.contextRecord.message = LogConstants.WSV_EXECUTE.message;
+        this.contextRecord.data = verbString + ' ' + hostString;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public setWsvSuccess (verbString: string, hostString: string) {
 
-        this.context.level = LogConstants.OK;
-        this.context.event = LogConstants.WSV_SUCCESS.event;
-        this.context.verb = verbString;
-        this.context.host = hostString;
-        delete this.context.headers;
-        delete this.context.query;
-        delete this.context.body;
-        this.context.message = LogConstants.WSV_SUCCESS.message;
-        this.context.data = verbString + ' ' + hostString;
+        this.contextRecord.level = LogConstants.OK;
+        this.contextRecord.event = LogConstants.WSV_SUCCESS.event;
+        this.contextRecord.verb = verbString;
+        this.contextRecord.host = hostString;
+        delete this.contextRecord.headers;
+        delete this.contextRecord.query;
+        delete this.contextRecord.body;
+        this.contextRecord.message = LogConstants.WSV_SUCCESS.message;
+        this.contextRecord.data = verbString + ' ' + hostString;
 
         this.setEnding (4);
 
-        this.logger.info (this.context);
+        this.logger.info (this.contextRecord);
 
     }
 
     public setWsvWebservice (hostString: string) {
 
-        this.context.level = LogConstants.ERR;
-        this.context.host = hostString;
+        this.contextRecord.level = LogConstants.ERR;
+        this.contextRecord.host = hostString;
 
     }
 
@@ -337,43 +337,43 @@ export class LogTool {
 
         let urlWithParsedQuery = url.parse (expressRequest.url, true);
 
-        this.context.verb = expressRequest.method;
+        this.contextRecord.verb = expressRequest.method;
 
         if (urlWithParsedQuery.pathname != null) {
 
-            this.context.url = urlWithParsedQuery.pathname;
+            this.contextRecord.url = urlWithParsedQuery.pathname;
 
         }
 
         if (Object.keys (expressRequest.params).length !== 0) {
 
-            const paramsObject: { [key: string]: string } = {};
+            const paramsRecord: Record<string, any> = {};
 
-            for (const [keyString, valueString] of Object.entries (expressRequest.params)) {
+            for (const paramsEntry of Object.entries (expressRequest.params)) {
 
-                paramsObject [keyString] = valueString;
+                paramsRecord [paramsEntry [0]] = paramsEntry [1];
 
             }
 
-            this.context.params = paramsObject;
+            this.contextRecord.params = paramsRecord;
 
         }
 
         if (Object.keys (expressRequest.query).length !== 0) {
 
-            const queryObject: {[key: string]: string} = {};
+            const queryRecord: Record<string, any> = {};
 
-            for (const [keyString, valueString] of Object.entries (expressRequest.query)) {
+            for (const queryEntry of Object.entries (expressRequest.query)) {
 
-                if (typeof valueString === 'string') {
+                if (typeof queryEntry [1] === 'string') {
 
-                    queryObject [keyString] = valueString;
+                    queryRecord [queryEntry [0]] = queryEntry [1];
 
                 }
 
             }
 
-            this.context.query = queryObject;
+            this.contextRecord.query = queryRecord;
 
         }
 
@@ -381,33 +381,33 @@ export class LogTool {
 
     public getTrace (): Record<string, any> {
 
-        return this.context;
+        return this.contextRecord;
 
     }
 
-    public setTrace (traceObject: Record<string, any>): void {
+    public setTrace (traceRecord: Record<string, any>): void {
 
-        this.context.starting = traceObject.starting;
-        this.context.transaction = traceObject.transaction;
-        this.context.depth = Number (traceObject.depth) + 1;
-
-    }
-
-    public setSoftTrace (traceObject: Record<string, any>): void {
-
-        this.context.transaction = traceObject.transaction;
-        this.context.depth = Number (traceObject.depth);
+        this.contextRecord.starting = traceRecord.starting;
+        this.contextRecord.transaction = traceRecord.transaction;
+        this.contextRecord.depth = Number (traceRecord.depth) + 1;
 
     }
 
-    public setHardTrace (traceObject: Record<string, any>): void {
+    public setSoftTrace (traceRecord: Record<string, any>): void {
 
-        this.context.starting = traceObject.starting;
-        this.context.transaction = traceObject.transaction;
-        this.context.depth = Number (traceObject.depth);
-        this.context.overwrite = false;
-        this.context.class = traceObject.class;
-        this.context.method = traceObject.method;
+        this.contextRecord.transaction = traceRecord.transaction;
+        this.contextRecord.depth = Number (traceRecord.depth);
+
+    }
+
+    public setHardTrace (traceRecord: Record<string, any>): void {
+
+        this.contextRecord.starting = traceRecord.starting;
+        this.contextRecord.transaction = traceRecord.transaction;
+        this.contextRecord.depth = Number (traceRecord.depth);
+        this.contextRecord.overwrite = false;
+        this.contextRecord.class = traceRecord.class;
+        this.contextRecord.method = traceRecord.method;
 
     }
 
@@ -456,41 +456,41 @@ export class LogTool {
 
     }
 
-    private getJson (logObject: Record<string, any>): Record<string, any> {
+    private getJson (logRecord: Record<string, any>): Record<string, any> {
 
-        return Object.entries (logObject).reduce ((recordStringAny: Record<string, any>, [keyString, valueAny]: [string, any]): Record<string, any> => {
+        return Object.entries (logRecord).reduce ((resultRecord: Record<string, any>, [keyString, valueAny]: [string, any]): Record<string, any> => {
 
             if (typeof valueAny === 'bigint') {
 
-                recordStringAny [keyString] = valueAny.toString ();
+                resultRecord [keyString] = valueAny.toString ();
 
             } else if (typeof valueAny === 'object' && valueAny !== null) {
 
-                recordStringAny [keyString] = this.getJson (valueAny);
+                resultRecord [keyString] = this.getJson (valueAny);
 
             } else {
 
-                recordStringAny[keyString] = valueAny;
+                resultRecord [keyString] = valueAny;
 
             }
 
-            return recordStringAny;
+            return resultRecord;
 
         }, {} as Record<string, any>);
 
     }
 
-    private getLocation (depthNumber: number): string[] {
+    private getLocation (depthNumber: number): string [] {
 
-        const stackString = new Error ().stack?.split ('\n');
+        const stackStringArray = new Error ().stack?.split ('\n');
 
-        if (!stackString || stackString.length <= 3) {
+        if (!stackStringArray || stackStringArray.length <= 3) {
 
             return [];
 
         }
 
-        const regExpMatchArray = stackString [depthNumber].match (/\sat\s(\w+)\.(\w+)/);
+        const regExpMatchArray = stackStringArray [depthNumber].match (/\sat\s(\w+)\.(\w+)/);
 
         if (!regExpMatchArray) {
 
@@ -507,54 +507,54 @@ export class LogTool {
     private getPrefix (): string {
 
         let outputString = '';
-        outputString += kleur.magenta (this.context.transaction);
+        outputString += kleur.magenta (this.contextRecord.transaction);
         outputString += ' [';
 
-        switch (this.context.level) {
+        switch (this.contextRecord.level) {
 
             case LogConstants.OK:
 
-                outputString += kleur.green (this.context.level + ' ');
+                outputString += kleur.green (this.contextRecord.level + ' ');
 
                 break;
 
             case LogConstants.NOK:
 
-                outputString += kleur.yellow (this.context.level);
+                outputString += kleur.yellow (this.contextRecord.level);
 
                 break;
 
             case LogConstants.ERR:
 
-                outputString += kleur.red (this.context.level);
+                outputString += kleur.red (this.contextRecord.level);
 
                 break;
 
             case LogConstants.DBG:
 
-                outputString += kleur.gray (this.context.level);
+                outputString += kleur.gray (this.contextRecord.level);
 
                 break;
 
         }
 
         outputString += '] [';
-        outputString += kleur.cyan (this.context.difference);
+        outputString += kleur.cyan (this.contextRecord.difference);
         outputString += '] [';
-        outputString += kleur.cyan (this.context.depth);
+        outputString += kleur.cyan (this.contextRecord.depth);
         outputString += '] ';
 
-        if (this.context.level === LogConstants.DBG) {
+        if (this.contextRecord.level === LogConstants.DBG) {
 
             outputString += '[';
-            outputString += kleur.gray (this.context.phase);
+            outputString += kleur.gray (this.contextRecord.phase);
             outputString += '] ';
 
         }
 
-        outputString += this.context.class;
+        outputString += this.contextRecord.class;
         outputString += '.';
-        outputString += this.context.method;
+        outputString += this.contextRecord.method;
 
         return outputString;
 
@@ -564,16 +564,16 @@ export class LogTool {
 
         let outputString = '';
 
-        switch (this.context.event) {
+        switch (this.contextRecord.event) {
 
             case LogConstants.OK_EXECUTE.event:
 
-                if (this.context.message) {
+                if (this.contextRecord.message) {
 
                     outputString += ' - ';
-                    outputString += this.context.message;
+                    outputString += this.contextRecord.message;
                     outputString += ': ';
-                    outputString += kleur.blue (this.context.data);
+                    outputString += kleur.blue (this.contextRecord.data);
 
                 }
 
@@ -581,12 +581,12 @@ export class LogTool {
 
             case LogConstants.NOK_EXECUTE.event:
 
-                if (this.context.message) {
+                if (this.contextRecord.message) {
 
                     outputString += ' - ';
-                    outputString += this.context.message;
+                    outputString += this.contextRecord.message;
                     outputString += ': ';
-                    outputString += kleur.blue (this.context.data);
+                    outputString += kleur.blue (this.contextRecord.data);
 
                 }
 
@@ -594,17 +594,17 @@ export class LogTool {
 
             case LogConstants.ERR_EXECUTE.event:
 
-                if (this.context.message) {
+                if (this.contextRecord.message) {
 
                     outputString += ' - ';
-                    outputString += this.context.message;
+                    outputString += this.contextRecord.message;
 
                 }
 
-                if (this.context.data) {
+                if (this.contextRecord.data) {
 
                     outputString += ': ';
-                    outputString += kleur.blue (this.context.data);
+                    outputString += kleur.blue (this.contextRecord.data);
 
                 }
 
@@ -613,18 +613,18 @@ export class LogTool {
             case LogConstants.SCP_EXECUTE.event:
 
                 outputString += ' - ';
-                outputString += this.context.message;
+                outputString += this.contextRecord.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
             case LogConstants.SCP_SUCCESS.event:
 
                 outputString += ' - ';
-                outputString += this.context.message;
+                outputString += this.contextRecord.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
@@ -633,25 +633,25 @@ export class LogTool {
                 outputString += ' - ';
                 outputString += LogConstants.SCP_POSTGRES.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
             case LogConstants.FNC_EXECUTE.event:
 
                 outputString += ' - ';
-                outputString += this.context.message;
+                outputString += this.contextRecord.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
             case LogConstants.FNC_SUCCESS.event:
 
                 outputString += ' - ';
-                outputString += this.context.message;
+                outputString += this.contextRecord.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
@@ -660,7 +660,7 @@ export class LogTool {
                 outputString += ' - ';
                 outputString += LogConstants.FNC_FUNCTION.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
@@ -669,7 +669,7 @@ export class LogTool {
                 outputString += ' - ';
                 outputString += LogConstants.FNC_POSTGRES.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
@@ -678,7 +678,7 @@ export class LogTool {
                 outputString += ' - ';
                 outputString += LogConstants.WSV_EXECUTE.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
@@ -687,7 +687,7 @@ export class LogTool {
                 outputString += ' - ';
                 outputString += LogConstants.WSV_SUCCESS.message;
                 outputString += ': ';
-                outputString += kleur.blue (this.context.data);
+                outputString += kleur.blue (this.contextRecord.data);
 
                 break;
 
@@ -721,15 +721,15 @@ export class LogTool {
 
         const date = new Date ();
 
-        this.context.ending = this.getDatetime (date);
-        this.context._id = this.getId (date);
-        this.context.operation = this.getUuid ();
-        this.context.difference = this.getDifference (this.context.ending, this.context.starting);
+        this.contextRecord.ending = this.getDatetime (date);
+        this.contextRecord._id = this.getId (date);
+        this.contextRecord.operation = this.getUuid ();
+        this.contextRecord.difference = this.getDifference (this.contextRecord.ending, this.contextRecord.starting);
 
-        if (this.context.overwrite === true) {
+        if (this.contextRecord.overwrite === true) {
 
-            this.context.class = locationStringArray [0];
-            this.context.method = locationStringArray [1];
+            this.contextRecord.class = locationStringArray [0];
+            this.contextRecord.method = locationStringArray [1];
 
         }
 

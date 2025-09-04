@@ -3,28 +3,75 @@
     "scope": "scope1",
     "intent": "consultar_deuda",
     "utterances": [
-        "cual es mi deuda",
-        "cuanto debo",
-        "quiero saber mi saldo pendiente",
-        "me puedes decir el monto de mi deuda",
-        "tengo facturas sin pagar",
-        "revisar mi estado de cuenta"
+        {
+            "message": "cual es mi deuda",
+            "object": "b533-e192-2f0a-76a0-a7ea-c49d-b521-bd0a"
+        },
+        {
+            "message": "cuanto debo",
+            "object": "daab-c370-aeb6-ce22-eea4-37a0-c437-1508"
+        },
+        {
+            "message": "quiero saber mi saldo pendiente",
+            "object": "6c7b-113a-8cc7-46bf-19df-0939-eaed-19ad"
+        },
+        {
+            "message": "me puedes decir el monto de mi deuda",
+            "object": "a0af-a290-0fbf-8407-da4b-704e-f9d5-9751"
+        },
+        {
+            "message": "tengo facturas sin pagar",
+            "object": "ed94-96b6-644b-f729-ad2f-6d80-669f-ab4b"
+        },
+        {
+            "message": "revisar mi estado de cuenta",
+            "object": "d088-d4d3-2cb5-08b6-5ce6-ddd7-31fc-54ac"
+        }
     ],
     "actions": [
-        "api.getCustomerDebt"
+        {
+            "type": "function",
+            "schema": "frontend",
+            "function": "link_action"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod1"
+        },
+        {
+            "type": "function",
+            "schema": "indicators",
+            "function": "setEuroValues"
+        },
+        {
+            "type": "discord",
+            "channel": "channel"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod2"
+        },
+        {
+            "type": "response",
+            "response": true
+        }
     ],
     "responses": [
         {
-            "identifier": 1,
-            "message": "Tu deuda actual es de ${monto}. ¿Deseas ver el detalle o realizar un pago?"
+            "message": "Tu deuda actual es de ${monto}. ¿Deseas ver el detalle o realizar un pago?",
+            "object": "2887-e09e-1acb-a9a8-2f49-6b86-9205-c1fd"
         },
         {
-            "identifier": 2,
-            "message": "Consultando tu estado de cuenta... Tienes un saldo pendiente de ${monto}."
+            "message": "Consultando tu estado de cuenta... Tienes un saldo pendiente de ${monto}.",
+            "object": "eb12-595d-7095-24dd-e1ec-1a1f-92af-f60a"
         },
         {
-            "identifier": 3,
-            "message": "Actualmente no registras deudas pendientes. ¡Excelente!"
+            "message": "Actualmente no registras deudas pendientes. ¡Excelente!",
+            "object": "eacb-bd22-5120-a5f7-9752-119c-f073-cec8"
         }
     ]
 }

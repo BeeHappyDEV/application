@@ -4,11 +4,11 @@
     "intent": "default",
     "responses": [
         {
-            "identifier": 1,
+            "object": "4c85-5af4-376c-675c-a715-a17c-e495-7dba",
             "message": "No he encontrado una respuesta apropiada"
         },
         {
-            "identifier": 2,
+            "object": "f195-2c4d-ec5c-ff3b-7c5d-df01-2cef-37d4",
             "message": "No entendi lo que me preguntaste"
         }
     ]

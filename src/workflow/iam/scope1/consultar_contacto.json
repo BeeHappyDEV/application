@@ -3,24 +3,71 @@
     "scope": "scope1",
     "intent": "consultar_contacto",
     "utterances": [
-        "correo de contacto",
-        "cual es el email de soporte",
-        "a donde puedo escribir un correo",
-        "necesito el email de la empresa",
-        "como los puedo contactar por email",
-        "dame tu correo"
+        {
+            "message": "correo de contacto",
+            "object": "f568-972d-c12f-3469-d85a-0f44-ec21-92f2"
+        },
+        {
+            "message": "cual es el email de soporte",
+            "object": "e313-7848-a603-375e-f6de-fc02-053f-68a5"
+        },
+        {
+            "message": "a donde puedo escribir un correo",
+            "object": "e411-888e-f209-4a6f-6a59-cef7-7dba-86d4"
+        },
+        {
+            "message": "necesito el email de la empresa",
+            "object": "3783-9cbe-1534-6d1d-fc1b-8fac-df9a-fbe8"
+        },
+        {
+            "message": "como los puedo contactar por email",
+            "object": "db2a-9404-77fb-9612-5c46-2949-2826-2bdd"
+        },
+        {
+            "message": "dame tu correo",
+            "object": "4092-1d31-7678-9145-9d46-c852-2541-5a30"
+        }
     ],
     "actions": [
-        "getInfo.contactEmail"
+        {
+            "type": "function",
+            "schema": "backend",
+            "function": "wakeup_Action"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod1"
+        },
+        {
+            "type": "function",
+            "schema": "backend",
+            "function": "wakeup_Action"
+        },
+        {
+            "type": "discord",
+            "channel": "channel"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod2"
+        },
+        {
+            "type": "response",
+            "response": true
+        }
     ],
     "responses": [
         {
-            "identifier": 1,
-            "message": "Puedes escribirnos a nuestro correo de contacto: soporte@miempresa.com"
+            "message": "Puedes escribirnos a nuestro correo de contacto: soporte@miempresa.com",
+            "object": "6fe3-e574-036e-2882-ee42-2fee-bcaa-bbff"
         },
         {
-            "identifier": 2,
-            "message": "Claro, nuestro email de soporte es soporte@miempresa.com. ¿Te puedo ayudar en algo más?"
+            "message": "Claro, nuestro email de soporte es soporte@miempresa.com. ¿Te puedo ayudar en algo más?",
+            "object": "0480-142a-ef7c-02c6-22c7-753e-5ef1-27f5"
         }
     ]
 }

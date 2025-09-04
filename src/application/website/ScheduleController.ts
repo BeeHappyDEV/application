@@ -23,18 +23,18 @@ export class ScheduleController {
 
     public async initialize (): Promise<void> {
 
-        const paramsObject: Record<string, any> = {};
+        const paramsRecord: Record<string, any> = {};
 
         if (Boolean (await this.propertiesTool.get ('scheduler.wakeup.enable'))) {
 
             nodeCron.schedule (await this.propertiesTool.get ('scheduler.wakeup.cron'), async (): Promise<void> => {
 
-                paramsObject.txt_action = 'wakeup';
-                paramsObject.txt_comment = await this.propertiesTool.get ('scheduler.wakeup.comment');
-                paramsObject.txt_host = await this.propertiesTool.get ('scheduler.wakeup.host');
-                paramsObject.txt_verbose = await this.propertiesTool.get ('scheduler.wakeup.verbose');
+                paramsRecord.txt_action = 'wakeup';
+                paramsRecord.txt_comment = await this.propertiesTool.get ('scheduler.wakeup.comment');
+                paramsRecord.txt_host = await this.propertiesTool.get ('scheduler.wakeup.host');
+                paramsRecord.txt_verbose = await this.propertiesTool.get ('scheduler.wakeup.verbose');
 
-                await this.cronScheduleAction (paramsObject);
+                await this.cronScheduleAction (paramsRecord);
 
             });
 
@@ -44,12 +44,12 @@ export class ScheduleController {
 
             nodeCron.schedule (await this.propertiesTool.get ('scheduler.indicators.cron'), async (): Promise<void> => {
 
-                paramsObject.set ('txt_action', 'indicators');
-                paramsObject.set ('txt_comment', await this.propertiesTool.get ('scheduler.indicators.comment'));
-                paramsObject.set ('txt_host', await this.propertiesTool.get ('scheduler.indicators.host'));
-                paramsObject.set ('txt_verbose', await this.propertiesTool.get ('scheduler.indicators.verbose'));
+                paramsRecord.set ('txt_action', 'indicators');
+                paramsRecord.set ('txt_comment', await this.propertiesTool.get ('scheduler.indicators.comment'));
+                paramsRecord.set ('txt_host', await this.propertiesTool.get ('scheduler.indicators.host'));
+                paramsRecord.set ('txt_verbose', await this.propertiesTool.get ('scheduler.indicators.verbose'));
 
-                await this.cronScheduleAction (paramsObject);
+                await this.cronScheduleAction (paramsRecord);
 
             });
 
@@ -59,12 +59,12 @@ export class ScheduleController {
 
             nodeCron.schedule (await this.propertiesTool.get ('scheduler.inspirational.cron'), async (): Promise<void> => {
 
-                paramsObject.set ('txt_action', 'inspirational');
-                paramsObject.set ('txt_comment', await this.propertiesTool.get ('scheduler.inspirational.comment'));
-                paramsObject.set ('txt_host', await this.propertiesTool.get ('scheduler.inspirational.host'));
-                paramsObject.set ('txt_verbose', await this.propertiesTool.get ('scheduler.inspirational.verbose'));
+                paramsRecord.set ('txt_action', 'inspirational');
+                paramsRecord.set ('txt_comment', await this.propertiesTool.get ('scheduler.inspirational.comment'));
+                paramsRecord.set ('txt_host', await this.propertiesTool.get ('scheduler.inspirational.host'));
+                paramsRecord.set ('txt_verbose', await this.propertiesTool.get ('scheduler.inspirational.verbose'));
 
-                await this.cronScheduleAction (paramsObject);
+                await this.cronScheduleAction (paramsRecord);
 
             });
 
@@ -80,50 +80,50 @@ export class ScheduleController {
 
     }
 
-    private async cronScheduleAction (paramsObject: Record<string, any>): Promise<void> {
+    private async cronScheduleAction (paramsRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            logTool.OK ('Execute',paramsObject.txt_comment + ' runs ' + paramsObject.txt_verbose);
+            logTool.OK ('Execute', paramsRecord.txt_comment + ' runs ' + paramsRecord.txt_verbose);
 
-            resultObject = await this.scheduleService.cronScheduleAction (logTool.getTrace (), paramsObject);
+            resultRecord = await this.scheduleService.cronScheduleAction (logTool.getTrace (), paramsRecord);
 
-            if (resultObject.outgoing) {
+            if (resultRecord.outgoing) {
 
-                if (resultObject.status.num_exception === 0) {
+                if (resultRecord.status.num_exception === 0) {
 
-                    logTool.OK ('Success', paramsObject.txt_comment);
+                    logTool.OK ('Success', paramsRecord.txt_comment);
 
                 } else {
 
-                    logTool.NOK ('Schedule Exception', paramsObject.txt_comment);
+                    logTool.NOK ('Schedule Exception', paramsRecord.txt_comment);
 
                 }
 
             } else {
 
-                resultObject.outgoing = {};
+                resultRecord.outgoing = {};
 
-                logTool.NOK ('Schedule Exception', paramsObject.txt_comment);
+                logTool.NOK ('Schedule Exception', paramsRecord.txt_comment);
 
             }
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.CONTROLLER.num_exception;
-            resultObject.status.txt_exception = LogConstants.CONTROLLER.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.CONTROLLER.num_exception;
+            resultRecord.status.txt_exception = LogConstants.CONTROLLER.txt_exception;
 
             logTool.ERR (LogConstants.CONTROLLER);
 

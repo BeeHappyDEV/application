@@ -21,87 +21,87 @@ export class BackendService {
     ) {
     }
 
-    public async postWakeupAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    public async postWakeupAction (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            paramsObject.txt_schema = 'backend';
-            paramsObject.txt_function = 'wakeup_action';
+            paramsRecord.txt_schema = 'backend';
+            paramsRecord.txt_function = 'wakeup_action';
 
-            resultObject = await this.postgresModule.execute (logTool.getTrace (), paramsObject);
+            resultRecord = await this.postgresModule.execute (logTool.getTrace (), paramsRecord);
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
             logTool.FINALIZE ();
 
-            return resultObject;
+            return resultRecord;
 
         }
 
-        if (resultObject.status.num_exception === 0) {
+        if (resultRecord.status.num_exception === 0) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } else {
 
-            logTool.NOK (resultObject.txt_exception);
+            logTool.NOK (resultRecord.txt_exception);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    public async postDeleteCacheAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    public async postDeleteCacheAction (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            const headersObject: Record<string, any> = {};
-            headersObject.authorization = 'Bearer ' + paramsObject.txt_token;
-            headersObject.content_type = 'application/json';
+            const headersRecord: Record<string, any> = {};
+            headersRecord.authorization = 'Bearer ' + paramsRecord.txt_token;
+            headersRecord.content_type = 'application/json';
 
-            const bodyObject: Record<string, any> = {};
-            bodyObject.purge_everything = true;
+            const bodyRecord: Record<string, any> = {};
+            bodyRecord.purge_everything = true;
 
-            resultObject = await this.webserviceModule.delete (logTool.getTrace (), paramsObject.txt_host, headersObject, undefined, bodyObject);
+            resultRecord = await this.webserviceModule.delete (logTool.getTrace (), paramsRecord.txt_host, headersRecord, undefined, bodyRecord);
 
             logTool.OK ();
 
         } catch (exception) {
 
-            resultObject.status = {};
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status = {};
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
 
@@ -109,35 +109,35 @@ export class BackendService {
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    public async postRebuildDocumentalAction (traceObject: Record<string, any>, _paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    public async postRebuildDocumentalAction (traceRecord: Record<string, any>, _paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
             await this.mongoDbModule.rebuildTraces ();
 
-            resultObject.status = {};
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status = {};
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } catch (exception) {
 
-            resultObject.status = {};
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status = {};
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
 
@@ -145,89 +145,89 @@ export class BackendService {
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    public async postRebuildRelationalAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    public async postRebuildRelationalAction (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.rebuildReadMainFile (logTool.getTrace (), paramsObject);
+            resultRecord = await this.rebuildReadMainFile (logTool.getTrace (), paramsRecord);
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
             logTool.FINALIZE ();
 
-            return resultObject;
+            return resultRecord;
 
         }
 
-        if (resultObject.status.num_exception === 0) {
+        if (resultRecord.status.num_exception === 0) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } else {
 
-            logTool.NOK (resultObject.txt_exception);
+            logTool.NOK (resultRecord.txt_exception);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    public async postReloadIndicatorsAction (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    public async postReloadIndicatorsAction (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            await this.reloadDollarIndicators (logTool.getTrace (), paramsObject);
-            await this.reloadEuroIndicators (logTool.getTrace (), paramsObject);
-            await this.reloadFomentUnitIndicators (logTool.getTrace (), paramsObject);
-            await this.reloadMonthlyTaxUnitIndicators (logTool.getTrace (), paramsObject);
+            await this.reloadDollarIndicators (logTool.getTrace (), paramsRecord);
+            await this.reloadEuroIndicators (logTool.getTrace (), paramsRecord);
+            await this.reloadFomentUnitIndicators (logTool.getTrace (), paramsRecord);
+            await this.reloadMonthlyTaxUnitIndicators (logTool.getTrace (), paramsRecord);
 
             logTool.OK ();
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.INDICATOR);
 
@@ -235,29 +235,29 @@ export class BackendService {
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    private async rebuildReadMainFile (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    private async rebuildReadMainFile (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         let exceptionBoolean = false;
 
-        const contentBuffer = fsExtra.readFileSync (paramsObject.txt_path + paramsObject.txt_file);
+        const nonSharedBuffer = fsExtra.readFileSync (paramsRecord.txt_path + paramsRecord.txt_file);
 
-        const contentString = contentBuffer.toString ();
+        const contentString = nonSharedBuffer.toString ();
 
         const linesString = contentString.split (/\r?\n/);
 
         for (let offsetNumber = 0; offsetNumber < linesString.length; offsetNumber++) {
 
-            const lineString = linesString[offsetNumber].trim ();
+            const lineString = linesString [offsetNumber].trim ();
 
             if (lineString.startsWith ('/*') || lineString.startsWith ('--') || lineString === '') {
 
@@ -265,11 +265,11 @@ export class BackendService {
 
             }
 
-            paramsObject.txt_folder = lineString;
+            paramsRecord.txt_folder = lineString;
 
-            resultObject = await this.rebuildReadFolderFile (logTool.getTrace (), paramsObject);
+            resultRecord = await this.rebuildReadFolderFile (logTool.getTrace (), paramsRecord);
 
-            if (resultObject.status.boo_exception == true) {
+            if (resultRecord.status.boo_exception == true) {
 
                 exceptionBoolean = true;
 
@@ -279,49 +279,49 @@ export class BackendService {
 
         if (!exceptionBoolean) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
-            logTool.OK ('Main Success', paramsObject.txt_path + paramsObject.txt_file);
+            logTool.OK ('Main Success', paramsRecord.txt_path + paramsRecord.txt_file);
 
         } else {
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
-            logTool.NOK ('Main Failed', paramsObject.txt_path + paramsObject.txt_file);
+            logTool.NOK ('Main Failed', paramsRecord.txt_path + paramsRecord.txt_file);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    private async rebuildReadFolderFile (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    private async rebuildReadFolderFile (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setSoftTrace (traceObject);
+        logTool.setSoftTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        paramsObject.txt_folder = paramsObject.txt_folder.split ('/') [0] + '/';
+        paramsRecord.txt_folder = paramsRecord.txt_folder.split ('/') [0] + '/';
 
-        const contentBuffer = fsExtra.readFileSync (paramsObject.txt_path + paramsObject.txt_folder + paramsObject.txt_file);
+        const nonSharedBuffer = fsExtra.readFileSync (paramsRecord.txt_path + paramsRecord.txt_folder + paramsRecord.txt_file);
 
-        const contentString = contentBuffer.toString ();
+        const contentString = nonSharedBuffer.toString ();
 
         const linesString = contentString.split (/\r?\n/);
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         let exceptionBoolean = false;
 
         for (let offsetNumber = 0; offsetNumber < linesString.length; offsetNumber++) {
 
-            const lineString = linesString[offsetNumber].trim ();
+            const lineString = linesString [offsetNumber].trim ();
 
             if (lineString.startsWith ('/*') || lineString.startsWith ('--') || lineString === '') {
 
@@ -329,11 +329,11 @@ export class BackendService {
 
             }
 
-            paramsObject.txt_script = lineString;
+            paramsRecord.txt_script = lineString;
 
-            resultObject = await this.rebuildReadScriptFile (logTool.getTrace (), paramsObject);
+            resultRecord = await this.rebuildReadScriptFile (logTool.getTrace (), paramsRecord);
 
-            if (resultObject.status.boo_exception == true) {
+            if (resultRecord.status.boo_exception == true) {
 
                 exceptionBoolean = true;
 
@@ -343,382 +343,382 @@ export class BackendService {
 
         if (!exceptionBoolean) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
-            logTool.OK ('Folder Success', paramsObject.txt_path + paramsObject.txt_folder.split ('/') [0]);
+            logTool.OK ('Folder Success', paramsRecord.txt_path + paramsRecord.txt_folder.split ('/') [0]);
 
         } else {
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
-            logTool.NOK ('Folder Failed', paramsObject.txt_path + paramsObject.txt_folder.split ('/') [0]);
+            logTool.NOK ('Folder Failed', paramsRecord.txt_path + paramsRecord.txt_folder.split ('/') [0]);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    private async rebuildReadScriptFile (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    private async rebuildReadScriptFile (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setSoftTrace (traceObject);
+        logTool.setSoftTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        const contentBuffer = fsExtra.readFileSync (paramsObject.txt_path + paramsObject.txt_folder + paramsObject.txt_script);
+        const contentBuffer = fsExtra.readFileSync (paramsRecord.txt_path + paramsRecord.txt_folder + paramsRecord.txt_script);
 
         const contentString = contentBuffer.toString ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            paramsObject.txt_content = contentString;
+            paramsRecord.txt_content = contentString;
 
-            resultObject = await this.postgresModule.execute (logTool.getTrace (), paramsObject);
+            resultRecord = await this.postgresModule.execute (logTool.getTrace (), paramsRecord);
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
             logTool.FINALIZE ();
 
-            return resultObject;
+            return resultRecord;
 
         }
 
-        if (resultObject.status.num_exception === 0) {
+        if (resultRecord.status.num_exception === 0) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } else {
 
-            logTool.NOK (resultObject.txt_exception);
+            logTool.NOK (resultRecord.txt_exception);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    private async reloadDollarIndicators (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    private async reloadDollarIndicators (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setSoftTrace (traceObject);
+        logTool.setSoftTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        const headersObject: Record<string, any> = {};
+        const headersRecord: Record<string, any> = {};
 
-        const queryObject: Record<string, any> = {};
-        delete queryObject.jsn_data;
-        queryObject.apikey = paramsObject.txt_token;
-        queryObject.formato = 'json';
+        const queryRecord: Record<string, any> = {};
+        delete queryRecord.jsn_data;
+        queryRecord.apikey = paramsRecord.txt_token;
+        queryRecord.formato = 'json';
 
-        const bodyObject: Record<string, any> = {};
+        const bodyRecord: Record<string, any> = {};
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.get (logTool.getTrace (), paramsObject.txt_host_dollar + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject);
+            resultRecord = await this.webserviceModule.get (logTool.getTrace (), paramsRecord.txt_host_dollar + '/' + new Date ().getFullYear ().toString (), headersRecord, queryRecord, bodyRecord);
 
-            let transientObject: Record<string, any> = JSON.parse (resultObject.outgoing.text);
-            transientObject = transientObject.Dolares;
-            transientObject = transientObject.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
+            let transientRecord: Record<string, any> = JSON.parse (resultRecord.outgoing.text);
+            transientRecord = transientRecord.Dolares;
+            transientRecord = transientRecord.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
                 value: item.Valor,
                 date: item.Fecha
             }));
 
-            delete queryObject.apikey;
-            delete queryObject.formato;
-            queryObject.jsn_data = transientObject;
-            queryObject.txt_schema = 'indicators';
-            queryObject.txt_function = 'set_dollar_values';
+            delete queryRecord.apikey;
+            delete queryRecord.formato;
+            queryRecord.jsn_data = transientRecord;
+            queryRecord.txt_schema = 'indicators';
+            queryRecord.txt_function = 'setDollarValues';
 
-            resultObject = await this.postgresModule.execute (logTool.getTrace (), queryObject);
+            resultRecord = await this.postgresModule.execute (logTool.getTrace (), queryRecord);
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
             logTool.FINALIZE ();
 
-            return resultObject;
+            return resultRecord;
 
         }
 
-        if (resultObject.status.num_exception === 0) {
+        if (resultRecord.status.num_exception === 0) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } else {
 
-            logTool.NOK (resultObject.txt_exception);
+            logTool.NOK (resultRecord.txt_exception);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    private async reloadEuroIndicators (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    private async reloadEuroIndicators (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setSoftTrace (traceObject);
+        logTool.setSoftTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        const headersObject: Record<string, any> = {};
+        const headersRecord: Record<string, any> = {};
 
-        const queryObject: Record<string, any> = {};
-        delete queryObject.jsn_data;
-        queryObject.apikey = paramsObject.txt_token;
-        queryObject.formato = 'json';
+        const queryRecord: Record<string, any> = {};
+        delete queryRecord.jsn_data;
+        queryRecord.apikey = paramsRecord.txt_token;
+        queryRecord.formato = 'json';
 
-        const bodyObject: Record<string, any> = {};
+        const bodyRecord: Record<string, any> = {};
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.get (logTool.getTrace (), paramsObject.txt_host_euro + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject);
+            resultRecord = await this.webserviceModule.get (logTool.getTrace (), paramsRecord.txt_host_euro + '/' + new Date ().getFullYear ().toString (), headersRecord, queryRecord, bodyRecord);
 
-            let transientObject: Record<string, any> = JSON.parse (resultObject.outgoing.text);
-            transientObject = transientObject.Euros;
-            transientObject = transientObject.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
+            let transientRecord: Record<string, any> = JSON.parse (resultRecord.outgoing.text);
+            transientRecord = transientRecord.Euros;
+            transientRecord = transientRecord.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
                 value: item.Valor,
                 date: item.Fecha
             }));
 
-            delete queryObject.apikey;
-            delete queryObject.formato;
-            queryObject.jsn_data = transientObject;
-            queryObject.txt_schema = 'indicators';
-            queryObject.txt_function = 'set_euro_values';
+            delete queryRecord.apikey;
+            delete queryRecord.formato;
+            queryRecord.jsn_data = transientRecord;
+            queryRecord.txt_schema = 'indicators';
+            queryRecord.txt_function = 'setEuroValues';
 
-            resultObject = await this.postgresModule.execute (logTool.getTrace (), queryObject);
+            resultRecord = await this.postgresModule.execute (logTool.getTrace (), queryRecord);
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
             logTool.FINALIZE ();
 
-            return resultObject;
+            return resultRecord;
 
         }
 
-        if (resultObject.status.num_exception === 0) {
+        if (resultRecord.status.num_exception === 0) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } else {
 
-            logTool.NOK (resultObject.txt_exception);
+            logTool.NOK (resultRecord.txt_exception);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    private async reloadFomentUnitIndicators (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    private async reloadFomentUnitIndicators (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setSoftTrace (traceObject);
+        logTool.setSoftTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        const headersObject: Record<string, any> = {};
+        const headersRecord: Record<string, any> = {};
 
-        const queryObject: Record<string, any> = {};
-        delete queryObject.jsn_data;
-        queryObject.apikey = paramsObject.txt_token;
-        queryObject.formato = 'json';
+        const queryRecord: Record<string, any> = {};
+        delete queryRecord.jsn_data;
+        queryRecord.apikey = paramsRecord.txt_token;
+        queryRecord.formato = 'json';
 
-        const bodyObject: Record<string, any> = {};
+        const bodyRecord: Record<string, any> = {};
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.get (logTool.getTrace (), paramsObject.txt_host_foment_unit + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject);
+            resultRecord = await this.webserviceModule.get (logTool.getTrace (), paramsRecord.txt_host_foment_unit + '/' + new Date ().getFullYear ().toString (), headersRecord, queryRecord, bodyRecord);
 
-            let transientObject: Record<string, any> = JSON.parse (resultObject.outgoing.text);
-            transientObject = transientObject.UFs;
-            transientObject = transientObject.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
+            let transientRecord: Record<string, any> = JSON.parse (resultRecord.outgoing.text);
+            transientRecord = transientRecord.UFs;
+            transientRecord = transientRecord.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
                 value: item.Valor,
                 date: item.Fecha
             }));
 
-            delete queryObject.apikey;
-            delete queryObject.formato;
-            queryObject.jsn_data = transientObject;
-            queryObject.txt_schema = 'indicators';
-            queryObject.txt_function = 'set_foment_unit_values';
+            delete queryRecord.apikey;
+            delete queryRecord.formato;
+            queryRecord.jsn_data = transientRecord;
+            queryRecord.txt_schema = 'indicators';
+            queryRecord.txt_function = 'setFomentUnitValues';
 
-            resultObject = await this.postgresModule.execute (logTool.getTrace (), queryObject);
+            resultRecord = await this.postgresModule.execute (logTool.getTrace (), queryRecord);
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
             logTool.FINALIZE ();
 
-            return resultObject;
+            return resultRecord;
 
         }
 
-        if (resultObject.status.num_exception === 0) {
+        if (resultRecord.status.num_exception === 0) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } else {
 
-            logTool.NOK (resultObject.txt_exception);
+            logTool.NOK (resultRecord.txt_exception);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    private async reloadMonthlyTaxUnitIndicators (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    private async reloadMonthlyTaxUnitIndicators (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setSoftTrace (traceObject);
+        logTool.setSoftTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        const headersObject: Record<string, any> = {};
+        const headersRecord: Record<string, any> = {};
 
-        const queryObject: Record<string, any> = {};
-        delete queryObject.jsn_data;
-        queryObject.apikey = paramsObject.txt_token;
-        queryObject.formato = 'json';
+        const queryRecord: Record<string, any> = {};
+        delete queryRecord.jsn_data;
+        queryRecord.apikey = paramsRecord.txt_token;
+        queryRecord.formato = 'json';
 
-        const bodyObject: Record<string, any> = {};
+        const bodyRecord: Record<string, any> = {};
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.get (logTool.getTrace (), paramsObject.txt_host_monthly_tax_unit + '/' + new Date ().getFullYear ().toString (), headersObject, queryObject, bodyObject);
+            resultRecord = await this.webserviceModule.get (logTool.getTrace (), paramsRecord.txt_host_monthly_tax_unit + '/' + new Date ().getFullYear ().toString (), headersRecord, queryRecord, bodyRecord);
 
-            let transientObject: Record<string, any> = JSON.parse (resultObject.outgoing.text);
-            transientObject = transientObject.UTMs;
-            transientObject = transientObject.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
+            let transientRecord: Record<string, any> = JSON.parse (resultRecord.outgoing.text);
+            transientRecord = transientRecord.UTMs;
+            transientRecord = transientRecord.map ((item: { Valor: any; Fecha: any; }): { value: any, date: any } => ({
                 value: item.Valor,
                 date: item.Fecha
             }));
 
-            delete queryObject.apikey;
-            delete queryObject.formato;
-            queryObject.jsn_data = transientObject;
-            queryObject.txt_schema = 'indicators';
-            queryObject.txt_function = 'set_monthly_tax_unit_values';
+            delete queryRecord.apikey;
+            delete queryRecord.formato;
+            queryRecord.jsn_data = transientRecord;
+            queryRecord.txt_schema = 'indicators';
+            queryRecord.txt_function = 'setMonthlyTaxUnitValues';
 
-            resultObject = await this.postgresModule.execute (logTool.getTrace (), queryObject);
+            resultRecord = await this.postgresModule.execute (logTool.getTrace (), queryRecord);
 
         } catch (exception) {
 
-            if (!resultObject.status) {
+            if (!resultRecord.status) {
 
-                resultObject.status = {};
+                resultRecord.status = {};
 
             }
 
-            resultObject.status.boo_exception = true;
-            resultObject.status.num_exception = LogConstants.SERVICE.num_exception;
-            resultObject.status.txt_exception = LogConstants.SERVICE.txt_exception;
+            resultRecord.status.boo_exception = true;
+            resultRecord.status.num_exception = LogConstants.SERVICE.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SERVICE.txt_exception;
 
             logTool.ERR (LogConstants.SERVICE);
             logTool.FINALIZE ();
 
-            return resultObject;
+            return resultRecord;
 
         }
 
-        if (resultObject.status.num_exception === 0) {
+        if (resultRecord.status.num_exception === 0) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } else {
 
-            logTool.NOK (resultObject.txt_exception);
+            logTool.NOK (resultRecord.txt_exception);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 

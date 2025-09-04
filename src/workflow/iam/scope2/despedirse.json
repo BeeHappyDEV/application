@@ -3,27 +3,74 @@
     "scope": "scope2",
     "intent": "despedirse",
     "utterances": [
-        "adios",
-        "chao",
-        "hasta luego",
-        "gracias por la ayuda",
-        "eso es todo gracias",
-        "nos vemos"
+        {
+            "message": "adios",
+            "object": "6e6e-2ddb-6346-ce14-3d19-d79b-3358-c16a"
+        },
+        {
+            "message": "chao",
+            "object": "2672-9bae-1fc5-b60a-2973-324e-f387-fe5f"
+        },
+        {
+            "message": "hasta luego",
+            "object": "24d6-769c-29f3-81d4-79db-193d-a150-b6a8"
+        },
+        {
+            "message": "gracias por la ayuda",
+            "object": "379e-26d9-9f19-336e-31fb-23b2-cd6d-2cbe"
+        },
+        {
+            "message": "eso es todo gracias",
+            "object": "5653-cf79-f790-bd3c-f866-6bc6-2158-4d5e"
+        },
+        {
+            "message": "nos vemos",
+            "object": "1086-c1ef-fa47-945e-a439-4eda-3978-9c5f"
+        }
     ],
     "actions": [
-        "conversation.end"
+        {
+            "type": "function",
+            "schema": "frontend",
+            "function": "link_action"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod1"
+        },
+        {
+            "type": "function",
+            "schema": "indicators",
+            "function": "setEuroValues"
+        },
+        {
+            "type": "discord",
+            "channel": "channel"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod2"
+        },
+        {
+            "type": "response",
+            "response": true
+        }
     ],
     "responses": [
         {
-            "identifier": 1,
+            "object": "fd98-62f4-c875-1ceb-a80e-6ed7-09e9-25da",
             "message": "¡De nada! Que tengas un excelente día."
         },
         {
-            "identifier": 2,
+            "object": "a835-dcc6-9400-7dff-9211-98d0-1dae-fed2",
             "message": "Ha sido un placer ayudarte. ¡Adiós!"
         },
         {
-            "identifier": 3,
+            "object": "4e0d-327c-64fe-577b-9997-e7c3-8642-21b6",
             "message": "Cualquier otra cosa, no dudes en volver a preguntar. ¡Chao!"
         }
     ]

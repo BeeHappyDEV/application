@@ -1,4 +1,5 @@
 import fsExtra from 'fs-extra';
+import crypto from "crypto";
 
 export class CommonsTool {
 
@@ -23,24 +24,6 @@ export class CommonsTool {
             return value;
 
         });
-
-    }
-
-    public static getToHumanize (candidateString: string): string {
-
-        candidateString = candidateString
-            .replace (/[-.]/g, ' ')
-            .replace (/([A-Z])/g, ' $1')
-            .replace (/\s+/g, ' ')
-            .trim ();
-
-        candidateString = candidateString.toLowerCase ()
-            .replace (/\b\w/g, char => char.toUpperCase ());
-
-        candidateString = candidateString.replace (/Whats App/g, 'Whatsapp')
-            .replace (/\s+/g, ' ');
-
-        return candidateString;
 
     }
 
@@ -84,51 +67,9 @@ export class CommonsTool {
 
     }
 
-    public static getBase26 (lengthNumber: number): string {
+    public static getMD5 (candidateString: string): string {
 
-        const charString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-
-        const randomValues = new Uint32Array (lengthNumber);
-
-        crypto.getRandomValues (randomValues);
-
-        return Array.from (randomValues, value =>
-
-            charString[value % charString.length]
-
-        ).join ('');
-
-    }
-
-    public static getBase52 (lengthNumber: number): string {
-
-        const charString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
-
-        const randomValues = new Uint32Array (lengthNumber);
-
-        crypto.getRandomValues (randomValues);
-
-        return Array.from (randomValues, value =>
-
-            charString[value % charString.length]
-
-        ).join ('');
-
-    }
-
-    public static getBase62 (lengthNumber: number): string {
-
-        const charString = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-
-        const randomValues = new Uint32Array (lengthNumber);
-
-        crypto.getRandomValues (randomValues);
-
-        return Array.from (randomValues, value =>
-
-            charString[value % charString.length]
-
-        ).join ('');
+        return crypto.createHash ('md5').update (candidateString).digest ('hex').match (/.{1,4}/g)!.join ('-');
 
     }
 

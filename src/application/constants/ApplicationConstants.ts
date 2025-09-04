@@ -1,5 +1,9 @@
 export class ApplicationConstants {
 
+    public static ACTION_DISCORD = 'discord';
+    public static ACTION_FUNCTION = 'function';
+    public static ACTION_METHOD = 'method';
+    public static ACTION_RESPONSE = 'response';
     public static CHANNEL_MESSENGER: string = 'Messenger';
     public static CHANNEL_TELEGRAM: string = 'Telegram';
     public static CHANNEL_WHATSAPP: string = 'WhatsApp';
@@ -28,5 +32,6 @@ export class ApplicationConstants {
     public static WEBSITE_BACKEND: string = 'Backend';
     public static WEBSITE_FRONTEND: string = 'Frontend';
     public static WEBSITE_SCHEDULE: string = 'Schedule';
+    public static WEBSITE_TESTING: string = 'Testing';
 
 }

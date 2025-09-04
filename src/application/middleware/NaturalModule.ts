@@ -5,18 +5,21 @@ import natural from 'natural';
 import path from 'path';
 
 import {PropertiesTool} from '../toolkit/PropertiesTool';
+import {CommonsTool} from "../toolkit/CommonsTool";
+import {LogTool} from "../toolkit/LogTool";
 
 @injectable ()
 export class NaturalModule {
 
     private bayesClassifier: natural.BayesClassifier = new natural.BayesClassifier ();
     private initializedBoolean = false;
-    private intentObject: any = null;
-    private intentObjectArray: any[] = [];
+    private intentRecord: Record<string, any> = {};
+    private intentRecordArray: any [] = [];
     private stopWords!: Set<string>;
     private wordTokenizer: natural.WordTokenizer;
 
     constructor (
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
 
@@ -51,24 +54,13 @@ export class NaturalModule {
 
     }
 
-    public async getResponse (preprocessedString: string): Promise<Record<string, any>> {
+    public async getIntent (preprocessedString: string): Promise<Record<string, any>> {
 
-        const responseObject: Record<string, any> = {};
+        const responseRecord: Record<string, any> = {};
 
         const processedString = await this.processString (preprocessedString);
 
         const apparatusClassificationArray = this.bayesClassifier.getClassifications (processedString);
-
-        if (!apparatusClassificationArray || apparatusClassificationArray.length === 0) {
-
-            responseObject.preprocessed = preprocessedString;
-            responseObject.processed = await this.processString (preprocessedString);
-            responseObject.confidence = 0;
-            responseObject.response = this.selectRandomResponse (this.intentObject.responses);
-
-            return responseObject;
-
-        }
 
         const totalNumber = apparatusClassificationArray.reduce ((summatoryNumber, apparatusClassification) => summatoryNumber + Math.exp (apparatusClassification.value), 0);
 
@@ -79,32 +71,36 @@ export class NaturalModule {
             }))
             .sort ((a, b) => b.confidence - a.confidence);
 
-        const intentObject = this.intentObjectArray.find (obj => obj.intent === apparatusClassification.label);
+        const intentRecord = this.intentRecordArray.find (obj => obj.intent === apparatusClassification.label);
 
-        responseObject.preprocessed = preprocessedString;
-        responseObject.processed = await this.processString (preprocessedString);
-        responseObject.intent = apparatusClassification.label;
-        responseObject.confidence = (apparatusClassification.confidence * 100).toFixed (1);
-        responseObject.response = this.selectRandomResponse (intentObject.responses);
-        responseObject.actions = intentObject.actions
+        responseRecord.preprocessed = preprocessedString;
+        responseRecord.processed = await this.processString (preprocessedString);
+        responseRecord.intent = apparatusClassification.label;
+        responseRecord.confidence = (apparatusClassification.confidence * 100).toFixed (1);
+        responseRecord.actions = intentRecord.actions
+        responseRecord.responses = intentRecord.responses;
 
-        return responseObject;
-
-    }
-
-    private selectRandomResponse (responseObjectArray: any []): string {
-
-        const randomNumber = Math.floor (Math.random () * responseObjectArray.length);
-
-        return responseObjectArray [randomNumber];
+        return responseRecord;
 
     }
+
+
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
+    /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 
     private async readIntentDirectories (): Promise<void> {
 
-        this.intentObject = null;
+        this.intentRecord = {};
 
-        this.intentObjectArray = [];
+        this.intentRecordArray = [];
 
         const rootString = await this.propertiesTool.get ('integration.natural.root');
 
@@ -130,15 +126,15 @@ export class NaturalModule {
 
                 for (const intentDirent of intentDirentArray) {
 
-                    let intentObject = await this.readIntentFile (rootString, domainDirent.name, scopeDirent.name, intentDirent);
+                    let intentRecord = await this.readIntentFile (rootString, domainDirent.name, scopeDirent.name, intentDirent);
 
-                    if (intentObject.intent === 'default') {
+                    if (intentRecord.intent === 'default') {
 
-                        this.intentObject= intentObject;
+                        this.intentRecord = intentRecord;
 
                     } else {
 
-                        this.intentObjectArray.push (intentObject);
+                        this.intentRecordArray.push (intentRecord);
 
                     }
 
@@ -155,22 +151,34 @@ export class NaturalModule {
 
         const contentString = fsExtra.readFileSync (sourceString, 'utf-8');
 
-        const intentObject = JSON.parse (contentString);
-        intentObject.domain = domainString;
-        intentObject.scope = scopeString;
-        intentObject.intent = path.parse (intentString).name;
+        const intentRecord = JSON.parse (contentString);
+        intentRecord.domain = domainString;
+        intentRecord.scope = scopeString;
+        intentRecord.intent = path.parse (intentString).name;
 
-        let offsetNumber = 0;
+        if (intentRecord.utterances && intentRecord.utterances.length > 0) {
 
-        for (const responseObject of intentObject.responses) {
+            for (const utteranceRecord of intentRecord.utterances) {
 
-            responseObject.identifier = ++offsetNumber;
+                utteranceRecord.object = CommonsTool.getMD5 (utteranceRecord.message);
+
+            }
 
         }
 
-        fsExtra.writeFileSync (sourceString, JSON.stringify (intentObject, null, 4), 'utf-8');
+        if (intentRecord.responses && intentRecord.responses.length > 0) {
 
-        return intentObject;
+            for (const responseRecord of intentRecord.responses) {
+
+                responseRecord.object = CommonsTool.getMD5 (responseRecord.message);
+
+            }
+
+        }
+
+        fsExtra.writeFileSync (sourceString, JSON.stringify (intentRecord, null, 4), 'utf-8');
+
+        return intentRecord;
 
     }
 
@@ -178,21 +186,21 @@ export class NaturalModule {
 
         this.bayesClassifier = new natural.BayesClassifier ();
 
-        for (const intentObject of this.intentObjectArray) {
+        for (const intentRecord of this.intentRecordArray) {
 
-            if (!intentObject.utterances || intentObject.utterances.length === 0) {
+            if (!intentRecord.utterances || intentRecord.utterances.length === 0) {
 
                 continue;
 
             }
 
-            for (const utteranceString of intentObject.utterances) {
+            for (const utteranceRecord of intentRecord.utterances) {
 
-                const processedString = await this.processString (utteranceString);
+                const processedString = await this.processString (utteranceRecord.message);
 
                 if (processedString) {
 
-                    this.bayesClassifier.addDocument (processedString, intentObject.intent);
+                    this.bayesClassifier.addDocument (processedString, intentRecord.intent);
 
                 }
 

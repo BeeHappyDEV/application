@@ -15,25 +15,25 @@ export class ScheduleService {
     ) {
     }
 
-    public async cronScheduleAction (traceObject:  Record<string, any>, paramsObject:  Record<string, any>): Promise<Record<string, any>> {
+    public async cronScheduleAction (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        const headersObject: Record<string, any> = {};
+        const headersRecord: Record<string, any> = {};
 
-        let queryObject: Record<string, any> = {};
+        let queryRecord: Record<string, any> = {};
 
-        const bodyObject: Record<string, any> = {};
-        bodyObject.transaction = logTool.getTrace ().transaction;
-        bodyObject.depth = logTool.getTrace ().depth + 2;
+        const bodyRecord: Record<string, any> = {};
+        bodyRecord.transaction = logTool.getTrace ().transaction;
+        bodyRecord.depth = logTool.getTrace ().depth + 2;
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.webserviceModule.post (logTool.getTrace (), await paramsObject.txt_host, headersObject, queryObject, bodyObject);
+            resultRecord = await this.webserviceModule.post (logTool.getTrace (), await paramsRecord.txt_host, headersRecord, queryRecord, bodyRecord);
 
         } catch (exception) {
 
@@ -41,23 +41,23 @@ export class ScheduleService {
 
         }
 
-        if (resultObject.status.num_exception === 0) {
+        if (resultRecord.status.num_exception === 0) {
 
-            resultObject.status.boo_exception = false;
-            resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-            resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+            resultRecord.status.boo_exception = false;
+            resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+            resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
             logTool.OK ();
 
         } else {
 
-            logTool.NOK (resultObject.txt_exception);
+            logTool.NOK (resultRecord.txt_exception);
 
         }
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 

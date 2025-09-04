@@ -1,6 +1,6 @@
-drop function if exists indicators.set_dollar_values;
+drop function if exists indicators.setDollarValues;
 
-create or replace function indicators.set_dollar_values (
+create or replace function indicators.setDollarValues (
     in in_jsn_object json
 )
 returns json as $body$

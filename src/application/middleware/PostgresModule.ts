@@ -57,41 +57,41 @@ export class PostgresModule {
 
     }
 
-    public async execute (traceObject: Record<string, any>, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    public async execute (traceRecord: Record<string, any>, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         await this.initialize ();
 
         const poolClient = await this.pgPool.connect ();
 
-        if (paramsObject.txt_script != null) {
+        if (paramsRecord.txt_script != null) {
 
             try {
 
-                const fileString = paramsObject.txt_path + paramsObject.txt_folder + paramsObject.txt_script;
+                const fileString = paramsRecord.txt_path + paramsRecord.txt_folder + paramsRecord.txt_script;
 
-                logTool.setScpExecute (fileString, paramsObject.txt_content);
+                logTool.setScpExecute (fileString, paramsRecord.txt_content);
 
-                await poolClient.query (paramsObject.txt_content);
+                await poolClient.query (paramsRecord.txt_content);
 
-                resultObject.status = {};
-                resultObject.status.boo_exception = false;
-                resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-                resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+                resultRecord.status = {};
+                resultRecord.status.boo_exception = false;
+                resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+                resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
                 logTool.setScpSuccess (fileString);
 
             } catch (exception) {
 
-                resultObject.status = {};
-                resultObject.status.boo_exception = true;
-                resultObject.status.num_exception = LogConstants.SCRIPT.num_exception;
-                resultObject.status.txt_exception = LogConstants.SCRIPT.txt_exception;
+                resultRecord.status = {};
+                resultRecord.status.boo_exception = true;
+                resultRecord.status.num_exception = LogConstants.SCRIPT.num_exception;
+                resultRecord.status.txt_exception = LogConstants.SCRIPT.txt_exception;
 
                 logTool.setScpPostgres ();
 
@@ -99,33 +99,33 @@ export class PostgresModule {
 
         }
 
-        if (paramsObject.txt_schema != null && paramsObject.txt_function != null) {
+        if (paramsRecord.txt_schema != null && paramsRecord.txt_function != null) {
 
             try {
 
-                const functionString = paramsObject.txt_schema + '.' + paramsObject.txt_function;
+                const functionString = paramsRecord.txt_schema + '.' + paramsRecord.txt_function;
 
-                delete paramsObject.txt_schema;
-                delete paramsObject.txt_function;
+                delete paramsRecord.txt_schema;
+                delete paramsRecord.txt_function;
 
-                logTool.setFncExecute (functionString, paramsObject)
+                logTool.setFncExecute (functionString, paramsRecord)
 
-                let postgresObject = await poolClient.query ('select * from ' + functionString + ' ($1)', [paramsObject]);
-                postgresObject = postgresObject.rows [0];
+                let postgresRecord = await poolClient.query ('select * from ' + functionString + ' ($1)', [paramsRecord]);
+                postgresRecord = postgresRecord.rows [0];
 
-                resultObject = Object.values (postgresObject) [0];
+                resultRecord = Object.values (postgresRecord) [0];
 
-                if (resultObject.status.boo_exception === false) {
+                if (resultRecord.status.boo_exception === false) {
 
-                    resultObject.status.num_exception = LogConstants.SUCCESS.num_exception;
-                    resultObject.status.txt_exception = LogConstants.SUCCESS.txt_exception;
+                    resultRecord.status.num_exception = LogConstants.SUCCESS.num_exception;
+                    resultRecord.status.txt_exception = LogConstants.SUCCESS.txt_exception;
 
                     logTool.setFncSuccess (functionString);
 
                 } else {
 
-                    resultObject.status.num_exception = LogConstants.FUNCTION.num_exception;
-                    resultObject.status.txt_exception = LogConstants.FUNCTION.txt_exception;
+                    resultRecord.status.num_exception = LogConstants.FUNCTION.num_exception;
+                    resultRecord.status.txt_exception = LogConstants.FUNCTION.txt_exception;
 
                     logTool.setFncFunction (functionString);
 
@@ -133,10 +133,10 @@ export class PostgresModule {
 
             } catch (exception) {
 
-                resultObject.status = {};
-                resultObject.status.boo_exception = true;
-                resultObject.status.num_exception = LogConstants.POSTGRES.num_exception;
-                resultObject.status.txt_exception = LogConstants.POSTGRES.txt_exception;
+                resultRecord.status = {};
+                resultRecord.status.boo_exception = true;
+                resultRecord.status.num_exception = LogConstants.POSTGRES.num_exception;
+                resultRecord.status.txt_exception = LogConstants.POSTGRES.txt_exception;
 
                 logTool.setFncPostgres ();
 
@@ -148,7 +148,7 @@ export class PostgresModule {
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 

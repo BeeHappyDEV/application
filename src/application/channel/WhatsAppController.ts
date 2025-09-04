@@ -1,12 +1,10 @@
 import {inject, injectable} from 'tsyringe';
 
-import express from 'express';
-import expressWs from 'express-ws';
-
-//import {LogTool} from '../toolkit/LogTool';
+import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
 
 import {WhatsAppService} from './WhatsAppService';
+import {container} from "tsyringe";
 
 @injectable ()
 export class WhatsAppController {
@@ -14,23 +12,28 @@ export class WhatsAppController {
     private initializedBoolean = false;
 
     constructor (
-        //@inject ('LogToolFactory') private logToolFactory: () => LogTool,
+        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool,
         @inject (WhatsAppService) private whatsAppService: WhatsAppService
     ) {
     }
 
-    // @ts-ignore
-    public async initialize (expressApplication: express.Application, expressWsInstance: expressWs.Instance): Promise<void> {
+    public async initialize (): Promise<void> {
 
-        const originalConsole = {...console};
-        console.log = () => {
-        };
-        console.log (this.whatsAppService);
-        console.log (this.propertiesTool);
-        console.log = originalConsole.log;
+        const propertyArray = Array (await this.propertiesTool.get ('channel.whatsapp.instances'));
 
-        this.initializedBoolean = true;
+        for (const propertyEntry of propertyArray [0]) {
+
+            console.log (propertyEntry.name + ' - ' + propertyEntry.phone);
+
+            const whatsAppService = container.resolve (WhatsAppService);
+
+            await whatsAppService.initialize (propertyEntry.phone);
+            await whatsAppService.connect ();
+
+            this.initializedBoolean = true;
+
+        }
 
     }
 

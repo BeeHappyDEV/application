@@ -5,7 +5,7 @@ import {container, inject, injectable} from 'tsyringe';
 
 import childProcess from 'child_process';
 import express from 'express';
-import expressWs from 'express-ws';
+//import expressWs from 'express-ws';
 import localTunnel from 'localtunnel';
 import superagent from 'superagent';
 
@@ -18,9 +18,10 @@ import {TelegramController} from '../channel/TelegramController';
 import {WhatsAppController} from '../channel/WhatsAppController';
 
 import {BackendController} from '../website/BackendController';
+import {DefaultController} from '../website/DefaultController';
 import {FrontendController} from '../website/FrontendController';
 import {ScheduleController} from '../website/ScheduleController';
-import {DefaultController} from '../website/DefaultController';
+import {TestingController} from '../website/TestingController';
 
 import {CommonsTool} from '../toolkit/CommonsTool';
 import {LogTool} from '../toolkit/LogTool';
@@ -33,7 +34,7 @@ import {ApplicationConstants} from '../constants/ApplicationConstants';
 export class ApplicationEntry {
 
     private readonly expressApplication: express.Application;
-    private readonly expressWsInstance: expressWs.Instance;
+    //private readonly expressWsInstance: expressWs.Instance;
 
     constructor (
         @inject ('LogToolFactory') private logToolFactory: () => LogTool,
@@ -47,10 +48,11 @@ export class ApplicationEntry {
         @inject (DefaultController) private defaultController: DefaultController,
         @inject (BackendController) private backendController: BackendController,
         @inject (FrontendController) private frontendController: FrontendController,
-        @inject (ScheduleController) private scheduleController: ScheduleController
+        @inject (ScheduleController) private scheduleController: ScheduleController,
+        @inject (TestingController) private testingController: TestingController
     ) {
         this.expressApplication = express ();
-        this.expressWsInstance = expressWs (this.expressApplication);
+        //this.expressWsInstance = expressWs (this.expressApplication);
     }
 
     public async initialize (): Promise<void> {
@@ -72,10 +74,10 @@ export class ApplicationEntry {
 
     }
 
-    private async middlewareInformation (traceObject: Record<string, any>): Promise<void> {
+    private async middlewareInformation (traceRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
 
         if (await this.mongoDbModule.isInitialized ()) {
 
@@ -109,29 +111,30 @@ export class ApplicationEntry {
 
     }
 
-    private async engineInformation (traceObject: Record<string, any>): Promise<void> {
+    private async engineInformation (traceRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
 
-        const versionsStringMap = {
+
+        const versionRecord: Record<string, any> = {
             [ApplicationConstants.LABEL_NODE]: childProcess.execSync ('node -v').toString ().trim ().slice (1),
             [ApplicationConstants.LABEL_PNPM]: childProcess.execSync ('pnpm -v').toString ().trim (),
             [ApplicationConstants.LABEL_TYPESCRIPT]: childProcess.execSync ('tsc --version').toString ().replace (ApplicationConstants.LABEL_VERSION + ' ', '').trim ()
-        };
+        }
 
-        for (const [keyString, valueString] of Object.entries (versionsStringMap)) {
+        for (const versionEntry of Object.entries (versionRecord)) {
 
-            logTool.OK (keyString, valueString);
+            logTool.OK (versionEntry [0], versionEntry [1]);
 
         }
 
     }
 
-    private async environmentInformation (traceObject: Record<string, any>): Promise<void> {
+    private async environmentInformation (traceRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
 
         logTool.OK (ApplicationConstants.LABEL_VERSION, CommonsTool.getApplicationVersion ());
 
@@ -159,10 +162,10 @@ export class ApplicationEntry {
 
     }
 
-    private async startDevelopmentEnvironment (traceObject: Record<string, any>, portString: string, siteString: string): Promise<void> {
+    private async startDevelopmentEnvironment (traceRecord: Record<string, any>, portString: string, siteString: string): Promise<void> {
 
         const logTool = this.logToolFactory ();
-        logTool.setHardTrace (traceObject);
+        logTool.setHardTrace (traceRecord);
 
         logTool.OK (ApplicationConstants.LABEL_ENVIRONMENT, ApplicationConstants.ENVIRONMENT_DEVELOPMENT);
 
@@ -206,10 +209,10 @@ export class ApplicationEntry {
 
     }
 
-    private async startProductionEnvironment (traceObject: Record<string, any>, portString: string, siteString: string): Promise<void> {
+    private async startProductionEnvironment (traceRecord: Record<string, any>, portString: string, siteString: string): Promise<void> {
 
         const logTool = this.logToolFactory ();
-        logTool.setHardTrace (traceObject);
+        logTool.setHardTrace (traceRecord);
 
         logTool.OK (ApplicationConstants.LABEL_ENVIRONMENT, ApplicationConstants.ENVIRONMENT_PRODUCTION);
 
@@ -226,10 +229,10 @@ export class ApplicationEntry {
 
     }
 
-    private async channelInformation (traceObject: Record<string, any>): Promise<void> {
+    private async channelInformation (traceRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
 
         await this.messengerController.initialize (this.expressApplication);
 
@@ -255,7 +258,7 @@ export class ApplicationEntry {
 
         }
 
-        await this.whatsAppController.initialize (this.expressApplication, this.expressWsInstance);
+        await this.whatsAppController.initialize ();
 
         if (await this.whatsAppController.isInitialized ()) {
 
@@ -269,10 +272,10 @@ export class ApplicationEntry {
 
     }
 
-    private async websiteInformation (traceObject: Record<string, any>): Promise<void> {
+    private async websiteInformation (traceRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
-        logTool.setTrace (traceObject);
+        logTool.setTrace (traceRecord);
 
         await this.defaultController.initialize (this.expressApplication);
 
@@ -319,6 +322,24 @@ export class ApplicationEntry {
         } else {
 
             logTool.ERR (ApplicationConstants.WEBSITE_SCHEDULE, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+        }
+
+        const environmentString = process.argv [2].slice (2);
+
+        if (environmentString == ApplicationConstants.LABEL_DEVELOPMENT) {
+
+            await this.testingController.initialize (this.expressApplication);
+
+            if (await this.testingController.isInitialized ()) {
+
+                logTool.OK (ApplicationConstants.WEBSITE_TESTING, ApplicationConstants.STATUS_INITIALIZED);
+
+            } else {
+
+                logTool.ERR (ApplicationConstants.WEBSITE_TESTING, ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+            }
 
         }
 

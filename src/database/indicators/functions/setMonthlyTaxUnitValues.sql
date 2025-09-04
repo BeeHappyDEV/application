@@ -1,6 +1,6 @@
-drop function if exists indicators.set_monthly_tax_unit_values;
+drop function if exists indicators.setMonthlyTaxUnitValues;
 
-create or replace function indicators.set_monthly_tax_unit_values (
+create or replace function indicators.setMonthlyTaxUnitValues (
     in in_jsn_object json
 )
 returns json as $body$

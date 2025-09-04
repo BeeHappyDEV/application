@@ -3,27 +3,74 @@
     "scope": "scope2",
     "intent": "saludar",
     "utterances": [
-        "hola",
-        "buenos dias",
-        "buenas tardes",
-        "hey",
-        "que tal",
-        "hola como estas"
+        {
+            "message": "hola",
+            "object": "4d18-6321-c1a7-f0f3-54b2-97e8-914a-b240"
+        },
+        {
+            "message": "buenos dias",
+            "object": "086f-9b7c-fcba-335d-54a2-e23b-9831-ae09"
+        },
+        {
+            "message": "buenas tardes",
+            "object": "37d4-f857-4bd9-e3b7-1ad8-0a4e-9804-411c"
+        },
+        {
+            "message": "hey",
+            "object": "6057-f13c-496e-cf7f-d777-ceb9-e79a-e285"
+        },
+        {
+            "message": "que tal",
+            "object": "8d7c-6fbb-7aae-b08b-d4cc-e466-a4cd-1015"
+        },
+        {
+            "message": "hola como estas",
+            "object": "f811-c119-22fc-e347-b22c-2c23-acac-410a"
+        }
     ],
     "actions": [
-        "conversation.start"
+        {
+            "type": "function",
+            "schema": "frontend",
+            "function": "link_action"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod1"
+        },
+        {
+            "type": "function",
+            "schema": "indicators",
+            "function": "setEuroValues"
+        },
+        {
+            "type": "discord",
+            "channel": "channel"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod2"
+        },
+        {
+            "type": "response",
+            "response": true
+        }
     ],
     "responses": [
         {
-            "identifier": 1,
+            "object": "a945-f211-f731-875c-d1e7-9388-b0ae-bab2",
             "message": "¡Hola! Soy tu asistente virtual. ¿En qué te puedo ayudar hoy?"
         },
         {
-            "identifier": 2,
+            "object": "fd70-f491-1e79-c25f-3960-2dea-9de4-549a",
             "message": "¡Buenos días! ¿Qué necesitas consultar?"
         },
         {
-            "identifier": 3,
+            "object": "cff1-3c38-2d05-687c-135f-63ce-9f0c-8acf",
             "message": "¡Hola! Dime cómo puedo asistirte."
         }
     ]

@@ -1,6 +1,6 @@
-drop function if exists indicators.set_foment_unit_values;
+drop function if exists indicators.setEuroValues;
 
-create or replace function indicators.set_foment_unit_values (
+create or replace function indicators.setEuroValues (
     in in_jsn_object json
 )
 returns json as $body$
@@ -24,7 +24,7 @@ begin
     for var_rec_day in
 
         select distinct
-            to_char ((json ->> 'date') :: date, 'yyyymmdd') :: numeric idf_foment_unit,
+            to_char ((json ->> 'date') :: date, 'yyyymmdd') :: numeric idf_euro,
             to_char ((json ->> 'date') :: date, 'dd') :: numeric num_day,
             to_char ((json ->> 'date') :: date, 'mm') :: numeric num_month,
             replace (replace ((json ->> 'value'), '.', ''), ',', '.') :: numeric num_value,
@@ -36,22 +36,22 @@ begin
 
     loop
 
-        insert into indicators.foment_units (
-            idf_foment_unit,
+        insert into indicators.euros (
+            idf_euro,
             boo_calculated,
             num_day,
             num_month,
             num_value,
             num_year
         ) values (
-            var_rec_day.idf_foment_unit,
+            var_rec_day.idf_euro,
             false,
             var_rec_day.num_day,
             var_rec_day.num_month,
             var_rec_day.num_value,
             var_rec_day.num_year
         )
-        on conflict (idf_foment_unit)
+        on conflict (idf_euro)
         do update set
             num_value = excluded.num_value,
             boo_calculated = false;
@@ -88,14 +88,14 @@ begin
             select
                 1
             from
-                indicators.foment_units fun
+                indicators.euros eur
             where
-                fun.idf_foment_unit = var_rec_day.num_previous
+                eur.idf_euro = var_rec_day.num_previous
 
         ) then
 
-            insert into indicators.foment_units (
-                idf_foment_unit,
+            insert into indicators.euros (
+                idf_euro,
                 boo_calculated,
                 num_day,
                 num_month,
@@ -110,13 +110,13 @@ begin
                 coalesce (
                     (
                         select
-                            fun.num_value
+                            eur.num_value
                         from
-                            indicators.foment_units fun
+                            indicators.euros eur
                         where
-                            fun.idf_foment_unit < var_rec_day.num_previous
+                            eur.idf_euro < var_rec_day.num_previous
                         order by
-                            fun.idf_foment_unit desc
+                            eur.idf_euro desc
                         limit
                             1
                     ),
@@ -128,31 +128,31 @@ begin
 
     end loop;
 
-    with temp_foment_units as (
+    with temp_euros as (
         select
-            fun.idf_foment_unit,
-            fun.num_value,
-            lag (fun.num_value) over (order by fun.idf_foment_unit) as prev_value
+            eur.idf_euro,
+            eur.num_value,
+            lag (eur.num_value) over (order by eur.idf_euro) as prev_value
         from
-            indicators.foment_units fun
+            indicators.euros eur
         where
-            fun.num_year = var_num_year
+            eur.num_year = var_num_year
     )
-    update indicators.foment_units fun
+    update indicators.euros eur
     set
-        num_absolute = fun.num_value - temp.prev_value,
-        num_variation = sign (fun.num_value - temp.prev_value),
+        num_absolute = eur.num_value - temp.prev_value,
+        num_variation = sign (eur.num_value - temp.prev_value),
         num_percentage =
             case
                 when temp.prev_value = 0 then
                     null
                 else
-                    round (((fun.num_value - temp.prev_value) / temp.prev_value * 100) :: numeric, 2)
+                    round (((eur.num_value - temp.prev_value) / temp.prev_value * 100) :: numeric, 2)
             end
     from
-        temp_foment_units temp
+        temp_euros temp
     where
-        fun.idf_foment_unit = temp.idf_foment_unit
+        eur.idf_euro = temp.idf_euro
         and temp.prev_value is not null;
 
     return result.successfully (var_jsn_status, var_jsn_incoming, var_jsn_outgoing);

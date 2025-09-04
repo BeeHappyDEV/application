@@ -3,28 +3,75 @@
     "scope": "scope1",
     "intent": "consultar_ejecutivo",
     "utterances": [
-        "cual es el ejecutivo que me atiende",
-        "quien es mi ejecutivo de cuentas",
-        "necesito el nombre de mi agente",
-        "con quien puedo hablar sobre mi cuenta",
-        "dime quien ve mi caso",
-        "quien está asignado a mi cuenta"
+        {
+            "message": "cual es el ejecutivo que me atiende",
+            "object": "31a6-d1b9-77d3-a4eb-2e8a-97b8-0668-498c"
+        },
+        {
+            "message": "quien es mi ejecutivo de cuentas",
+            "object": "8c1b-2244-95fe-eb71-b178-6dcd-f864-7cc5"
+        },
+        {
+            "message": "necesito el nombre de mi agente",
+            "object": "d4e9-dafd-2d01-0500-bc67-991e-642e-6095"
+        },
+        {
+            "message": "con quien puedo hablar sobre mi cuenta",
+            "object": "a747-c589-8276-413f-6af4-b4ae-3634-f18a"
+        },
+        {
+            "message": "dime quien ve mi caso",
+            "object": "cbcf-646f-05d8-e1bc-c429-4246-4372-2d69"
+        },
+        {
+            "message": "quien está asignado a mi cuenta",
+            "object": "cfe3-4de9-5ab7-3574-5f6d-48ea-b2e2-5f7d"
+        }
     ],
     "actions": [
-        "api.getAccountExecutive"
+        {
+            "type": "function",
+            "schema": "frontend",
+            "function": "link_action"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod1"
+        },
+        {
+            "type": "function",
+            "schema": "indicators",
+            "function": "setEuroValues"
+        },
+        {
+            "type": "discord",
+            "channel": "channel"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod2"
+        },
+        {
+            "type": "response",
+            "response": true
+        }
     ],
     "responses": [
         {
-            "identifier": 1,
-            "message": "Tu ejecutivo asignado es {nombre_ejecutivo}. ¿Necesitas sus datos de contacto?"
+            "message": "Tu ejecutivo asignado es {nombre_ejecutivo}. ¿Necesitas sus datos de contacto?",
+            "object": "f402-5250-83f1-d30a-1375-045e-0aa5-0e69"
         },
         {
-            "identifier": 2,
-            "message": "Claro, la persona a cargo de tu cuenta es {nombre_ejecutivo}."
+            "message": "Claro, la persona a cargo de tu cuenta es {nombre_ejecutivo}.",
+            "object": "23f3-f230-f038-cbb6-1596-2d84-f65c-96b1"
         },
         {
-            "identifier": 3,
-            "message": "Un momento, estoy verificando... Tu ejecutivo es {nombre_ejecutivo}."
+            "message": "Un momento, estoy verificando... Tu ejecutivo es {nombre_ejecutivo}.",
+            "object": "8e0b-efa1-da7e-293e-3d2a-d900-693d-0247"
         }
     ]
 }

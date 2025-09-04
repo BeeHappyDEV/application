@@ -3,23 +3,70 @@
     "scope": "scope1",
     "intent": "consultar_horario",
     "utterances": [
-        "en que horario atienden",
-        "cual es el horario de atencion",
-        "hasta que hora trabajan",
-        "cuando estan abiertos",
-        "puedo llamar ahora",
-        "cuales son sus horas de oficina"
+        {
+            "message": "en que horario atienden",
+            "object": "a8b0-eb1f-073a-ed60-6943-a843-cf5a-a52b"
+        },
+        {
+            "message": "cual es el horario de atencion",
+            "object": "ca3f-0ae2-43cb-5397-0b63-a58f-6ebb-8b0d"
+        },
+        {
+            "message": "hasta que hora trabajan",
+            "object": "58bf-b5b3-08f7-b539-8871-6b97-34e1-7cde"
+        },
+        {
+            "message": "cuando estan abiertos",
+            "object": "9a47-1146-b9f6-2762-11c0-6b11-5283-b3e1"
+        },
+        {
+            "message": "puedo llamar ahora",
+            "object": "de84-1065-0f89-2732-206f-1cd9-35ce-fe59"
+        },
+        {
+            "message": "cuales son sus horas de oficina",
+            "object": "72e1-2351-7655-af67-47ea-c736-21d8-0b4a"
+        }
     ],
     "actions": [
-        "getInfo.businessHours"
+        {
+            "type": "function",
+            "schema": "frontend",
+            "function": "link_action"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod1"
+        },
+        {
+            "type": "function",
+            "schema": "indicators",
+            "function": "setEuroValues"
+        },
+        {
+            "type": "discord",
+            "channel": "channel"
+        },
+        {
+            "type": "method",
+            "package": "website",
+            "class": "ExampleController",
+            "method": "exampleMethod2"
+        },
+        {
+            "type": "response",
+            "response": true
+        }
     ],
     "responses": [
         {
-            "identifier": 1,
+            "object": "2228-6570-623b-635f-8933-f418-d93b-6208",
             "message": "Nuestro horario de atención es de lunes a viernes, de 9:00 a 18:00 hrs."
         },
         {
-            "identifier": 2,
+            "object": "8937-3b96-33c1-3f2e-d32f-9638-351b-8cf5",
             "message": "Atendemos de lunes a viernes, entre las 9:00 y las 18:00. Los fines de semana no estamos disponibles."
         }
     ]

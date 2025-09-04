@@ -2,8 +2,6 @@ import {inject, injectable} from 'tsyringe';
 
 import express from 'express';
 
-import {WorkflowController} from '../workflow/WorkflowController';
-
 import {BackendService} from './BackendService';
 
 import {LogConstants} from '../constants/LogConstants';
@@ -19,63 +17,44 @@ export class BackendController {
     constructor (
         @inject ('LogToolFactory') private logToolFactory: () => LogTool,
         @inject (PropertiesTool) private propertiesTool: PropertiesTool,
-        @inject (WorkflowController) private workflowController: WorkflowController,
         @inject (BackendService) private backendService: BackendService
     ) {
     }
 
     public async initialize (expressApplication: express.Application): Promise<void> {
 
-        const paramsObject: Record<string, any> = {};
+        const paramsRecord: Record<string, any> = {};
 
         expressApplication.post ('/backend/system/wakeup', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
-            this.postWakeupAction (expressRequest, expressResponse, paramsObject);
+            this.postWakeupAction (expressRequest, expressResponse, paramsRecord);
 
         });
 
         expressApplication.post ('/backend/cache/delete', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
-            this.postDeleteCacheAction (expressRequest, expressResponse, paramsObject);
+            this.postDeleteCacheAction (expressRequest, expressResponse, paramsRecord);
 
         });
 
         expressApplication.post ('/backend/rebuild/documental', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
-            this.postRebuildDocumentalAction (expressRequest, expressResponse, paramsObject);
+            this.postRebuildDocumentalAction (expressRequest, expressResponse, paramsRecord);
 
         });
 
         expressApplication.post ('/backend/rebuild/relational', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
-            paramsObject.txt_file = 'index.txt';
-            paramsObject.txt_path = './src/database/';
+            paramsRecord.txt_file = 'index.txt';
+            paramsRecord.txt_path = './src/database/';
 
-            this.postRebuildRelationalAction (expressRequest, expressResponse, paramsObject);
+            this.postRebuildRelationalAction (expressRequest, expressResponse, paramsRecord);
 
         });
 
         expressApplication.post ('/backend/reload/indicators', (expressRequest: express.Request, expressResponse: express.Response): void => {
 
-            this.postReloadIndicatorsAction (expressRequest, expressResponse, paramsObject);
-
-        });
-
-        expressApplication.post ('/test', async (expressRequest: express.Request, expressResponse: express.Response): Promise<void> => {
-
-            const incomingString = expressRequest.query.incoming;
-
-            if (typeof incomingString === "string") {
-
-                const resultString = await this.workflowController.executeWorkflow (incomingString);
-
-                expressResponse.send (resultString);
-
-            } else {
-
-                expressResponse.send ('Error');
-
-            }
+            this.postReloadIndicatorsAction (expressRequest, expressResponse, paramsRecord);
 
         });
 
@@ -89,28 +68,28 @@ export class BackendController {
 
     }
 
-    private async postWakeupAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<void> {
+    private async postWakeupAction (expressRequest: express.Request, expressResponse: express.Response, paramsRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
         logTool.setRequest (expressRequest);
 
         if (expressRequest.body.transaction && expressRequest.body.depth) {
 
-            const traceObject: Record<string, any> = {};
-            traceObject.transaction = expressRequest.body.transaction;
-            traceObject.depth = Number (expressRequest.body.depth);
+            const traceRecord: Record<string, any> = {};
+            traceRecord.transaction = expressRequest.body.transaction;
+            traceRecord.depth = Number (expressRequest.body.depth);
 
-            logTool.setSoftTrace (traceObject);
+            logTool.setSoftTrace (traceRecord);
 
         }
 
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.backendService.postWakeupAction (logTool.getTrace (), paramsObject);
+            resultRecord = await this.backendService.postWakeupAction (logTool.getTrace (), paramsRecord);
 
             logTool.OK ();
 
@@ -120,26 +99,26 @@ export class BackendController {
 
         }
 
-        expressResponse.send (resultObject);
+        expressResponse.send (resultRecord);
 
         logTool.FINALIZE ();
 
     }
 
-    private async postDeleteCacheAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<Record<string, any>> {
+    private async postDeleteCacheAction (expressRequest: express.Request, expressResponse: express.Response, paramsRecord: Record<string, any>): Promise<Record<string, any>> {
 
         const logTool = this.logToolFactory ();
         logTool.setRequest (expressRequest);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            paramsObject.txt_host = await this.propertiesTool.get ('integration.cloudflare.host');
-            paramsObject.txt_token = await this.propertiesTool.get ('integration.cloudflare.token');
+            paramsRecord.txt_host = await this.propertiesTool.get ('integration.cloudflare.host');
+            paramsRecord.txt_token = await this.propertiesTool.get ('integration.cloudflare.token');
 
-            resultObject = await this.backendService.postDeleteCacheAction (logTool.getTrace (), paramsObject);
+            resultRecord = await this.backendService.postDeleteCacheAction (logTool.getTrace (), paramsRecord);
 
             logTool.OK ();
 
@@ -149,25 +128,25 @@ export class BackendController {
 
         }
 
-        expressResponse.send (resultObject);
+        expressResponse.send (resultRecord);
 
         logTool.FINALIZE ();
 
-        return resultObject;
+        return resultRecord;
 
     }
 
-    private async postRebuildDocumentalAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<void> {
+    private async postRebuildDocumentalAction (expressRequest: express.Request, expressResponse: express.Response, paramsRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
         logTool.setRequest (expressRequest);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.backendService.postRebuildDocumentalAction (logTool.getTrace (), paramsObject);
+            resultRecord = await this.backendService.postRebuildDocumentalAction (logTool.getTrace (), paramsRecord);
 
             logTool.OK ();
 
@@ -177,23 +156,23 @@ export class BackendController {
 
         }
 
-        expressResponse.send (resultObject);
+        expressResponse.send (resultRecord);
 
         logTool.FINALIZE ();
 
     }
 
-    private async postRebuildRelationalAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<void> {
+    private async postRebuildRelationalAction (expressRequest: express.Request, expressResponse: express.Response, paramsRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
         logTool.setRequest (expressRequest);
         logTool.INITIALIZE ();
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.backendService.postRebuildRelationalAction (logTool.getTrace (), paramsObject);
+            resultRecord = await this.backendService.postRebuildRelationalAction (logTool.getTrace (), paramsRecord);
 
             logTool.OK ();
 
@@ -203,40 +182,40 @@ export class BackendController {
 
         }
 
-        expressResponse.send (resultObject);
+        expressResponse.send (resultRecord);
 
         logTool.FINALIZE ();
 
     }
 
-    private async postReloadIndicatorsAction (expressRequest: express.Request, expressResponse: express.Response, paramsObject: Record<string, any>): Promise<void> {
+    private async postReloadIndicatorsAction (expressRequest: express.Request, expressResponse: express.Response, paramsRecord: Record<string, any>): Promise<void> {
 
         const logTool = this.logToolFactory ();
         logTool.setRequest (expressRequest);
 
         if (expressRequest.body.transaction && expressRequest.body.depth) {
 
-            const traceObject: Record<string, any> = {};
-            traceObject.transaction = expressRequest.body.transaction;
-            traceObject.depth = Number (expressRequest.body.depth);
+            const traceRecord: Record<string, any> = {};
+            traceRecord.transaction = expressRequest.body.transaction;
+            traceRecord.depth = Number (expressRequest.body.depth);
 
-            logTool.setSoftTrace (traceObject);
+            logTool.setSoftTrace (traceRecord);
 
         }
 
         logTool.INITIALIZE ();
 
-        paramsObject.txt_host_dollar = await this.propertiesTool.get ('scheduler.indicators.host.dollar');
-        paramsObject.txt_host_euro = await this.propertiesTool.get ('scheduler.indicators.host.euro');
-        paramsObject.txt_host_foment_unit = await this.propertiesTool.get ('scheduler.indicators.host.foment_unit');
-        paramsObject.txt_host_monthly_tax_unit = await this.propertiesTool.get ('scheduler.indicators.host.monthly_tax_unit');
-        paramsObject.txt_token = await this.propertiesTool.get ('scheduler.indicators.token');
+        paramsRecord.txt_host_dollar = await this.propertiesTool.get ('scheduler.indicators.host.dollar');
+        paramsRecord.txt_host_euro = await this.propertiesTool.get ('scheduler.indicators.host.euro');
+        paramsRecord.txt_host_foment_unit = await this.propertiesTool.get ('scheduler.indicators.host.foment_unit');
+        paramsRecord.txt_host_monthly_tax_unit = await this.propertiesTool.get ('scheduler.indicators.host.monthly_tax_unit');
+        paramsRecord.txt_token = await this.propertiesTool.get ('scheduler.indicators.token');
 
-        let resultObject: Record<string, any> = {};
+        let resultRecord: Record<string, any> = {};
 
         try {
 
-            resultObject = await this.backendService.postReloadIndicatorsAction (logTool.getTrace (), paramsObject);
+            resultRecord = await this.backendService.postReloadIndicatorsAction (logTool.getTrace (), paramsRecord);
 
             logTool.OK ();
 
@@ -246,7 +225,7 @@ export class BackendController {
 
         }
 
-        expressResponse.send (resultObject);
+        expressResponse.send (resultRecord);
 
         logTool.FINALIZE ();
 
