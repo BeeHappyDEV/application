@@ -52,8 +52,10 @@ channel:
   whatsapp:
     enable: true
     instances:
+      - name: beebee
+        number: 56944244244
       - name: beejay
-        phone: 56944744744
+        number: 56944744744
 
 # SCHEDULERS #
 

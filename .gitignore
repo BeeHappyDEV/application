@@ -2,7 +2,7 @@
 .docusaurus/
 .idea/
 /node_modules
-/sessions
+/instance_*
 *.bkp
 *.lock
 *.log

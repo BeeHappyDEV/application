@@ -1,33 +1,31 @@
 import {injectable} from 'tsyringe';
 
-import {
-    default as makeWASocket,
-    useMultiFileAuthState,
-    DisconnectReason,
-    fetchLatestBaileysVersion,
-    Browsers
-} from 'baileys';
+import pino from 'pino';
+
 import {Boom} from '@hapi/boom';
+import {Browsers, DisconnectReason, fetchLatestBaileysVersion, makeWASocket, useMultiFileAuthState} from 'baileys';
 
 @injectable ()
 export class WhatsAppService {
 
     private initializedBoolean = false;
+    private numberString: string = '';
+    private logger: any;
+    private connectionPromise: Promise<void> | null = null;
+    private qrCode: string = '';
 
     private sock: any | null;
-    private numberSet: Set<string> = new Set ();
-    private assignedPhone: string = '';
-    private isConnected: boolean = false;
 
     constructor (
         //@inject ('LogToolFactory') private logToolFactory: () => LogTool
     ) {
+        this.logger = pino ({level: 'silent'});
+        this.logger = pino ({level: 'info'});
     }
 
-    public async initialize (phoneString: string): Promise<void> {
+    public async initialize (instanceRecord: Record<string, any>): Promise<void> {
 
-        this.numberSet.add (phoneString);
-        this.assignedPhone = phoneString;
+        this.numberString = instanceRecord.numberString;
 
         if (this.initializedBoolean) {
 
@@ -36,6 +34,8 @@ export class WhatsAppService {
         }
 
         try {
+
+            await this.execute ();
 
             this.initializedBoolean = true;
 
@@ -53,140 +53,160 @@ export class WhatsAppService {
 
     }
 
-    public async connect (): Promise<void> {
-        console.log ();
-        if (this.isConnected) {
-            return;
+    private async execute (): Promise<void> {
+        if (this.connectionPromise) {
+            return this.connectionPromise;
         }
 
-        try {
-            const {state, saveCreds} = await useMultiFileAuthState (`auth_${this.assignedPhone}`);
-            const {version} = await fetchLatestBaileysVersion ();
+        this.connectionPromise = (async () => {
+            try {
+                const authDir = `auth_${this.numberString}`;
+                const {state, saveCreds} = await useMultiFileAuthState (authDir);
+                const {version} = await fetchLatestBaileysVersion ();
 
-            this.sock = makeWASocket ({
-                version,
-                auth: state,
-                browser: Browsers.ubuntu ('Chrome')
-            });
+                this.sock = makeWASocket ({
+                    logger: this.logger,
+                    version,
+                    auth: state,
+                    browser: Browsers.ubuntu ('Chrome'),
+                    connectTimeoutMs: 60000
+                });
 
-            // Manejar eventos de conexión
-            this.sock.ev.on ('connection.update', (update: { connection: any; lastDisconnect?: { error?: Boom } }) => {
+                // Configurar manejadores de eventos
+                this.setupEventHandlers (saveCreds);
 
-                const {connection, lastDisconnect} = update;
+                // Esperar a que la conexión se establezca
+                await new Promise<void> ((resolve, reject) => {
+                    const timeout = setTimeout (() => {
+                        reject (new Error (`Timeout de conexión para ${this.numberString}`));
+                    }, 120000); // 2 minutos timeout
 
-                if (connection === 'close') {
+                    this.sock.ev.on ('connection.update', (update: { connection: any }) => {
+                        if (update.connection === 'open') {
+                            clearTimeout (timeout);
+                            this.qrCode = '';
+                            resolve ();
+                        }
+                    });
+                });
 
-                    this.isConnected = false;
+                this.initializedBoolean = true;
+                this.logger.info (`✅ Conexión exitosa para: ${this.numberString}`);
 
-                    const boomError = lastDisconnect?.error as Boom;
+            } catch (error) {
+                this.initializedBoolean = false;
+                this.connectionPromise = null;
+                this.logger.error (`❌ Error en execute() para ${this.numberString}:`, error);
+                throw error;
+            }
+        }) ();
 
-                    const shouldReconnect = boomError?.output?.statusCode !== DisconnectReason.loggedOut;
-
-                    console.log (`Conexión cerrada para ${this.assignedPhone}, reconectando:`, shouldReconnect);
-
-                    if (shouldReconnect) {
-
-                        setTimeout (() => this.connect (), 5000);
-
-                    }
-
-                } else if (connection === 'open') {
-
-                    this.isConnected = true;
-
-                    console.log (`✅ Conectado a WhatsApp para: ${this.assignedPhone}`);
-
-                }
-
-            });
-
-            this.sock.ev.on ('creds.update', saveCreds);
-
-            await this.setupMessageHandler ();
-
-        } catch (error) {
-
-            console.error (`Error conectando para ${this.assignedPhone}:`, error);
-
-            this.isConnected = false;
-
-            throw error;
-
-        }
-
+        return this.connectionPromise;
     }
 
-    private async setupMessageHandler () {
+    private setupEventHandlers(saveCreds: () => Promise<void>): void {
+        // Manejador de actualización de conexión (INCLUYENDO QR)
+        this.sock.ev.on('connection.update', (update: {
+            connection: any;
+            lastDisconnect?: { error?: Boom };
+            qr?: string;
+        }) => {
+            const {connection, lastDisconnect, qr} = update;
 
-        this.sock.ev.on ('messages.upsert', async (m: { messages: any [] }): Promise<void> => {
+            // ✅ MANEJO MANUAL DEL QR CODE
+            if (qr) {
+                this.qrCode = qr;
+                this.logger.info(`📱 QR Code para ${this.numberString}:`);
+                this.logger.info(qr); // Esto mostrará el QR en texto
+                this.logger.info('Escanea el código QR con WhatsApp → Linked Devices');
+            }
 
-            const message = m.messages [0];
+            this.logger.debug(`Conexión update para ${this.numberString}:`, connection);
+
+            if (connection === 'close') {
+                this.initializedBoolean = false;
+                const boomError = lastDisconnect?.error as Boom;
+                const shouldReconnect = boomError?.output?.statusCode !== DisconnectReason.loggedOut;
+
+                this.logger.warn(`Conexión cerrada para ${this.numberString}, reconectando: ${shouldReconnect}`);
+
+                if (shouldReconnect) {
+                    setTimeout(() => {
+                        this.connectionPromise = null;
+                        this.execute().catch(error => {
+                            this.logger.error(`Error en reconexión automática: ${error}`);
+                        });
+                    }, 5000);
+                }
+            } else if (connection === 'open') {
+                this.initializedBoolean = true;
+                this.qrCode = ''; // Limpiar QR cuando se conecta
+                this.logger.info(`✅ Conectado a WhatsApp para: ${this.numberString}`);
+            }
+        });
+
+        // Manejador de actualización de credenciales
+        this.sock.ev.on('creds.update', saveCreds);
+
+        // Configurar manejador de mensajes
+        this.sock.ev.on('messages.upsert', this.handleMessages.bind(this));
+    }
+
+    private async handleMessages (m: { messages: any[] }): Promise<void> {
+        try {
+            const message = m.messages[0];
 
             // Ignorar mensajes propios y mensajes sin contenido
             if (message.key.fromMe || !message.message) {
-
                 return;
-
             }
 
-            // Extraer información del mensaje
             const from = message.key.remoteJid;
-            const messageType = Object.keys (message.message) [0];
-            const senderNumber = from.split ('@') [0];
+            const messageType = Object.keys (message.message)[0];
+            const senderNumber = from.split ('@')[0];
 
-            console.log ('📨 Mensaje recibido de:', senderNumber);
-            console.log ('Tipo de mensaje:', messageType);
+            this.logger.info (`📨 Mensaje recibido de ${senderNumber}: ${messageType}`);
 
-            // Procesar diferentes tipos de mensajes
             switch (messageType) {
-                case 'conversation': // Mensaje de texto simple
+                case 'conversation':
                     const text = message.message.conversation;
-                    console.log ('Texto recibido:', text);
                     await this.processTextMessage (senderNumber, text);
                     break;
 
-                case 'extendedTextMessage': // Mensaje de texto extendido
+                case 'extendedTextMessage':
                     const extendedText = message.message.extendedTextMessage.text;
-                    console.log ('Texto extendido:', extendedText);
                     await this.processTextMessage (senderNumber, extendedText);
                     break;
 
-                case 'stickerMessage': // Sticker
-                    console.log ('Sticker recibido');
+                case 'stickerMessage':
                     await this.processStickerMessage (senderNumber, message);
                     break;
 
-                case 'imageMessage': // Imagen
-                    console.log ('Imagen recibida');
+                case 'imageMessage':
                     await this.processMediaMessage (senderNumber, 'image');
                     break;
 
                 default:
-                    console.log ('Tipo de mensaje no procesado:', messageType);
+                    this.logger.debug (`Tipo de mensaje no procesado: ${messageType}`);
             }
-        });
+        } catch (error) {
+            this.logger.error ('Error en handleMessages:', error);
+        }
     }
 
-    private async processTextMessage (senderNumber: string, text: string) {
-        console.log (`Procesando texto de ${senderNumber}: ${text}`);
+    private async processTextMessage (senderNumber: string, text: string): Promise<void> {
+        this.logger.info (`Procesando texto de ${senderNumber}: ${text}`);
 
-        // Ejemplo: responder automáticamente
         if (text.toLowerCase () === 'hola') {
             await this.sendMessage (senderNumber + '@s.whatsapp.net', '¡Hola! ¿Cómo estás?');
         }
-
-        // Verificar si el número está registrado
-        if (await this.isNumberRegistered (senderNumber)) {
-            console.log ('Número registrado detectado');
-            // Tu lógica para números registrados
-        }
     }
 
-    private async processStickerMessage (senderNumber: string, message: { message: { stickerMessage: any } }) {
-        console.log (`Sticker recibido de ${senderNumber}`);
-
+    private async processStickerMessage (senderNumber: string, message: {
+        message: { stickerMessage: any }
+    }): Promise<void> {
         const stickerInfo = message.message.stickerMessage;
-        console.log ('Info del sticker:', {
+        this.logger.info (`Sticker recibido de ${senderNumber}`, {
             mimetype: stickerInfo.mimetype,
             fileSize: stickerInfo.fileLength
         });
@@ -194,22 +214,26 @@ export class WhatsAppService {
         await this.sendMessage (senderNumber + '@s.whatsapp.net', '¡Qué buen sticker! 😊');
     }
 
-    private async processMediaMessage (senderNumber: string, mediaType: string) {
-        console.log (`${mediaType} recibido de ${senderNumber}`);
+    private async processMediaMessage (senderNumber: string, mediaType: string): Promise<void> {
+        this.logger.info (`${mediaType} recibido de ${senderNumber}`);
     }
 
-    private async sendMessage (jid: string, text: string) {
+    private async sendMessage (jid: string, text: string): Promise<void> {
         try {
             await this.sock.sendMessage (jid, {text: text});
-            console.log ('✅ Mensaje enviado a:', jid);
+            this.logger.info (`✅ Mensaje enviado a: ${jid}`);
         } catch (error) {
-            console.error ('Error enviando mensaje:', error);
+            this.logger.error (`Error enviando mensaje a ${jid}:`, error);
         }
     }
 
-    private async isNumberRegistered (number: string): Promise<boolean> {
-        const cleanNumber = number.replace (/\D/g, '');
-        return this.numberSet.has (cleanNumber);
+    // Método para cerrar la conexión
+    public async disconnect (): Promise<void> {
+        if (this.sock) {
+            this.sock.ws.close ();
+            this.initializedBoolean = false;
+            this.connectionPromise = null;
+            this.logger.info (`🔌 Conexión cerrada para: ${this.numberString}`);
+        }
     }
-
 }

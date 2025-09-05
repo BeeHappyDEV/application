@@ -50,7 +50,11 @@ channel:
     webhook: https://beehappy.dev
   whatsapp:
     enable: true
-    aaa: aaa
+    instances:
+      - name: beebee
+        number: 56944244244
+      - name: beejay
+        number: 56944744744
 
 # SCHEDULERS #
 

@@ -141,6 +141,7 @@ export class WebserviceModule {
     }
 
     public async post (traceRecord: Record<string, any>, hostString: string, headersRecord?: Record<string, any>, queryRecord?: Record<string, any>, bodyRecord?: Record<string, any>): Promise<Record<string, any>> {
+
         const logTool = this.logToolFactory ();
         logTool.setTrace (traceRecord);
         logTool.INITIALIZE ();
@@ -201,6 +202,5 @@ export class WebserviceModule {
         return resultRecord;
 
     }
-
-
+    
 }

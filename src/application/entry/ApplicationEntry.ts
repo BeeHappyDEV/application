@@ -260,13 +260,19 @@ export class ApplicationEntry {
 
         await this.whatsAppController.initialize ();
 
-        if (await this.whatsAppController.isInitialized ()) {
+        let instanceRecord = await this.whatsAppController.isInitialized ();
 
-            logTool.OK (ApplicationConstants.CHANNEL_WHATSAPP, ApplicationConstants.STATUS_INITIALIZED);
+        for (const instanceEntry of Object.values (instanceRecord)) {
 
-        } else {
+            if (instanceEntry.initializedBoolean) {
 
-            logTool.ERR (ApplicationConstants.CHANNEL_WHATSAPP, ApplicationConstants.STATUS_NOT_INITIALIZED);
+                logTool.OK (ApplicationConstants.CHANNEL_WHATSAPP, instanceEntry.nameString + '/' + instanceEntry.numberString + ' ' + ApplicationConstants.STATUS_INITIALIZED);
+
+            } else {
+
+                logTool.ERR (ApplicationConstants.CHANNEL_WHATSAPP, instanceEntry.nameString + '/' + instanceEntry.numberString + ' ' + ApplicationConstants.STATUS_NOT_INITIALIZED);
+
+            }
 
         }
 

@@ -1,20 +1,16 @@
-import {inject, injectable} from 'tsyringe';
+import {container, inject, injectable} from 'tsyringe';
 
-import {LogTool} from '../toolkit/LogTool';
 import {PropertiesTool} from '../toolkit/PropertiesTool';
 
 import {WhatsAppService} from './WhatsAppService';
-import {container} from "tsyringe";
 
 @injectable ()
 export class WhatsAppController {
 
-    private initializedBoolean = false;
+    private instanceRecord: Record<string, any> = [];
 
     constructor (
-        @inject ('LogToolFactory') private logToolFactory: () => LogTool,
-        @inject (PropertiesTool) private propertiesTool: PropertiesTool,
-        @inject (WhatsAppService) private whatsAppService: WhatsAppService
+        @inject (PropertiesTool) private propertiesTool: PropertiesTool
     ) {
     }
 
@@ -22,24 +18,28 @@ export class WhatsAppController {
 
         const propertyArray = Array (await this.propertiesTool.get ('channel.whatsapp.instances'));
 
-        for (const propertyEntry of propertyArray [0]) {
+        for (const propertyEntry of Object.values (propertyArray [0])) {
 
-            console.log (propertyEntry.name + ' - ' + propertyEntry.phone);
+            const propertyRecord: Record<string, any> = propertyEntry as unknown as Record<string, any>;
+
+            const instanceRecord: Record<string, any> = {};
+            instanceRecord.nameString = propertyRecord.name;
+            instanceRecord.numberString = propertyRecord.number;
 
             const whatsAppService = container.resolve (WhatsAppService);
+            await whatsAppService.initialize (instanceRecord);
 
-            await whatsAppService.initialize (propertyEntry.phone);
-            await whatsAppService.connect ();
+            instanceRecord.initializedBoolean = await whatsAppService.isInitialized ();
 
-            this.initializedBoolean = true;
+            this.instanceRecord.push (instanceRecord);
 
         }
 
     }
 
-    public async isInitialized (): Promise<boolean> {
+    public async isInitialized (): Promise<Record<string, any>> {
 
-        return this.initializedBoolean;
+        return this.instanceRecord;
 
     }
 
